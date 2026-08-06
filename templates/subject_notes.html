@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subjects</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="subject-page">
+    <div id="page-loader"></div>
+<div class="subject-container">
+
+
+
+    <div class="subject-grid">
+
+{% if branch == 'cme' %}
+   <h1 class="subject-title">
+
+    {% if semester == 'first_year' %}
+     FIRST YEAR
+    
+
+        <a class="subject-card">English</a>
+
+        <a class="subject-card">
+            Engineering Mathematics - I
+        </a>
+
+        <a class="subject-card">
+            Engineering Physics
+        </a>
+
+        <a class="subject-card">
+            Engineering Chemistry & Environmental Studies
+        </a>
+
+                 <a class="subject-card"
+        href="{{ url_for('static',
+        filename='pdfs/notes/cme/first_year/BCE_notes.pdf') }}"
+        target="_blank">
+            Basics of Computer Engineering
+        </a>
+
+        <a class="subject-card"
+        href="{{ url_for('static',
+        filename='pdfs/notes/cme/first_year/C-Programming_Notes.pdf') }}"
+        target="_blank">
+            Programming in C
+        </a>
+
+    {% elif semester == 'third_sem' %}
+      THIRD SEMESTER
+
+        <a class="subject-card">
+            Engineering Mathematics - II
+        </a>
+
+                <a class="subject-card"
+        href="{{ url_for('static',
+        filename='pdfs/notes/cme/third_sem/Digital_electronics.pdf') }}"
+        target="_blank">
+            Digital Electronics
+        </a>
+
+
+        <a class="subject-card">
+            Operating System
+        </a>
+
+        <a class="subject-card"
+          href="{{ url_for('static',
+        filename='pdfs/notes/cme/third_sem/Data_structuresthrough_C.pdf') }}"
+        target="_blank">
+            Data Structures Through C
+        </a>
+
+        <a class="subject-card">
+            Database Management System (DBMS)
+        </a>
+
+    {% elif semester == 'fourth_sem' %}
+     FOURTH SEMESTER 
+
+        <a class="subject-card"
+           href="{{ url_for('static',
+           filename='pdfs/notes/cme/fourth_sem/java.pdf') }}"
+          target="_blank">
+            OOP Through Java
+        </a>
+
+       <a class="subject-card"
+   href="{{ url_for('static',
+   filename='pdfs/notes/cme/fourth_sem/CN_CS.pdf') }}"
+   target="_blank">
+    Computer Networks & Cyber Security
+</a>
+
+        <a class="subject-card"
+   href="{{ url_for('static',
+   filename='pdfs/notes/cme/fourth_sem/webtechnology.pdf') }}"
+   target="_blank">
+    Web Technologies
+</a>
+
+    {% elif semester == 'fifth_sem' %}
+      FIFTH SEMESTER
+
+        <a class="subject-card">
+            Industrial Management & Entrepreneurship
+        </a>
+
+        <a class="subject-card">
+            Big Data & Cloud Computing
+        </a>
+
+        <a class="subject-card">
+            Android Programming
+        </a>
+
+        <a class="subject-card">
+            Internet of Things (IoT)
+        </a>
+
+        <a class="subject-card"
+        href="{{ url_for('static',
+        filename='pdfs/notes/cme/fifth_sem/Python_Notes.pdf') }}"
+        target="_blank">
+            PYTHON
+        </a>
+
+    {% endif %}
+    </h1>
+
+{% else %}
+
+    <h2 style="color:white;">
+        Subjects for this branch will be added soon.
+    </h2>
+
+{% endif %}
+
+</div>
+
+<br>
+
+<a href="{{ url_for('semesters', branch=branch) }}"
+   class="back-btn">
+    ⬅ Back to Semesters
+</a>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

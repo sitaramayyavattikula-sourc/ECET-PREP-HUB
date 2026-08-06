@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Result</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+
+<body class="quiz-page">
+    <div id="page-loader"></div>
+
+<div class="quiz-result-box">
+
+    <h1>🎉 Quiz Completed!</h1>
+
+   <h2>
+    Your Score:
+    <span id="scoreCounter">0</span>/{{ total }}
+</h2>
+<h3>
+    📊 Percentage: {{ percentage }}%
+</h3>
+{% if percentage >= 90 %} <h2>🥇 Top Performer</h2> {% elif percentage >= 75 %} <h2>🥈 Great Job</h2> {% elif percentage >= 50 %} <h2>🥉 Good Attempt</h2> {% else %} <h2>📚 Keep Practicing</h2> {% endif %}
+<h3>📈 Performance</h3>
+<h3>
+    🏆 You are Rank #{{ rank }}
+</h3>
+
+
+<div class="progress-container">
+    <div class="progress-bar"
+         id="progressBar">
+        0%
+    </div>
+</div>
+
+<div class="chart-box">
+    <canvas id="resultChart"></canvas>
+</div>
+
+   
+
+    <a href="{{ url_for('quiz') }}"
+       class="quiz-btn">
+        Take Another Quiz
+    </a>
+    <a href="{{ url_for('leaderboard') }}"
+   class="quiz-btn">
+    🏆 View Leaderboard
+</a>
+
+
+</div>
+
+<script>
+    const finalScore = Number("{{ score }}");
+
+let currentScore = 0;
+
+const counter = setInterval(() => {
+
+    document.getElementById("scoreCounter")
+            .innerText = currentScore;
+
+    if (currentScore >= finalScore) {
+        clearInterval(counter);
+    } else {
+        currentScore++;
+    }
+
+}, 100);
+
+const percentage =
+    Number("{{ percentage }}");
+
+const progressBar =
+    document.getElementById("progressBar");
+
+setTimeout(() => {
+
+    progressBar.style.width =
+        percentage + "%";
+
+    progressBar.innerText =
+        percentage + "%";
+
+}, 500);
+const score = Number("{{ score }}");
+const total = Number("{{ total }}");
+const wrong = total - score;
+
+new Chart(
+    document.getElementById("resultChart"),
+    {
+        type: "pie",
+
+        data: {
+            labels: [
+                "Correct Answers",
+                "Wrong Answers"
+            ],
+            datasets: [{
+                data: [score, wrong],
+                backgroundColor: [
+                    "#28a745",
+                    "#dc3545"
+                ],
+                borderColor: "#ffffff",
+                borderWidth: 3
+            }]
+        },
+
+        plugins: [ChartDataLabels],
+
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white",
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+
+                datalabels: {
+                    color: "white",
+                    font: {
+                        weight: "bold",
+                        size: 16
+                    },
+
+                    formatter: (value, context) => {
+                        let total =
+                            context.chart.data.datasets[0]
+                                   .data
+                                   .reduce((a, b) => a + b, 0);
+
+                        let percentage =
+                            (value / total * 100)
+                            .toFixed(1);
+
+                        return percentage + "%";
+                    }
+                }
+            }
+        }
+    }
+);
+</script>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

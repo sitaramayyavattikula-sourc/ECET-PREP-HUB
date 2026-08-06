@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ECET Previous Papers</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+</head>
+
+<body class="papers-page">
+    <div id="page-loader"></div>
+
+<div class="papers-container">
+
+{% if branch == 'cme' %}
+
+    <h1>📄 CME ECET Previous Papers</h1>
+
+    <a class="paper-btn"
+       href="{{ url_for('static',
+       filename='pdfs/papers/cme/ECET_2024.pdf') }}"
+       target="_blank">
+        ECET 2024 Paper
+    </a>
+
+    <a class="paper-btn"
+       href="{{ url_for('static',
+       filename='pdfs/papers/cme/ECET_2023.pdf') }}"
+       target="_blank">
+        ECET 2023 Paper
+    </a>
+
+    <a class="paper-btn"
+       href="{{ url_for('static',
+       filename='pdfs/papers/cme/ECET_2022.pdf') }}"
+       target="_blank">
+        ECET 2022 Paper
+    </a>
+
+{% else %}
+
+    <h1>
+        📄 {{ branch.upper() }} ECET Previous Papers
+    </h1>
+
+    <h2 style="color:white; margin-top:50px;">
+        Papers for this branch will be uploaded soon.
+    </h2>
+
+{% endif %}
+
+</div>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

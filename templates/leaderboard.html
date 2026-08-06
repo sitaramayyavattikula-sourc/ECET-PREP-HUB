@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Leaderboard</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/leaderboard.css') }}">
+</head>
+<body class="leaderboard-page">
+    <div id="page-loader"></div>
+
+<div class="leaderboard-container">
+
+    <h1>🏆 Quiz Leaderboard</h1>
+
+    <table class="leaderboard-table">
+
+        <tr>
+            <th>S.No</th>
+            <th>Rank</th>
+            <th>Student Name</th>
+            <th>Best Score</th>
+        </tr>
+
+        {% for student in students %}
+        <tr
+        {% if loop.index == 1 %}
+            class="gold"
+        {% elif loop.index == 2 %}
+            class="silver"
+        {% elif loop.index == 3 %}
+            class="bronze"
+        {% endif %}
+        >
+
+            <td>{{ loop.index }}</td>
+
+            <td>
+                {% if loop.index == 1 %}
+                    🥇
+                {% elif loop.index == 2 %}
+                    🥈
+                {% elif loop.index == 3 %}
+                    🥉
+                {% else %}
+                    {{ loop.index }}
+                {% endif %}
+            </td>
+
+            <td>{{ student.name }}</td>
+            <td>{{ student.best_score }}</td>
+
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

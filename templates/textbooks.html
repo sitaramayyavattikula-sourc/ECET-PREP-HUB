@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Study Notes</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    
+ <div id="page-loader"></div>
+<h1 class="notes-title">📚 Study Notes</h1>
+
+<div class="notes-container">
+
+    <div class="note-card">
+        <h2>☕ Java</h2>
+        <a href="{{ url_for('static',
+        filename='pdfs/notes/Java.pdf') }}"
+        target="_blank">
+            View Notes
+        </a>
+    </div>
+
+    <div class="note-card">
+        <h2>🌐 Web Technology</h2>
+        <a href="{{ url_for('static',
+        filename='pdfs/notes/Web_Technology.pdf') }}"
+        target="_blank">
+            View Notes
+        </a>
+    </div>
+
+    <div class="note-card">
+        <h2>💻 CN & CS</h2>
+        <a href="{{ url_for('static',
+        filename='pdfs/notes/CN_CS.pdf') }}"
+        target="_blank">
+            View Notes
+        </a>
+    </div>
+
+    <div class="note-card">
+        <h2>🔌 Digital Electronics</h2>
+        <a href="{{ url_for('static',
+        filename='pdfs/notes/Digital_Electronics.pdf') }}"
+        target="_blank">
+            View Notes
+        </a>
+    </div>
+
+</div>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

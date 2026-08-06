@@ -1,0 +1,22 @@
+# Large PDF
+static/pdfs/notes/cme/first_year/BCE_notes.pdf
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# SQLite database
+*.db
+
+# Virtual environments
+venv/
+.env
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+
+# macOS
+.DS_Store

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Contact Us</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body class="contact-page">
+
+<div id="page-loader"></div>
+
+<div class="contact-container">
+
+    <h1>Contact Us</h1>
+
+    <p class="contact-subtitle">
+        We'd love to hear from you.
+    </p>
+
+    <div class="contact-content">
+
+        <!-- Left -->
+
+        <div class="contact-info">
+
+            <h2>ECET Portal</h2>
+
+            <p>
+                📍 AITAM, Tekkali,
+                Srikakulam,
+                Andhra Pradesh
+            </p>
+
+            <p>
+                📧 ecetportal@gmail.com
+            </p>
+
+            <p>
+                📞 +91 7981295427
+            </p>
+
+            <p>
+                🌐 www.ecetportal.com
+            </p>
+
+        </div>
+
+        <!-- Right -->
+
+        <form class="contact-form">
+
+            <input
+                type="text"
+                placeholder="Your Name"
+                required>
+
+            <input
+                type="email"
+                placeholder="Email Address"
+                required>
+
+            <input
+                type="text"
+                placeholder="Subject"
+                required>
+
+            <textarea
+                rows="6"
+                placeholder="Write your message..."
+                required></textarea>
+
+            <button type="submit">
+
+                Send Message
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <br>
+
+   <a href="{{ url_for('home') }}"
+   class="back-btn">
+
+        ⬅ Back to Home
+
+    </a>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+
+</body>
+
+</html>

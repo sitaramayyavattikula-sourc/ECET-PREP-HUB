@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Viewer</title>
+</head>
+<body>
+    <div id="page-loader"></div>
+
+<h2>Study Notes</h2>
+
+<iframe
+    src="{{ url_for('static', filename=pdf_file) }}"
+    width="100%"
+    height="700px">
+</iframe>
+
+<br><br>
+
+<a href="{{ url_for('static', filename=pdf_file) }}"
+   download>
+    <button>
+        Download PDF
+    </button>
+</a>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

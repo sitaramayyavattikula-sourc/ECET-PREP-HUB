@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Branch</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="branch-page">
+  <div id="page-loader"></div>
+
+<div class="branch-container">
+
+    <h1 class="branch-title">
+        🏫 Select Your Branch
+    </h1>
+
+    <div class="branch-cards">
+
+        <a class="branch-card"
+           href="{{ url_for('semesters', branch='cme') }}">
+            <i class="fas fa-computer"></i>
+            <h2>CME</h2>
+            <p>Computer Engineering</p>
+        </a>
+
+        <a class="branch-card"
+           href="{{ url_for('semesters', branch='ece') }}">
+            <i class="fas fa-microchip"></i>
+            <h2>ECE</h2>
+            <p>Electronics & Communication</p>
+        </a>
+
+        <a class="branch-card"
+           href="{{ url_for('semesters', branch='mec') }}">
+            <i class="fas fa-cogs"></i>
+            <h2>MEC</h2>
+            <p>Mechanical Engineering</p>
+        </a>
+
+        <a class="branch-card"
+           href="{{ url_for('semesters', branch='civil') }}">
+            <i class="fas fa-building"></i>
+            <h2>CIVIL</h2>
+            <p>Civil Engineering</p>
+        </a>
+
+        <a class="branch-card"
+           href="{{ url_for('semesters', branch='eee') }}">
+            <i class="fas fa-bolt"></i>
+            <h2>EEE</h2>
+            <p>Electrical Engineering</p>
+        </a>
+
+    </div>
+
+</div>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

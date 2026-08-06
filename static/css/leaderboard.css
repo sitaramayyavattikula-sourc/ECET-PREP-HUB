@@ -1,0 +1,84 @@
+.leaderboard-page{
+    min-height: 100vh;
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.45),
+        rgba(0,0,0,0.45)
+    ),
+    url("/static/images/dashboardimg.png");
+
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: Arial, sans-serif;
+}
+
+.leaderboard-container{
+    width: 900px;
+    padding: 40px;
+
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(18px);
+
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 25px;
+
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+.leaderboard-container h1{
+    text-align: center;
+    color: white;
+    font-size: 40px;
+    margin-bottom: 30px;
+}
+
+.leaderboard-table{
+    width: 100%;
+    border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.leaderboard-table th{
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 18px;
+    font-size: 20px;
+}
+
+.leaderboard-table td{
+    padding: 18px;
+    text-align: center;
+    color: white;
+    font-size: 18px;
+    border-bottom:
+    1px solid rgba(255,255,255,0.15);
+}
+
+.leaderboard-table tr:hover{
+    background:
+    rgba(255,255,255,0.12);
+}
+
+/* Top 3 colors */
+
+.gold{
+    background:
+    rgba(255,215,0,0.25);
+}
+
+.silver{
+    background:
+    rgba(192,192,192,0.25);
+}
+
+.bronze{
+    background:
+    rgba(205,127,50,0.25);
+}

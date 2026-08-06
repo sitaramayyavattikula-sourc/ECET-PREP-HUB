@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Branch</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+</head>
+
+<body class="papers-page">
+    <div id="page-loader"></div>
+    
+
+<div class="papers-container">
+
+    <h1>📄 Select Branch</h1>
+
+    <a href="{{ url_for('papers', branch='cme') }}"
+       class="paper-btn">
+        CME Papers
+    </a>
+
+    <a href="{{ url_for('papers', branch='ece') }}"
+       class="paper-btn">
+        ECE Papers
+    </a>
+
+    <a href="{{ url_for('papers', branch='eee') }}"
+       class="paper-btn">
+        EEE Papers
+    </a>
+
+    <a href="{{ url_for('papers', branch='mec') }}"
+       class="paper-btn">
+        MEC Papers
+    </a>
+
+    <a href="{{ url_for('papers', branch='civil') }}"
+       class="paper-btn">
+        CIVIL Papers
+    </a>
+
+</div>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

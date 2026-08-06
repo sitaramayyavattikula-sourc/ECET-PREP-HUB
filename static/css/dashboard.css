@@ -1,0 +1,99 @@
+.dashboard-container{
+
+    min-height:100vh;
+
+    background:
+    linear-gradient(
+        rgba(15,23,42,0.75),
+        rgba(30,64,175,0.75)
+    ),
+    url("../images/dashboardimg.png");
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    text-align:center;
+    padding:60px;
+}
+
+.dashboard-title{
+    color:white;
+    font-size:50px;
+    margin-top:20px;
+}
+
+.dashboard-subtitle{
+    color:#e2e8f0;
+    font-size:22px;
+    margin-bottom:50px;
+}
+
+.dashboard-cards{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:35px;
+}
+
+.dashboard-card{
+
+    width:260px;
+    padding:40px;
+
+    text-decoration:none;
+    color:white;
+
+    background:rgba(255,255,255,0.15);
+
+    backdrop-filter:blur(15px);
+
+    border-radius:25px;
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,0.30);
+
+    transition:all 0.4s ease;
+}
+
+.dashboard-card i{
+    font-size:55px;
+    margin-bottom:20px;
+}
+
+.dashboard-card:hover{
+
+    transform:
+        translateY(-15px)
+        scale(1.05);
+
+    background:
+        rgba(255,255,255,0.25);
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,0.45);
+}
+
+.logout-btn{
+
+    display:inline-block;
+    margin-top:50px;
+
+    padding:15px 35px;
+
+    background:#ef4444;
+    color:white;
+
+    text-decoration:none;
+    border-radius:40px;
+
+    font-size:20px;
+    font-weight:bold;
+
+    transition:0.3s;
+}
+
+.logout-btn:hover{
+    background:#dc2626;
+    transform:scale(1.08);
+}

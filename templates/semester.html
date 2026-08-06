@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Semester</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="semester-page">
+    <div id="page-loader"></div>
+
+<div class="semester-container">
+
+    <div class="semester-box">
+
+        <h1 class="semester-title">
+            📚 Select Your Semester
+        </h1>
+
+        <div class="semester-cards">
+
+            <a class="semester-card"
+               href="{{ url_for('subject_notes',
+               branch=branch,
+               semester='first_year') }}">
+                <i class="fas fa-book-open"></i>
+                <h2>First Year</h2>
+                <p>Semester 1 & 2 Notes</p>
+            </a>
+
+            <a class="semester-card"
+               href="{{ url_for('subject_notes',
+               branch=branch,
+               semester='third_sem') }}">
+                <i class="fas fa-graduation-cap"></i>
+                <h2>Third Semester</h2>
+                <p>Study Materials</p>
+            </a>
+
+            <a class="semester-card"
+               href="{{ url_for('subject_notes',
+               branch=branch,
+               semester='fourth_sem') }}">
+                <i class="fas fa-laptop-code"></i>
+                <h2>Fourth Semester</h2>
+                <p>Lecture Notes</p>
+            </a>
+
+            <a class="semester-card"
+               href="{{ url_for('subject_notes',
+               branch=branch,
+               semester='fifth_sem') }}">
+                <i class="fas fa-user-graduate"></i>
+                <h2>Fifth Semester</h2>
+                <p>Final Year Subjects</p>
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<head> <link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body class="quiz-page">
+    <div id="page-loader"></div>
+
+<div class="quiz-layout">
+
+    <div class="quiz-main">    
+    <div class="exam-header">
+
+    <div class="exam-title">
+        <h2>ECET Mock Examination</h2>
+        <p>Duration : 03 Hours | Total Questions : 200</p>
+    </div>
+
+    <div class="timer-box">
+
+        <div class="timer-label">
+            ⏰ TIME REMAINING 
+        </div>
+
+        <div id="timer">
+            03:00:00
+        </div>
+
+    </div>
+
+</div>
+    <div class="timer-box">
+
+    <span class="timer-title">
+        ⏰ ALLOTED TIME
+    </span>
+
+    <span id="timer">
+        03:00:00
+    </span>
+
+</div>
+
+<form id="quizForm"
+      action="{{ url_for('submit_quiz') }}"
+      method="POST">
+
+    <input type="hidden"
+           name="branch"
+           value="{{ branch }}">
+
+    {% for q in questions %}
+
+        {% set question_no = loop.index %}
+
+        {% if question_no == 1 %}
+<div class="subject-ribbon math">
+    <div class="subject-left">
+        <div class="subject-icon">📘</div>
+
+        <div class="subject-text">
+            <h2>MATHEMATICS</h2>
+            <p>Questions 1 - 50</p>
+        </div>
+    </div>
+
+    <div class="subject-badge">
+        Section - I
+    </div>
+</div>
+
+        {% elif question_no == 51 %}
+
+<div class="subject-ribbon physics">
+    <div class="subject-left">
+        <div class="subject-icon">⚛️</div>
+
+        <div class="subject-text">
+            <h2>PHYSICS</h2>
+            <p>Questions 51 - 75</p>
+        </div>
+    </div>
+
+    <div class="subject-badge">
+        Section - II
+    </div>
+</div>
+
+        {% elif question_no == 76 %}
+
+<div class="subject-ribbon chemistry">
+    <div class="subject-left">
+        <div class="subject-icon">🧪</div>
+
+        <div class="subject-text">
+            <h2>CHEMISTRY</h2>
+            <p>Questions 76 - 100</p>
+        </div>
+    </div>
+
+    <div class="subject-badge">
+        Section - III
+    </div>
+</div>
+
+        {% elif question_no == 101 %}
+
+<div class="subject-ribbon cse">
+    <div class="subject-left">
+        <div class="subject-icon">💻</div>
+
+        <div class="subject-text">
+            <h2>COMPUTER SCIENCE & ENGINEERING</h2>
+            <p>Questions 101 - 200</p>
+        </div>
+    </div>
+
+    <div class="subject-badge">
+        Section - IV
+    </div>
+</div>
+
+        {% endif %}
+
+<div
+    class="question-box"
+    id="question{{ question_no }}">
+            <h3>
+                {{ question_no }}. {{ q.question }}
+            </h3>
+
+            {% for option in q.options %}
+
+        <label>
+
+    <input
+        type="radio"
+        name="q{{ question_no }}"
+        value="{{ option }}"
+        onchange="markAnswered({{ question_no }})"
+        required>
+
+    {{ option }}
+
+</label>
+
+            <br>
+
+            {% endfor %}
+
+        </div>
+
+    {% endfor %}
+
+<button
+    type="button"
+    class="submit-btn"
+    onclick="openModal()">
+
+    ✅ Submit Test
+
+</button>
+
+</form>
+
+</div>
+
+<!-- ==========================
+        Question Palette
+=========================== -->
+
+<div class="palette-container">
+
+    <h3>Question Palette</h3>
+
+    <div class="palette-grid">
+
+        {% for q in questions %}
+
+        <button
+            type="button"
+            class="palette-btn not-visited"
+            id="palette{{ loop.index }}"
+            onclick="gotoQuestion({{ loop.index }})">
+
+            {{ loop.index }}
+
+        </button>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</div>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+<script src="{{ url_for('static',
+filename='js/submit.js') }}"></script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+<script src="{{ url_for('static',
+filename='js/palette.js') }}"></script>
+<div id="submitModal" class="modal">
+
+    <div class="modal-content">
+
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+
+        <h2>📝 Submit Test</h2>
+
+        <p class="modal-message">
+            Are you sure you want to submit your ECET Mock Test?
+        </p>
+
+        <div class="summary-box">
+
+            <p>✅ Answered Questions :
+                <span id="answeredCount">0</span>
+            </p>
+
+            <p>❌ Unanswered Questions :
+                <span id="unansweredCount">0</span>
+            </p>
+
+        </div>
+
+        <p class="warning">
+            ⚠ After submission you cannot change your answers.
+        </p>
+
+        <div class="modal-buttons">
+
+            <button
+                class="cancel-btn"
+                onclick="closeModal()">
+
+                Cancel
+
+            </button>
+
+            <button
+                class="submit-final-btn"
+                onclick="submitQuiz()">
+
+                🚀 Submit Test
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+</body>

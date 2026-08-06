@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+</head>
+
+<body class="quiz-page">
+    <div id="page-loader"></div>    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
+<div class="quiz-container">
+
+    <h1 class="quiz-title">
+        📝 Select Branch Quiz
+    </h1>
+
+    <p class="quiz-subtitle">
+        Choose your branch and start the ECET Mock Examination
+    </p>
+
+    <div class="quiz-grid">
+
+        <a class="quiz-card"
+           href="{{ url_for('start_quiz', branch='cme') }}">
+            <div style="font-size:60px;">💻</div>
+            <h2>CME</h2>
+            <p>Computer Engineering</p>
+        </a>
+
+        <a class="quiz-card"
+           href="{{ url_for('start_quiz', branch='ece') }}">
+            <div style="font-size:60px;">📡</div>
+            <h2>ECE</h2>
+            <p>Electronics & Communication</p>
+        </a>
+
+        <a class="quiz-card"
+           href="{{ url_for('start_quiz', branch='eee') }}">
+            <div style="font-size:60px;">⚡</div>
+            <h2>EEE</h2>
+            <p>Electrical & Electronics</p>
+        </a>
+
+        <a class="quiz-card"
+           href="{{ url_for('start_quiz', branch='civil') }}">
+            <div style="font-size:60px;">🏗️</div>
+            <h2>CIVIL</h2>
+            <p>Civil Engineering</p>
+        </a>
+
+        <a class="quiz-card"
+           href="{{ url_for('start_quiz', branch='mec') }}">
+            <div style="font-size:60px;">⚙️</div>
+            <h2>MECHANICAL</h2>
+            <p>Mechanical Engineering</p>
+        </a>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/dashboard.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+    <div id="page-loader"></div>
+
+<div class="dashboard-container">
+
+    <h1 class="dashboard-title">
+        👋 Welcome, {{ session['student_name'] }}
+    </h1>
+    
+<div class="student-card">
+
+    <h2 class="student-name">
+        {{ session.student_name }}
+    </h2>
+
+    <div class="student-info">
+        <i class="fas fa-envelope"></i>
+        <span>{{ session.student_email }}</span>
+    </div>
+
+    <div class="student-info">
+        <i class="fas fa-phone"></i>
+        <span>{{ session.student_phone }}</span>
+    </div>
+
+</div>
+
+    <p class="dashboard-subtitle">
+        Welcome to ECET Learning Portal
+    </p>
+
+    <div class="dashboard-cards">
+
+        <a href="{{ url_for('notes') }}"
+           class="dashboard-card">
+            <i class="fas fa-book"></i>
+            <h2>Study Notes</h2>
+        </a>
+
+        <a href="{{ url_for('paper_branches') }}"
+           class="dashboard-card">
+            <i class="fas fa-file-pdf"></i>
+            <h2>Previous Papers</h2>
+        </a>
+
+        <a href="{{ url_for('quiz') }}"
+           class="dashboard-card">
+            <i class="fas fa-pen"></i>
+            <h2>Quiz</h2>
+        </a>
+        <a href="{{ url_for('leaderboard') }}">
+    🏆 Leaderboard
+</a>
+
+        
+
+    </div>
+
+    <a href="{{ url_for('logout') }}"
+       class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+    </a>
+
+</div>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

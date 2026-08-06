@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Login</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/register.css') }}">
+          <link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="login-page">
+    <div id="page-loader"></div>
+
+<div class="register-box">
+
+    <h1 class="register-title">Student Login</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="{{ category }}-message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+
+        <input type="email"
+               name="email"
+               placeholder="Enter Email"
+               required>
+
+     <div class="password-box">
+    <input type="password"
+           id="loginPassword"
+           name="password"
+           placeholder="Password"
+           required>
+
+    <i class="fa-solid fa-eye"
+       id="loginEye"
+       onclick="toggleLoginPassword()"></i>
+</div>
+
+
+        <button type="submit">
+            Login
+        </button>
+
+    </form>
+
+</div>
+<script>
+function toggleLoginPassword() {
+
+    var password =
+        document.getElementById("loginPassword");
+
+    var eye =
+        document.getElementById("loginEye");
+
+    if (password.type === "password") {
+        password.type = "text";
+        eye.classList.remove("fa-eye");
+        eye.classList.add("fa-eye-slash");
+    }
+    else {
+        password.type = "password";
+        eye.classList.remove("fa-eye-slash");
+        eye.classList.add("fa-eye");
+    }
+}
+</script>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>

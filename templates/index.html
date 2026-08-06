@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECET Portal</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+
+<body>
+<div id="page-loader"></div>
+<!-- ================= HEADER ================= -->
+
+<header class="top-header">
+
+    <!-- Left side -->
+    <div class="logo-section">
+
+        <img src="{{ url_for('static', filename='images/apsbtet.png') }}"
+             alt="APSBTET Logo">
+
+        <div class="portal-title">
+
+            <h1>ECET PORTAL</h1>
+
+            <p>AITAM Diploma Students Learning Platform</p>
+
+        </div>
+
+    </div>
+
+    <!-- Right side -->
+    <div class="college-logo">
+
+        <img src="{{ url_for('static', filename='images/aditya.png') }}"
+             alt="Silver Jubilee">
+
+    </div>
+
+</header>
+
+<!-- ================= NAVIGATION ================= -->
+
+<nav class="navbar">
+
+    <ul class="nav-links">
+
+        <li><a href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+
+
+        <li><a href="#about"><i class="fa-solid fa-circle-info"></i> About</a></li>
+
+        <li><a href="/contact"><i class="fa-solid fa-phone"></i> Contact</a></li>
+
+    </ul>
+
+    <div class="nav-buttons">
+
+        <a href="/login" class="login-btn">
+            <i class="fa-solid fa-user"></i>
+            Login
+        </a>
+
+        <a href="/register" class="register-btn">
+            <i class="fa-solid fa-user-plus"></i>
+            Register
+        </a>
+
+    </div>
+
+</nav>
+
+<!-- ================= HERO SECTION ================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <span class="hero-badge">
+            Welcome to the official ECET Learning Portal
+        </span>
+
+        <h2>
+
+            Prepare for ECET
+
+            <br>
+
+            <span>with Confidence</span>
+
+        </h2>
+
+        <p>
+
+            Everything you need to crack the ECET examination in one place.
+            Access high-quality notes, previous papers, quizzes, and learning
+            resources specially designed for diploma students.
+
+        </p>
+
+        <div class="hero-buttons">
+
+           <a href="{{ url_for('notes') if session.get('student_id') else url_for('register') }}"
+   class="primary-btn">
+    <i class="fa-solid fa-book-open"></i>
+    Explore Notes
+</a>
+
+<a href="{{ url_for('quiz') if session.get('student_id') else url_for('register') }}"
+   class="secondary-btn">
+    <i class="fa-solid fa-pen"></i>
+    Take Quiz
+</a>
+        </div>
+
+    </div>
+
+    <div class="hero-image">
+
+        <img src="{{ url_for('static', filename='images/aitam.jpg') }}"
+             alt="AITAM Campus">
+
+    </div>
+
+</section>
+
+<!-- ================= OUR SERVICES ================= -->
+
+<!-- ================= FEATURES ================= -->
+
+<section class="features">
+
+    <div class="feature-card">
+
+        <div class="feature-icon blue">
+            <i class="fa-solid fa-book-open"></i>
+        </div>
+
+        <div class="feature-content">
+
+            <h3>Study Notes</h3>
+
+            <p>
+                High-quality subject-wise study materials.
+            </p>
+
+<a href="{{ url_for('register') }}">View Notes →</a>
+
+        </div>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <div class="feature-icon green">
+            <i class="fa-solid fa-file-lines"></i>
+        </div>
+
+        <div class="feature-content">
+
+            <h3>Previous Papers</h3>
+
+            <p>
+                Practice with previous ECET question papers.
+            </p>
+
+<a href="{{ url_for('register') }}">View Papers →</a>
+        </div>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <div class="feature-icon orange">
+            <i class="fa-solid fa-pen-to-square"></i>
+        </div>
+
+        <div class="feature-content">
+
+            <h3>Online Quiz</h3>
+
+            <p>
+                Test your preparation with mock quizzes.
+            </p>
+
+          <a href="{{ url_for('register') }}">Start Quiz →</a>
+
+
+        </div>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <div class="feature-icon purple">
+            <i class="fa-solid fa-chart-column"></i>
+        </div>
+
+        <div class="feature-content">
+
+            <h3>Results</h3>
+
+            <p>
+                View your quiz scores and track progress.
+            </p>
+
+<a href="{{ url_for('register') }}">View Results →</a>
+        </div>
+
+    </div>
+
+</section>
+<!-- ================= ABOUT ECET ================= -->
+
+<main>
+
+<section class="about" id="about">
+
+    <div class="about-container">
+
+        <!-- Left Side Image -->
+        <div class="about-image">
+
+            <img src="{{ url_for('static', filename='images/ecet.png') }}"
+                 alt="ECET Logo">
+
+        </div>
+
+        <!-- Right Side Text -->
+        <div class="about-text">
+
+            <h2>About ECET</h2>
+
+            <h3>Engineering Common Entrance Test (ECET)</h3>
+
+            <p>
+               ECET Portal is an integrated online learning platform designed to support diploma students in their ECET preparation journey. It offers comprehensive study materials, semester-wise notes, previous examination papers, real-time mock tests, detailed result analysis, and an intuitive interface that enhances the learning experience. The platform aims to provide students with a reliable, efficient, and interactive environment to strengthen their knowledge, evaluate their performance, and improve their chances of success in the Engineering Common Entrance Test.
+            </p>
+
+            <ul>
+                <li>✔ High-quality Study Notes</li>
+                <li>✔ Previous Year Question Papers</li>
+                <li>✔ Online Practice Quizzes</li>
+                <li>✔ Performance Tracking</li>
+            </ul>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- ================= STATISTICS ================= -->
+
+<section class="stats">
+
+    <div class="stats-container">
+
+        <div class="stat-box">
+            <h2>500+</h2>
+            <p>Study Notes</p>
+        </div>
+
+        <div class="stat-box">
+            <h2>150+</h2>
+            <p>Previous Papers</p>
+        </div>
+
+        <div class="stat-box">
+            <h2>100+</h2>
+            <p>Mock Quizzes</p>
+        </div>
+
+        <div class="stat-box">
+            <h2>5000+</h2>
+            <p>Students Benefited</p>
+        </div>
+
+    </div>
+
+</section>
+<!-- ================= WHY CHOOSE US ================= -->
+
+<section class="why">
+
+    <h2>Why Choose Our Portal?</h2>
+
+    <div class="why-container">
+
+        <div class="why-card">
+            <i class="fa-solid fa-book-open"></i>
+            <h3>High Quality Notes</h3>
+            <p>
+                Well-organized study materials prepared for ECET students.
+            </p>
+        </div>
+
+        <div class="why-card">
+            <i class="fa-solid fa-file-lines"></i>
+            <h3>Previous Papers</h3>
+            <p>
+                Practice using previous year ECET question papers.
+            </p>
+        </div>
+
+        <div class="why-card">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <h3>Mock Tests</h3>
+            <p>
+                Improve your preparation with online quizzes and tests.
+            </p>
+        </div>
+
+        <div class="why-card">
+            <i class="fa-solid fa-chart-line"></i>
+            <h3>Performance Tracking</h3>
+            <p>
+                Monitor your scores and measure your progress easily.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 ECET Portal | Developed by Team ECET</p>
+    </footer>
+<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+</body>
+</html>
+

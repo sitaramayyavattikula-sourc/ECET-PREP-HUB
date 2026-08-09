@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>CME Quiz</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+
+</head>
+
+<body class="quiz-page">
+
+    <div id="page-loader"></div>
+
+    <div class="quiz-container">
+
+        <h1 class="quiz-title">
+            💻 CME Quiz
+        </h1>
+
+        <p class="quiz-subtitle">
+            Select your curriculum
+        </p>
+
+
+        <div class="quiz-grid">
+
+            <!-- =========================
+                 C23 QUIZ
+            ========================== -->
+
+            <a class="quiz-card"
+               href="{{ url_for('start_quiz',
+               branch='cme') }}">
+
+                <div style="font-size:60px;">
+                    📘
+                </div>
+
+                <h2>
+                    C23
+                </h2>
+
+                <p>
+                    C23 Curriculum
+                </p>
+
+            </a>
+
+
+            <!-- =========================
+                 C26 QUIZ
+            ========================== -->
+
+            <a class="quiz-card"
+               href="#"
+               onclick="alert('C26 Quiz will be available soon.')">
+
+                <div style="font-size:60px;">
+                    📚
+                </div>
+
+                <h2>
+                    C26
+                </h2>
+
+                <p>
+                    Coming Soon
+                </p>
+
+            </a>
+
+        </div>
+
+
+        <!-- Back to Branch Selection -->
+
+        <div style="margin-top:30px;">
+
+            <a href="{{ url_for('quiz') }}"
+               class="back-btn">
+
+                ⬅ Back to Branches
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <script src="{{ url_for('static',
+                 filename='js/loader.js') }}">
+    </script>
+
+</body>
+
+</html>

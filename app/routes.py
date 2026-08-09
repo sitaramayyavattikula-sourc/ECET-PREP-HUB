@@ -89,6 +89,14 @@ def papers(branch):
 @app.route("/quiz")
 def quiz():
     return render_template("quiz.html")
+# CME Quiz Selection
+@app.route("/cme-quiz")
+def cme_quiz():
+
+    return render_template(
+        "cme_quiz.html"
+    )
+
 @app.route("/quiz/<branch>")
 def start_quiz(branch):
 

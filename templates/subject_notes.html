@@ -1,154 +1,184 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Subjects</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Notes — AP E-CET Portal</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-
-<body class="subject-page">
-    <div id="page-loader"></div>
-<div class="subject-container">
-
-
-
-    <div class="subject-grid">
-
-{% if branch == 'cme' %}
-   <h1 class="subject-title">
-
-    {% if semester == 'first_year' %}
-     FIRST YEAR
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dashboard-body subject-page">
+    <div id="page-loader"></div>
 
-        <a class="subject-card">English</a>
+    <!-- Collapsible Left Navigation Drawer (Application Menu) -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
 
-        <a class="subject-card">
-            Engineering Mathematics - I
-        </a>
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
 
-        <a class="subject-card">
-            Engineering Physics
-        </a>
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}" class="active"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
 
-        <a class="subject-card">
-            Engineering Chemistry & Environmental Studies
-        </a>
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
 
-                 <a class="subject-card"
-        href="{{ url_for('static',
-        filename='pdfs/notes/cme/first_year/BCE_notes.pdf') }}"
-        target="_blank">
-            Basics of Computer Engineering
-        </a>
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-        <a class="subject-card"
-        href="{{ url_for('static',
-        filename='pdfs/notes/cme/first_year/C-Programming_Notes.pdf') }}"
-        target="_blank">
-            Programming in C
-        </a>
+    <main class="dashboard-main-content">
+        <div class="subject-container" style="max-width: 900px; margin: 2rem auto; text-align: center;">
+            <h1 style="font-family: 'Outfit', sans-serif; font-size: 2rem; color: white; margin-bottom: 0.5rem;"><i class="fa-solid fa-book" style="color: #6366F1;"></i> Subject Notes & Study Materials</h1>
+            <p style="color: #94A3B8; margin-bottom: 2.5rem;">Branch: <strong style="color: #A5B4FC; text-transform: uppercase;">{{ branch }}</strong> | Semester: <strong style="color: #A5B4FC; text-transform: uppercase;">{{ semester }}</strong></p>
 
-    {% elif semester == 'third_sem' %}
-      THIRD SEMESTER
+            <div class="subject-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+                {% if branch == 'cme' %}
+                    {% if semester == 'first_year' %}
+                        <div class="subject-card" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1rem; padding: 1.5rem; color: white; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-lines" style="font-size: 2rem; color: #818CF8;"></i>
+                            <span style="font-weight: 600;">English</span>
+                        </div>
+                        <div class="subject-card" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1rem; padding: 1.5rem; color: white; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-calculator" style="font-size: 2rem; color: #818CF8;"></i>
+                            <span style="font-weight: 600;">Engineering Mathematics - I</span>
+                        </div>
+                        <div class="subject-card" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1rem; padding: 1.5rem; color: white; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-atom" style="font-size: 2rem; color: #818CF8;"></i>
+                            <span style="font-weight: 600;">Engineering Physics</span>
+                        </div>
+                        <div class="subject-card" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1rem; padding: 1.5rem; color: white; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-flask" style="font-size: 2rem; color: #818CF8;"></i>
+                            <span style="font-weight: 600;">Engineering Chemistry & Environmental Studies</span>
+                        </div>
+                        <a class="subject-card" href="{{ url_for('static', filename='pdfs/notes/cme/first_year/BCE_notes.pdf') }}" target="_blank" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1rem; padding: 1.5rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-pdf" style="font-size: 2rem; color: #6366F1;"></i>
+                            <span style="font-weight: 600;">Basics of Computer Engineering (PDF)</span>
+                        </a>
+                        <a class="subject-card" href="{{ url_for('static', filename='pdfs/notes/cme/first_year/C-Programming_Notes.pdf') }}" target="_blank" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1rem; padding: 1.5rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-pdf" style="font-size: 2rem; color: #6366F1;"></i>
+                            <span style="font-weight: 600;">Programming in C (PDF)</span>
+                        </a>
+                    {% elif semester == 'third_sem' %}
+                        <div class="subject-card" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1rem; padding: 1.5rem; color: white; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-calculator" style="font-size: 2rem; color: #818CF8;"></i>
+                            <span style="font-weight: 600;">Engineering Mathematics - II</span>
+                        </div>
+                        <a class="subject-card" href="{{ url_for('static', filename='pdfs/notes/cme/third_sem/Digital_electronics.pdf') }}" target="_blank" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1rem; padding: 1.5rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-pdf" style="font-size: 2rem; color: #6366F1;"></i>
+                            <span style="font-weight: 600;">Digital Electronics (PDF)</span>
+                        </a>
+                        <div class="subject-card" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1rem; padding: 1.5rem; color: white; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-microchip" style="font-size: 2rem; color: #818CF8;"></i>
+                            <span style="font-weight: 600;">Operating System</span>
+                        </div>
+                        <a class="subject-card" href="{{ url_for('static', filename='pdfs/notes/cme/third_sem/Data_structuresthrough_C.pdf') }}" target="_blank" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1rem; padding: 1.5rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-pdf" style="font-size: 2rem; color: #6366F1;"></i>
+                            <span style="font-weight: 600;">Data Structures Through C (PDF)</span>
+                        </a>
+                        <div class="subject-card" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1rem; padding: 1.5rem; color: white; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-database" style="font-size: 2rem; color: #818CF8;"></i>
+                            <span style="font-weight: 600;">DBMS</span>
+                        </div>
+                    {% elif semester == 'fourth_sem' %}
+                        <a class="subject-card" href="{{ url_for('static', filename='pdfs/notes/cme/fourth_sem/java.pdf') }}" target="_blank" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1rem; padding: 1.5rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-pdf" style="font-size: 2rem; color: #6366F1;"></i>
+                            <span style="font-weight: 600;">OOP Through Java (PDF)</span>
+                        </a>
+                        <a class="subject-card" href="{{ url_for('static', filename='pdfs/notes/cme/fourth_sem/CN_CS.pdf') }}" target="_blank" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1rem; padding: 1.5rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-pdf" style="font-size: 2rem; color: #6366F1;"></i>
+                            <span style="font-weight: 600;">Computer Networks & Cybersecurity (PDF)</span>
+                        </a>
+                        <a class="subject-card" href="{{ url_for('static', filename='pdfs/notes/cme/fourth_sem/webtechnology.pdf') }}" target="_blank" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1rem; padding: 1.5rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-pdf" style="font-size: 2rem; color: #6366F1;"></i>
+                            <span style="font-weight: 600;">Web Technologies (PDF)</span>
+                        </a>
+                    {% elif semester == 'fifth_sem' %}
+                        <a class="subject-card" href="{{ url_for('static', filename='pdfs/notes/cme/fifth_sem/Python_Notes.pdf') }}" target="_blank" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1rem; padding: 1.5rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+                            <i class="fa-solid fa-file-pdf" style="font-size: 2rem; color: #6366F1;"></i>
+                            <span style="font-weight: 600;">Python Programming (PDF)</span>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <div style="grid-column: 1 / -1; color: #94A3B8; padding: 2rem;">
+                        <p>Study materials and notes for this branch will be added soon.</p>
+                    </div>
+                {% endif %}
+            </div>
 
-        <a class="subject-card">
-            Engineering Mathematics - II
-        </a>
+            <div style="margin-top: 2.5rem;">
+                <a href="{{ url_for('semesters', branch=branch) }}" class="btn-cancel-exam-setup" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.5rem; border-radius: 2rem; background: rgba(255,255,255,0.08); color: white; text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Semesters
+                </a>
+            </div>
+        </div>
+    </main>
 
-                <a class="subject-card"
-        href="{{ url_for('static',
-        filename='pdfs/notes/cme/third_sem/Digital_electronics.pdf') }}"
-        target="_blank">
-            Digital Electronics
-        </a>
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
 
-
-        <a class="subject-card">
-            Operating System
-        </a>
-
-        <a class="subject-card"
-          href="{{ url_for('static',
-        filename='pdfs/notes/cme/third_sem/Data_structuresthrough_C.pdf') }}"
-        target="_blank">
-            Data Structures Through C
-        </a>
-
-        <a class="subject-card">
-            Database Management System (DBMS)
-        </a>
-
-    {% elif semester == 'fourth_sem' %}
-     FOURTH SEMESTER 
-
-        <a class="subject-card"
-           href="{{ url_for('static',
-           filename='pdfs/notes/cme/fourth_sem/java.pdf') }}"
-          target="_blank">
-            OOP Through Java
-        </a>
-
-       <a class="subject-card"
-   href="{{ url_for('static',
-   filename='pdfs/notes/cme/fourth_sem/CN_CS.pdf') }}"
-   target="_blank">
-    Computer Networks & Cyber Security
-</a>
-
-        <a class="subject-card"
-   href="{{ url_for('static',
-   filename='pdfs/notes/cme/fourth_sem/webtechnology.pdf') }}"
-   target="_blank">
-    Web Technologies
-</a>
-
-    {% elif semester == 'fifth_sem' %}
-      FIFTH SEMESTER
-
-        <a class="subject-card">
-            Industrial Management & Entrepreneurship
-        </a>
-
-        <a class="subject-card">
-            Big Data & Cloud Computing
-        </a>
-
-        <a class="subject-card">
-            Android Programming
-        </a>
-
-        <a class="subject-card">
-            Internet of Things (IoT)
-        </a>
-
-        <a class="subject-card"
-        href="{{ url_for('static',
-        filename='pdfs/notes/cme/fifth_sem/Python_Notes.pdf') }}"
-        target="_blank">
-            PYTHON
-        </a>
-
-    {% endif %}
-    </h1>
-
-{% else %}
-
-    <h2 style="color:white;">
-        Subjects for this branch will be added soon.
-    </h2>
-
-{% endif %}
-
-</div>
-
-<br>
-
-<a href="{{ url_for('semesters', branch=branch) }}"
-   class="back-btn">
-    ⬅ Back to Semesters
-</a>
-<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+    </script>
 </body>
 </html>

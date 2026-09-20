@@ -1,61 +1,166 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Quiz Leaderboard</title>
-    <link rel="stylesheet"
-          href="{{ url_for('static',
-          filename='css/leaderboard.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Leaderboard — AP E-CET Portal</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/leaderboard.css') }}">
 </head>
-<body class="leaderboard-page">
+<body class="dashboard-body leaderboard-page">
     <div id="page-loader"></div>
 
-<div class="leaderboard-container">
+    <!-- Collapsible Left Navigation Drawer (Application Menu) -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
 
-    <h1>🏆 Quiz Leaderboard</h1>
-
-    <table class="leaderboard-table">
-
-        <tr>
-            <th>S.No</th>
-            <th>Rank</th>
-            <th>Student Name</th>
-            <th>Best Score</th>
-        </tr>
-
-        {% for student in students %}
-        <tr
-        {% if loop.index == 1 %}
-            class="gold"
-        {% elif loop.index == 2 %}
-            class="silver"
-        {% elif loop.index == 3 %}
-            class="bronze"
-        {% endif %}
-        >
-
-            <td>{{ loop.index }}</td>
-
-            <td>
-                {% if loop.index == 1 %}
-                    🥇
-                {% elif loop.index == 2 %}
-                    🥈
-                {% elif loop.index == 3 %}
-                    🥉
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
                 {% else %}
-                    {{ loop.index }}
+                    <i class="fa-solid fa-user-gear"></i>
                 {% endif %}
-            </td>
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
 
-            <td>{{ student.name }}</td>
-            <td>{{ student.best_score }}</td>
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}" class="active"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
 
-        </tr>
-        {% endfor %}
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
 
-    </table>
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-</div>
-<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <main class="dashboard-main-content">
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">
+                <div class="trophy-badge">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h1>Quiz Leaderboard</h1>
+                <p class="leaderboard-subtitle">Top performing students ranked by AP E-CET CBT Mock Quiz excellence</p>
+            </div>
+
+            <div class="leaderboard-table-wrapper">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th class="th-sno">S.No</th>
+                            <th class="th-rank">Rank</th>
+                            <th class="th-name">Student Name</th>
+                            <th class="th-score">Best Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if students and students|length > 0 %}
+                            {% for student in students %}
+                            <tr
+                            {% if loop.index == 1 %}
+                                class="gold"
+                            {% elif loop.index == 2 %}
+                                class="silver"
+                            {% elif loop.index == 3 %}
+                                class="bronze"
+                            {% endif %}
+                            >
+                                <td class="td-sno">{{ loop.index }}</td>
+                                <td class="td-rank">
+                                    {% if loop.index == 1 %}
+                                        <span class="rank-badge" title="Rank 1 - Gold">🥇</span>
+                                    {% elif loop.index == 2 %}
+                                        <span class="rank-badge" title="Rank 2 - Silver">🥈</span>
+                                    {% elif loop.index == 3 %}
+                                        <span class="rank-badge" title="Rank 3 - Bronze">🥉</span>
+                                    {% else %}
+                                        <span class="rank-badge rank-pill">#{{ loop.index }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="td-name" title="{{ student.name }}">{{ student.name }}</td>
+                                <td class="td-score">
+                                    <span class="score-pill">
+                                        <i class="fa-solid fa-bolt"></i> {{ student.best_score }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4">
+                                    <div class="empty-leaderboard">
+                                        <i class="fa-solid fa-trophy"></i>
+                                        <p>No quiz scores recorded yet. Be the first to take a test!</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+    </script>
 </body>
 </html>

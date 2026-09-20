@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Exam Performance Analytics — AP E-CET Portal</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dashboard-body">
+    <div id="page-loader"></div>
+
+    <!-- Collapsible Left Sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
+
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}" class="active"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
+
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main-content">
+        <!-- Result Summary Banner -->
+        <section class="welcome-banner result-banner" style="margin-bottom: 2rem; padding: 2.5rem 2rem; background: rgba(30, 41, 59, 0.85); border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.12); text-align: center;">
+            <span class="welcome-badge" style="margin-bottom: 1rem;"><i class="fa-solid fa-award"></i> EXAM COMPLETED</span>
+            <h1 style="font-size: 2.5rem; font-family: 'Outfit', sans-serif; margin: 0.5rem 0; color: white;">Score: <span style="color: #6366F1;">{{ score }} / {{ total }}</span> ({{ percentage }}%)</h1>
+            <p style="color: #94A3B8; margin-bottom: 1.5rem;">Subject: <strong style="color: white;">{{ subject }}</strong> | Scheme: <strong style="color: white;">{{ scheme }}</strong> | Branch: <strong class="active-tag">{{ branch|upper }}</strong> | Time Taken: <strong style="color: white;">{{ time_taken }}</strong></p>
+
+            <div class="result-stats-pills" style="display: flex; gap: 1.25rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
+                <div class="stat-pill" style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem 1.5rem; border-radius: 1rem; min-width: 110px;">
+                    <label style="display: block; font-size: 0.8rem; color: #94A3B8;">Accuracy</label>
+                    <span style="font-size: 1.3rem; font-weight: 700; color: #4ADE80;">{{ accuracy }}%</span>
+                </div>
+                <div class="stat-pill" style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem 1.5rem; border-radius: 1rem; min-width: 110px;">
+                    <label style="display: block; font-size: 0.8rem; color: #94A3B8;">Correct</label>
+                    <span style="font-size: 1.3rem; font-weight: 700; color: #4ADE80;">{{ score }}</span>
+                </div>
+                <div class="stat-pill" style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem 1.5rem; border-radius: 1rem; min-width: 110px;">
+                    <label style="display: block; font-size: 0.8rem; color: #94A3B8;">Incorrect</label>
+                    <span style="font-size: 1.3rem; font-weight: 700; color: #F87171;">{{ wrong if wrong is defined else (attempted - score) }}</span>
+                </div>
+                <div class="stat-pill" style="background: rgba(15, 23, 42, 0.7); padding: 0.85rem 1.5rem; border-radius: 1rem; min-width: 110px;">
+                    <label style="display: block; font-size: 0.8rem; color: #94A3B8;">Unanswered</label>
+                    <span style="font-size: 1.3rem; font-weight: 700; color: #FBBF24;">{{ unanswered if unanswered is defined else (total - attempted) }}</span>
+                </div>
+            </div>
+
+            <!-- Primary Actions Bar -->
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button type="button" class="btn-featured-action" onclick="toggleReviewSection()" style="padding: 0.75rem 2rem; border-radius: 2rem;">
+                    <i class="fa-solid fa-list-check"></i> Review Answers
+                </button>
+                <a href="{{ url_for('ai_exam_setup') }}" class="btn-secondary-action" style="padding: 0.75rem 2rem; border-radius: 2rem; background: rgba(255,255,255,0.1); color: white; text-decoration: none;">
+                    <i class="fa-solid fa-rotate-right"></i> Take Another Exam
+                </a>
+                <a href="{{ url_for('ai_tutor') }}" class="btn-secondary-action" style="padding: 0.75rem 2rem; border-radius: 2rem; background: rgba(255,255,255,0.1); color: white; text-decoration: none;">
+                    <i class="fa-solid fa-robot"></i> Back to AI Tutor
+                </a>
+            </div>
+        </section>
+
+        <!-- Detailed Question-by-Question Review Section (HIDDEN INITIALLY) -->
+        <section id="reviewSection" class="materials-section" style="display: none; margin-top: 2rem;">
+            <div class="section-header" style="margin-bottom: 1.5rem;">
+                <h2><i class="fa-solid fa-list-check"></i> Detailed Answer Review</h2>
+                <p>Click <strong>Find Solution</strong> on any question to generate an AI academic explanation on demand.</p>
+            </div>
+
+            <div class="review-questions-list" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                {% for item in review %}
+                <div class="review-item-card" style="background: rgba(30, 41, 59, 0.75); border: 1px solid {% if item.is_correct %}rgba(74, 222, 128, 0.3){% else %}rgba(248, 113, 113, 0.3){% endif %}; border-radius: 1.25rem; padding: 1.5rem;">
+                    <div class="review-item-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span class="review-q-no" style="font-weight: 700; color: #A5B4FC;">Question {{ item.number }}</span>
+                        {% if item.is_correct %}
+                            <span class="status-tag tag-correct" style="color: #4ADE80; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> ✓ Correct</span>
+                        {% elif item.user_choice == 'Not Attempted' %}
+                            <span class="status-tag tag-unanswered" style="color: #FBBF24; font-weight: 600;"><i class="fa-solid fa-minus"></i> — Not Answered</span>
+                        {% else %}
+                            <span class="status-tag tag-incorrect" style="color: #F87171; font-weight: 600;"><i class="fa-solid fa-circle-xmark"></i> ✗ Incorrect</span>
+                        {% endif %}
+                    </div>
+
+                    <h3 class="review-q-text" style="font-size: 1.1rem; color: white; margin-bottom: 1rem;">{{ item.question }}</h3>
+
+                    <div class="review-answers-box" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 0.85rem; margin-bottom: 1rem;">
+                        <div class="ans-row">
+                            <label style="font-size: 0.85rem; color: #94A3B8; display: block;">Your Answer:</label>
+                            <span class="user-ans" style="font-weight: 600; color: {% if item.is_correct %}#4ADE80{% else %}#F87171{% endif %};">{{ item.user_choice }}</span>
+                        </div>
+                        <div class="ans-row">
+                            <label style="font-size: 0.85rem; color: #94A3B8; display: block;">Correct Answer:</label>
+                            <span class="correct-ans" style="font-weight: 600; color: #4ADE80;">{{ item.correct_choice }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Solution Container (Loaded on-demand) -->
+                    <div id="solutionBox_{{ item.number }}" style="display: none; background: rgba(99, 102, 241, 0.1); border-left: 3px solid #6366F1; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <h4 style="color: #A5B4FC; font-size: 0.95rem; margin-top: 0; margin-bottom: 0.4rem;"><i class="fa-solid fa-robot"></i> AI Academic Explanation:</h4>
+                        <p id="solutionText_{{ item.number }}" style="font-size: 0.95rem; color: #E2E8F0; line-height: 1.5; margin: 0; white-space: pre-line;"></p>
+                    </div>
+
+                    <div class="review-q-actions" style="display: flex; gap: 0.75rem; justify-content: flex-end; align-items: center;">
+                        <button type="button" class="btn-find-solution" id="btnSol_{{ item.number }}" onclick="findSolution({{ item.number }}, '{{ item.question|escape }}', '{{ item.user_choice|escape }}', '{{ item.correct_choice|escape }}')" style="background: rgba(99, 102, 241, 0.25); color: #C7D2FE; border: 1px solid rgba(99, 102, 241, 0.4); padding: 0.5rem 1.25rem; border-radius: 1.5rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                            <i class="fa-solid fa-lightbulb"></i> Find Solution
+                        </button>
+                        <form action="{{ url_for('ai_tutor_explain_question') }}" method="POST" style="margin: 0; display: inline;">
+                            <input type="hidden" name="question" value="{{ item.question }}">
+                            {% for opt in item.options %}
+                                <input type="hidden" name="options" value="{{ opt }}">
+                            {% endfor %}
+                            <input type="hidden" name="user_choice" value="{{ item.user_choice }}">
+                            <input type="hidden" name="correct_choice" value="{{ item.correct_choice }}">
+                            <input type="hidden" name="subject" value="{{ subject }}">
+                            <button type="submit" class="btn-ask-tutor-chat" style="background: rgba(34, 197, 94, 0.25); color: #86EFAC; border: 1px solid rgba(34, 197, 94, 0.4); padding: 0.5rem 1.25rem; border-radius: 1.5rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                <i class="fa-solid fa-robot"></i> Ask AI Tutor in Chat
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+
+        function toggleReviewSection() {
+            const sec = document.getElementById("reviewSection");
+            sec.style.display = (sec.style.display === "none") ? "block" : "none";
+            if (sec.style.display === "block") {
+                sec.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        async function findSolution(qNo, qText, userAns, correctAns) {
+            const btn = document.getElementById("btnSol_" + qNo);
+            const box = document.getElementById("solutionBox_" + qNo);
+            const textEl = document.getElementById("solutionText_" + qNo);
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Generating Solution...`;
+
+            try {
+                const response = await fetch("/api/generate_solution", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        question: qText,
+                        user_choice: userAns,
+                        correct_choice: correctAns
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok && result.status === "success") {
+                    textEl.innerText = result.solution;
+                    box.style.display = "block";
+                    btn.innerHTML = `<i class="fa-solid fa-check"></i> Solution Loaded`;
+                    btn.style.background = "rgba(34, 197, 94, 0.2)";
+                    btn.style.color = "#4ADE80";
+                    btn.style.borderColor = "rgba(34, 197, 94, 0.4)";
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Retry Find Solution`;
+                    alert("Unable to generate solution. Please try again.");
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Retry Find Solution`;
+                alert("Network error: " + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

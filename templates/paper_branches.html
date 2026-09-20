@@ -1,47 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Select Branch</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Branch — PYQs — AP E-CET Portal</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static',
-          filename='css/style.css') }}">
-</head>
-
-<body class="papers-page">
-    <div id="page-loader"></div>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dashboard-body papers-page">
+    <div id="page-loader"></div>
 
-<div class="papers-container">
+    <!-- Collapsible Left Navigation Drawer (Application Menu) -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
 
-    <h1>📄 Select Branch</h1>
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
 
-    <a href="{{ url_for('papers', branch='cme') }}"
-       class="paper-btn">
-        CME Papers
-    </a>
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}" class="active"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
 
-    <a href="{{ url_for('papers', branch='ece') }}"
-       class="paper-btn">
-        ECE Papers
-    </a>
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
 
-    <a href="{{ url_for('papers', branch='eee') }}"
-       class="paper-btn">
-        EEE Papers
-    </a>
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <a href="{{ url_for('papers', branch='mec') }}"
-       class="paper-btn">
-        MEC Papers
-    </a>
+    <main class="dashboard-main-content">
+        <div class="papers-container" style="max-width: 900px; margin: 2rem auto; text-align: center;">
+            <h1 style="font-family: 'Outfit', sans-serif; font-size: 2.2rem; color: white; margin-bottom: 0.5rem;"><i class="fa-solid fa-file-pdf" style="color: #6366F1;"></i> Select Branch for PYQs</h1>
+            <p style="color: #94A3B8; margin-bottom: 2.5rem;">Access previous year question papers and solution keys for your engineering branch.</p>
 
-    <a href="{{ url_for('papers', branch='civil') }}"
-       class="paper-btn">
-        CIVIL Papers
-    </a>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+                <a href="{{ url_for('papers', branch='cme') }}" class="paper-btn" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-laptop-code" style="font-size: 2.5rem; color: #6366F1;"></i>
+                    <span style="font-size: 1.2rem; font-weight: 700; font-family: 'Outfit', sans-serif;">CME Papers</span>
+                    <span style="font-size: 0.85rem; color: #94A3B8;">Computer Engineering</span>
+                </a>
 
-</div>
-<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+                <a href="{{ url_for('papers', branch='ece') }}" class="paper-btn" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-microchip" style="font-size: 2.5rem; color: #8B5CF6;"></i>
+                    <span style="font-size: 1.2rem; font-weight: 700; font-family: 'Outfit', sans-serif;">ECE Papers</span>
+                    <span style="font-size: 0.85rem; color: #94A3B8;">Electronics & Communication</span>
+                </a>
+
+                <a href="{{ url_for('papers', branch='eee') }}" class="paper-btn" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-bolt" style="font-size: 2.5rem; color: #F59E0B;"></i>
+                    <span style="font-size: 1.2rem; font-weight: 700; font-family: 'Outfit', sans-serif;">EEE Papers</span>
+                    <span style="font-size: 0.85rem; color: #94A3B8;">Electrical Engineering</span>
+                </a>
+
+                <a href="{{ url_for('papers', branch='mec') }}" class="paper-btn" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-gears" style="font-size: 2.5rem; color: #10B981;"></i>
+                    <span style="font-size: 1.2rem; font-weight: 700; font-family: 'Outfit', sans-serif;">MEC Papers</span>
+                    <span style="font-size: 0.85rem; color: #94A3B8;">Mechanical Engineering</span>
+                </a>
+
+                <a href="{{ url_for('papers', branch='civil') }}" class="paper-btn" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-building" style="font-size: 2.5rem; color: #3B82F6;"></i>
+                    <span style="font-size: 1.2rem; font-weight: 700; font-family: 'Outfit', sans-serif;">CIVIL Papers</span>
+                    <span style="font-size: 0.85rem; color: #94A3B8;">Civil Engineering</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+    </script>
 </body>
 </html>

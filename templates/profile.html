@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile — AP E-CET Portal</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dashboard-body">
+    <div id="page-loader"></div>
+
+    <!-- Collapsible Left Sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
+
+        <div class="sidebar-user-card">
+            <div class="user-avatar" id="sidebarAvatarContainer">
+                {% set p_img = (student['profile_image'] if student else session.get('student_profile_image')) %}
+                {% if p_img %}
+                    <img src="{{ p_img }}" id="sidebarAvatarImg" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name" id="sidebarUserName">{{ student['name'] if student else session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}" class="active"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Top Navigation Header (ONLY Profile Button) -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
+
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% set header_img = (student['profile_image'] if student else session.get('student_profile_image')) %}
+                    {% if header_img %}
+                        <img src="{{ header_img }}" id="headerAvatarImg" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span id="headerUserName">{{ student['name'] if student else session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main-content">
+        <div class="profile-page-wrapper">
+            <div class="profile-card-premium">
+                <!-- Profile Header & Avatar -->
+                <div class="profile-header-center">
+                    <div class="profile-avatar-container">
+                        <div class="profile-avatar-large" id="mainAvatarDisplay">
+                            {% set main_img = (student['profile_image'] if student else session.get('student_profile_image')) %}
+                            {% if main_img %}
+                                <img src="{{ main_img }}" id="profileMainImg" alt="Profile" style="width: 105px; height: 105px; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                <i class="fa-solid fa-user"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <h2 class="profile-user-title" id="displayProfileTitle">{{ student['name'] if student else session.get('student_name', 'Student Name') }}</h2>
+                    <span class="profile-role-badge">Student</span>
+                </div>
+
+                <!-- Alert Message -->
+                <div id="profileMsg" class="flash-alert" style="display: none; margin-bottom: 1rem;"></div>
+
+                <!-- Essential User Details Card (Read View) -->
+                <div id="profileReadView" class="profile-details-list">
+                    <div class="profile-detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-user"></i> Full Name</span>
+                        <span class="detail-value" id="valName">{{ student['name'] if student else session.get('student_name', 'Student Name') }}</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-envelope"></i> Email Address</span>
+                        <span class="detail-value">{{ student['email'] if student else session.get('student_email', '') }}</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-phone"></i> Phone Number</span>
+                        <span class="detail-value" id="valPhone">{{ (student['phone'] if student else session.get('student_phone')) or 'Not provided' }}</span>
+                    </div>
+                    <div class="profile-detail-row">
+                        <span class="detail-label"><i class="fa-solid fa-graduation-cap"></i> Selected E-CET Branch</span>
+                        <span class="detail-value branch-highlight" id="valBranch">
+                            {% set b = (student['branch'] if student else session.get('student_branch')) %}
+                            {% if b %}
+                                {{ b|upper }}
+                            {% else %}
+                                Branch not selected
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Edit Profile Action Button -->
+                    <div class="profile-action-container">
+                        <button type="button" class="btn-edit-profile-trigger" onclick="toggleEditMode(true)">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Edit Profile Form View (Hidden by default, shown on Edit Profile click) -->
+                <form id="editProfileForm" class="profile-edit-form" style="display: none;" enctype="multipart/form-data">
+                    <div class="form-field-group">
+                        <label for="editAvatar"><i class="fa-solid fa-image"></i> Profile Picture (PNG, JPG, WEBP)</label>
+                        <input type="file" id="editAvatar" name="profile_image" accept="image/png, image/jpeg, image/webp" class="profile-input">
+                    </div>
+
+                    <div class="form-field-group">
+                        <label for="editName"><i class="fa-solid fa-user"></i> Full Name</label>
+                        <input type="text" id="editName" name="name" value="{{ student['name'] if student else session.get('student_name', '') }}" required class="profile-input">
+                    </div>
+
+                    <div class="form-field-group">
+                        <label><i class="fa-solid fa-envelope"></i> Email Address (Account ID)</label>
+                        <input type="email" value="{{ student['email'] if student else session.get('student_email', '') }}" readonly class="profile-input readonly-input">
+                    </div>
+
+                    <div class="form-field-group">
+                        <label for="editPhone"><i class="fa-solid fa-phone"></i> Mobile Number (10 Digits)</label>
+                        <input type="tel" id="editPhone" name="phone" value="{{ student['phone'] if student else session.get('student_phone', '') }}" required class="profile-input" maxlength="10">
+                    </div>
+
+                    <div class="form-field-group">
+                        <label for="editBranch"><i class="fa-solid fa-laptop-code"></i> Selected E-CET Branch</label>
+                        <select name="branch" id="editBranch" required class="profile-input">
+                            {% set active_b = (student['branch'] if student else session.get('student_branch', ''))|lower %}
+                            <option value="" {% if not active_b %}selected{% endif %} disabled>Select Branch</option>
+                            <option value="cme" {% if active_b == 'cme' %}selected{% endif %}>CME (Computer Engineering)</option>
+                            <option value="ece" {% if active_b == 'ece' %}selected{% endif %}>ECE (Electronics & Communication)</option>
+                            <option value="eee" {% if active_b == 'eee' %}selected{% endif %}>EEE (Electrical & Electronics)</option>
+                            <option value="mec" {% if active_b == 'mec' %}selected{% endif %}>MEC (Mechanical Engineering)</option>
+                            <option value="civil" {% if active_b == 'civil' %}selected{% endif %}>CIVIL (Civil Engineering)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-btn-row">
+                        <button type="button" class="btn-cancel-edit" onclick="toggleEditMode(false)">Cancel</button>
+                        <button type="submit" class="btn-save-profile">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+
+        function toggleEditMode(showEdit) {
+            document.getElementById("profileReadView").style.display = showEdit ? "none" : "flex";
+            document.getElementById("editProfileForm").style.display = showEdit ? "flex" : "none";
+            document.getElementById("profileMsg").style.display = "none";
+        }
+
+        document.getElementById("editProfileForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const msgBox = document.getElementById("profileMsg");
+            msgBox.style.display = "none";
+
+            const formData = new FormData();
+            formData.append("name", document.getElementById("editName").value.trim());
+            formData.append("phone", document.getElementById("editPhone").value.trim());
+            formData.append("branch", document.getElementById("editBranch").value);
+
+            const fileInput = document.getElementById("editAvatar");
+            if (fileInput.files.length > 0) {
+                formData.append("profile_image", fileInput.files[0]);
+            }
+
+            try {
+                const response = await fetch("/api/update_profile", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok && result.status === "success") {
+                    msgBox.className = "flash-alert flash-success";
+                    msgBox.innerHTML = '<i class="fa-solid fa-circle-check"></i> Profile updated successfully!';
+                    msgBox.style.display = "block";
+
+                    // Update UI read view
+                    document.getElementById("valName").innerText = result.name;
+                    document.getElementById("valPhone").innerText = result.phone;
+                    document.getElementById("valBranch").innerText = result.branch.toUpperCase();
+                    document.getElementById("displayProfileTitle").innerText = result.name;
+                    document.getElementById("headerUserName").innerText = result.name;
+                    const sidebarName = document.getElementById("sidebarUserName");
+                    if (sidebarName) sidebarName.innerText = result.name;
+
+                    // Update profile image displays if new image uploaded
+                    if (result.profile_image) {
+                        const avatarDisplay = document.getElementById("mainAvatarDisplay");
+                        avatarDisplay.innerHTML = `<img src="${result.profile_image}" id="profileMainImg" alt="Profile" style="width: 105px; height: 105px; border-radius: 50%; object-fit: cover;">`;
+                        
+                        const headerPill = document.querySelector(".user-pill");
+                        if (headerPill) {
+                            headerPill.innerHTML = `<img src="${result.profile_image}" id="headerAvatarImg" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"> <span id="headerUserName">${result.name}</span>`;
+                        }
+                    }
+
+                    setTimeout(() => toggleEditMode(false), 1200);
+                } else {
+                    msgBox.className = "flash-alert flash-error";
+                    msgBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (result.message || "Failed to update profile.");
+                    msgBox.style.display = "block";
+                }
+            } catch (err) {
+                msgBox.className = "flash-alert flash-error";
+                msgBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Network error: ' + err.message;
+                msgBox.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>

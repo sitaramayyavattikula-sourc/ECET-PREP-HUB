@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor — AP E-CET Portal</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <!-- Marked.js Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body class="dashboard-body ai-tutor-body">
+    <div id="page-loader"></div>
+
+    <!-- Collapsible Left Navigation Drawer (Application Menu) -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}" class="active"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Top Navigation Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
+
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ username }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main-content">
+        <!-- Main AI Chat Workspace Layout (Matching Reference Screenshot) -->
+        <div class="workspace-layout">
+            <!-- Left Fixed Workspace Sidebar (~260px) -->
+            <aside class="workspace-sidebar">
+                <div class="sidebar-brand-title">
+                    <i class="fa-solid fa-robot"></i> E-CET AI Tutor
+                </div>
+
+                <!-- New Chat Button -->
+                <button type="button" class="btn-new-chat-pill" onclick="startNewChat()">
+                    <i class="fa-solid fa-pen-to-square"></i> + New chat
+                </button>
+
+                <!-- Chat History Header & Grouped Saved Conversations -->
+                <div class="sidebar-history-container" style="flex: 1; overflow-y: auto;">
+                    {% set pinned_chats = conversations | selectattr('is_pinned') | list %}
+                    {% set recent_chats = conversations | rejectattr('is_pinned') | list %}
+
+                    {% if pinned_chats %}
+                        <div class="sidebar-history-heading"><i class="fa-solid fa-thumbtack"></i> PINNED</div>
+                        <ul class="saved-chats-clean-list" id="pinnedChatsList">
+                            {% for conv in pinned_chats %}
+                            <li class="chat-session-item pinned-session" id="convItem{{ conv.id }}" onclick="loadConversation({{ conv.id }})">
+                                <div class="chat-session-info" style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden;">
+                                    <i class="fa-solid fa-thumbtack" style="color: #6366F1; font-size: 0.8rem;"></i>
+                                    <span id="titleSpan{{ conv.id }}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ conv.title }}</span>
+                                </div>
+                                <div class="chat-session-menu" onclick="event.stopPropagation()">
+                                    <button type="button" class="three-dots-btn" onclick="toggleDropdownMenu(event, {{ conv.id }})"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    <div class="dropdown-chat-menu" id="dropdownMenu{{ conv.id }}">
+                                        <button type="button" onclick="renameChat(event, {{ conv.id }})"><i class="fa-solid fa-pen"></i> Rename</button>
+                                        <button type="button" onclick="togglePinChat(event, {{ conv.id }})"><i class="fa-solid fa-thumbtack"></i> <span id="pinText{{ conv.id }}">Unpin</span></button>
+                                        <button type="button" onclick="shareChat(event, {{ conv.id }})"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                                        <button type="button" onclick="deleteConversation(event, {{ conv.id }})"><i class="fa-solid fa-trash"></i> Delete</button>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    <div class="sidebar-history-heading" style="margin-top: 0.75rem;">CHAT HISTORY</div>
+                    <ul class="saved-chats-clean-list" id="recentChatsList">
+                        {% if recent_chats %}
+                            {% for conv in recent_chats %}
+                            <li class="chat-session-item" id="convItem{{ conv.id }}" onclick="loadConversation({{ conv.id }})">
+                                <div class="chat-session-info" style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden;">
+                                    <i class="fa-regular fa-comment"></i>
+                                    <span id="titleSpan{{ conv.id }}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ conv.title }}</span>
+                                </div>
+                                <div class="chat-session-menu" onclick="event.stopPropagation()">
+                                    <button type="button" class="three-dots-btn" onclick="toggleDropdownMenu(event, {{ conv.id }})"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    <div class="dropdown-chat-menu" id="dropdownMenu{{ conv.id }}">
+                                        <button type="button" onclick="renameChat(event, {{ conv.id }})"><i class="fa-solid fa-pen"></i> Rename</button>
+                                        <button type="button" onclick="togglePinChat(event, {{ conv.id }})"><i class="fa-solid fa-thumbtack"></i> <span id="pinText{{ conv.id }}">Pin</span></button>
+                                        <button type="button" onclick="shareChat(event, {{ conv.id }})"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                                        <button type="button" onclick="deleteConversation(event, {{ conv.id }})"><i class="fa-solid fa-trash"></i> Delete</button>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        {% else %}
+                            {% if not pinned_chats %}
+                                <li class="no-chats-text" id="noChatsNotice" style="color: #94A3B8; font-size: 0.82rem; padding: 0.5rem 0;">No previous chats.</li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Bottom User Profile Card (Clickable -> Opens /profile) -->
+                <div class="sidebar-bottom-profile" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View & Edit Profile">
+                    <div class="profile-avatar-circle"><i class="fa-solid fa-user"></i></div>
+                    <div class="profile-text-info">
+                        <span class="profile-user-name">{{ username }}</span>
+                        <span class="profile-user-role">Student</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Main Content Area -->
+            <section class="workspace-chat-container">
+                <div class="workspace-header">
+                    <h2><i class="fa-solid fa-robot"></i> AI Tutor</h2>
+                    {% if from_review %}
+                        <a href="{{ url_for('ai_exam_setup') }}" class="btn-secondary-action" style="padding: 0.4rem 1.1rem; border-radius: 1.5rem; font-size: 0.85rem; background: rgba(99, 102, 241, 0.2); color: #A5B4FC; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(99, 102, 241, 0.4);">
+                            <i class="fa-solid fa-arrow-left"></i> Return to Exam Review
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Chat Display Window with Centered Empty State -->
+                <div id="aiChatWindow" class="chat-window">
+                    <div class="empty-chat-state" id="emptyChatState">
+                        <h2>Ready when you are.</h2>
+                    </div>
+                </div>
+
+                <!-- Bottom Centered Pill-Shaped Chat Composer -->
+                <div class="chat-composer-container">
+                    <form id="aiDoubtForm" class="chat-composer-box">
+                        <button type="button" class="composer-attach-btn" title="Add File or Context">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <textarea id="aiDoubtInput" rows="1" placeholder="Ask anything..." required></textarea>
+                        <button type="submit" id="sendBtn" class="composer-send-btn" title="Send Message" disabled>
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        let currentConvId = null;
+        const doubtForm = document.getElementById("aiDoubtForm");
+        const doubtInput = document.getElementById("aiDoubtInput");
+        const sendBtn = document.getElementById("sendBtn");
+        const chatWindow = document.getElementById("aiChatWindow");
+
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+
+        function toggleDropdownMenu(e, convId) {
+            e.stopPropagation();
+            document.querySelectorAll(".dropdown-chat-menu").forEach(m => {
+                if (m.id !== "dropdownMenu" + convId) m.classList.remove("show-menu", "open-upward");
+            });
+            const menu = document.getElementById("dropdownMenu" + convId);
+            if (menu) {
+                const isShown = menu.classList.contains("show-menu");
+                if (!isShown) {
+                    menu.classList.add("show-menu");
+                    const rect = menu.getBoundingClientRect();
+                    if (rect.bottom > window.innerHeight - 20) {
+                        menu.classList.add("open-upward");
+                    }
+                } else {
+                    menu.classList.remove("show-menu", "open-upward");
+                }
+            }
+        }
+
+        document.addEventListener("click", function() {
+            document.querySelectorAll(".dropdown-chat-menu").forEach(m => m.classList.remove("show-menu", "open-upward"));
+        });
+
+        // Close menus and sidebar on Escape key
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") {
+                document.querySelectorAll(".dropdown-chat-menu").forEach(m => m.classList.remove("show-menu", "open-upward"));
+                const sidebar = document.getElementById("appSidebar");
+                const overlay = document.getElementById("sidebarOverlay");
+                if (sidebar && sidebar.classList.contains("open-sidebar")) {
+                    sidebar.classList.remove("open-sidebar");
+                    if (overlay) overlay.classList.remove("open-overlay");
+                }
+            }
+        });
+
+        function startNewChat() {
+            currentConvId = null;
+            chatWindow.innerHTML = `
+                <div class="empty-chat-state" id="emptyChatState">
+                    <h2>Ready when you are.</h2>
+                </div>
+            `;
+            document.querySelectorAll(".chat-session-item").forEach(el => el.classList.remove("active-session"));
+            doubtInput.focus();
+        }
+
+        // Auto-expand textarea & enable send button when text is entered
+        doubtInput.addEventListener("input", function() {
+            this.style.height = "auto";
+            this.style.height = (this.scrollHeight < 150 ? this.scrollHeight : 150) + "px";
+            
+            const hasText = this.value.trim().length > 0;
+            sendBtn.disabled = !hasText;
+            if (hasText) {
+                sendBtn.classList.add("active-send");
+            } else {
+                sendBtn.classList.remove("active-send");
+            }
+        });
+
+        // Enter to send, Shift+Enter for new line
+        doubtInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (doubtInput.value.trim().length > 0) {
+                    doubtForm.dispatchEvent(new Event("submit"));
+                }
+            }
+        });
+
+        let isSending = false;
+        doubtForm.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            if (isSending) return;
+            const message = doubtInput.value.trim();
+            if (!message) return;
+
+            isSending = true;
+
+            // Remove empty state if present
+            const emptyState = document.getElementById("emptyChatState");
+            if (emptyState) emptyState.remove();
+
+            appendBubble("user", message);
+            doubtInput.value = "";
+            doubtInput.style.height = "auto";
+            sendBtn.disabled = true;
+            sendBtn.classList.remove("active-send");
+
+            const loadingId = appendLoadingBubble();
+
+            try {
+                const response = await fetch("/api/ai_chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_id: currentConvId
+                    })
+                });
+
+                const data = await response.json();
+                removeBubble(loadingId);
+
+                if (data.reply) {
+                    appendBubble("assistant", data.reply);
+                    if (data.conversation_id && !currentConvId) {
+                        currentConvId = data.conversation_id;
+                        addSessionToSidebar(data.conversation_id, data.title || message.substring(0, 25));
+                    }
+                } else {
+                    appendBubble("assistant", "⚠️ " + (data.error || "Unable to receive AI response."));
+                }
+            } catch (err) {
+                removeBubble(loadingId);
+                appendBubble("assistant", "⚠️ Connection Error: " + err.message);
+            } finally {
+                isSending = false;
+            }
+        });
+
+        async function loadConversation(convId) {
+            currentConvId = convId;
+            document.querySelectorAll(".chat-session-item").forEach(el => el.classList.remove("active-session"));
+            const targetItem = document.getElementById("convItem" + convId);
+            if (targetItem) targetItem.classList.add("active-session");
+
+            chatWindow.innerHTML = `<div class="chat-bubble assistant-bubble"><div class="bubble-text">Loading conversation...</div></div>`;
+
+            try {
+                const res = await fetch("/api/get_conversation/" + convId);
+                const data = await res.json();
+                if (data.messages) {
+                    chatWindow.innerHTML = "";
+                    if (data.messages.length === 0) {
+                        chatWindow.innerHTML = `
+                            <div class="empty-chat-state" id="emptyChatState">
+                                <h2>Ready when you are.</h2>
+                            </div>
+                        `;
+                    } else {
+                        data.messages.forEach(m => {
+                            appendBubble(m.role, m.content);
+                        });
+                    }
+                }
+            } catch (err) {
+                chatWindow.innerHTML = `<div class="chat-bubble assistant-bubble"><div class="bubble-text">⚠️ Error loading conversation history.</div></div>`;
+            }
+        }
+
+        async function renameChat(e, convId) {
+            e.stopPropagation();
+            const titleSpan = document.getElementById("titleSpan" + convId);
+            const currentTitle = titleSpan ? titleSpan.innerText : "";
+            const newTitle = prompt("Enter new title for conversation:", currentTitle);
+            if (!newTitle || !newTitle.trim()) return;
+
+            try {
+                const res = await fetch("/api/rename_conversation/" + convId, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ title: newTitle.trim() })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    if (titleSpan) titleSpan.innerText = data.title;
+                }
+            } catch (err) {
+                alert("Failed to rename conversation.");
+            }
+        }
+
+        async function togglePinChat(e, convId) {
+            e.stopPropagation();
+            try {
+                const res = await fetch("/api/pin_conversation/" + convId, { method: "POST" });
+                const data = await res.json();
+                if (data.status === "success") {
+                    location.reload();
+                }
+            } catch (err) {
+                alert("Failed to toggle pin state.");
+            }
+        }
+
+        async function shareChat(e, convId) {
+            e.stopPropagation();
+            try {
+                const res = await fetch("/api/share_conversation/" + convId);
+                const data = await res.json();
+                if (data.share_url) {
+                    await navigator.clipboard.writeText(data.share_url);
+                    alert("Safe conversation link copied to clipboard:\n" + data.share_url);
+                }
+            } catch (err) {
+                alert("Failed to generate share link.");
+            }
+        }
+
+        async function deleteConversation(event, convId) {
+            event.stopPropagation();
+            if (!confirm("Delete this conversation?")) return;
+
+            try {
+                const res = await fetch("/api/delete_conversation/" + convId, { method: "POST" });
+                if (res.ok) {
+                    const el = document.getElementById("convItem" + convId);
+                    if (el) el.remove();
+                    if (currentConvId === convId) startNewChat();
+                }
+            } catch (err) {
+                alert("Unable to delete conversation.");
+            }
+        }
+
+        function addSessionToSidebar(convId, title) {
+            const list = document.getElementById("recentChatsList") || document.getElementById("savedChatsList");
+            const notice = document.getElementById("noChatsNotice");
+            if (notice) notice.remove();
+
+            const li = document.createElement("li");
+            li.className = "chat-session-item active-session";
+            li.id = "convItem" + convId;
+            li.onclick = () => loadConversation(convId);
+            li.innerHTML = `
+                <div class="chat-session-info" style="display: flex; align-items: center; gap: 0.5rem; overflow: hidden;">
+                    <i class="fa-regular fa-comment"></i>
+                    <span id="titleSpan${convId}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</span>
+                </div>
+                <div class="chat-session-menu" onclick="event.stopPropagation()">
+                    <button type="button" class="three-dots-btn" onclick="toggleDropdownMenu(event, ${convId})"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    <div class="dropdown-chat-menu" id="dropdownMenu${convId}">
+                        <button type="button" onclick="renameChat(event, ${convId})"><i class="fa-solid fa-pen"></i> Rename</button>
+                        <button type="button" onclick="togglePinChat(event, ${convId})"><i class="fa-solid fa-thumbtack"></i> <span id="pinText${convId}">Pin</span></button>
+                        <button type="button" onclick="shareChat(event, ${convId})"><i class="fa-solid fa-share-nodes"></i> Share</button>
+                        <button type="button" onclick="deleteConversation(event, ${convId})"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            `;
+            list.prepend(li);
+        }
+
+        function appendBubble(sender, text) {
+            const div = document.createElement("div");
+            div.className = `chat-bubble ${sender}-bubble`;
+            let contentHtml = "";
+            if (sender === "assistant") {
+                try {
+                    if (typeof marked !== "undefined" && marked.parse) {
+                        contentHtml = marked.parse(text);
+                    } else {
+                        contentHtml = text.replace(/\n/g, "<br>");
+                    }
+                } catch (e) {
+                    contentHtml = text.replace(/\n/g, "<br>");
+                }
+            } else {
+                const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                contentHtml = escaped.replace(/\n/g, "<br>");
+            }
+            div.innerHTML = `<div class="bubble-text">${contentHtml}</div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function appendLoadingBubble() {
+            const id = "loading-" + Date.now();
+            const div = document.createElement("div");
+            div.className = "chat-bubble assistant-bubble loading-bubble";
+            div.id = id;
+            div.innerHTML = `<div class="typing-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            return id;
+        }
+
+        function removeBubble(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        // Auto-load conversation if passed via active_conv_id or URL parameter
+        window.addEventListener("DOMContentLoaded", function() {
+            const activeConvId = {{ active_conv_id if active_conv_id else 'null' }};
+            if (activeConvId) {
+                loadConversation(activeConvId);
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const chatIdParam = urlParams.get('chat_id') || urlParams.get('shared_id') || urlParams.get('conv_id');
+            if (chatIdParam) {
+                loadConversation(parseInt(chatIdParam));
+            } else {
+                const questionParam = urlParams.get('q');
+                if (questionParam) {
+                    const autoPrompt = "Please explain this AP E-CET question in detail: " + decodeURIComponent(questionParam);
+                    doubtInput.value = autoPrompt;
+                    doubtForm.dispatchEvent(new Event("submit"));
+                }
+            }
+        });
+    </script>
+</body>
+</html>

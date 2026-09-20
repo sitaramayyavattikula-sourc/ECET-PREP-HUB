@@ -1,374 +1,245 @@
-body {
+/* =========================================================
+   AP E-CET PORTAL — PROFESSIONAL AUTHENTICATION SYSTEM CSS
+   ========================================================= */
 
+body.login-page, body.register-page {
+    background-color: #0F172A;
+    background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15), transparent 70%);
+    font-family: 'Inter', sans-serif;
+    color: #F8FAFC;
     margin: 0;
     min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+}
 
+/* Remove floating decorative circles that interfere with text readability */
+body::before, body::after {
+    display: none !important;
+}
+
+.auth-card-wrapper {
+    width: 100%;
+    max-width: 440px;
     display: flex;
     justify-content: center;
-    align-items: center;
-
-    font-family: Arial, sans-serif;
-
-    background: linear-gradient(-45deg, #667eea, #764ba2, #00c6ff, #0072ff);
-
-    background-size: 400% 400%;
-
-    animation: backgroundMove 12s ease infinite;
-
-}
-/* Animated background */
-
-@keyframes backgroundMove {
-
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-
-}
-body::before {
-
-    content: "";
-
-    position: absolute;
-
-    width: 300px;
-    height: 300px;
-
-    background: rgba(255,255,255,0.15);
-
-    border-radius: 50%;
-
-    top: 10%;
-    left: 10%;
-
-    animation: float 6s infinite alternate;
-
 }
 
-
-body::after {
-
-    content: "";
-
-    position: absolute;
-
-    width: 250px;
-    height: 250px;
-
-    background: rgba(255,255,255,0.12);
-
-    border-radius: 50%;
-
-    bottom: 10%;
-    right: 10%;
-
-    animation: float 8s infinite alternate;
-
-}
-
-
-@keyframes float {
-
-    from {
-
-        transform: translateY(0px);
-
-    }
-
-    to {
-
-        transform: translateY(40px);
-
-    }
-
-}
-
-
-/* Register card animation */
-
-.register-box {
-
-    width: 450px;
-
-    padding: 45px;
-
-    background: rgba(255,255,255,0.92);
-
-    backdrop-filter: blur(12px);
-
-    border-radius: 20px;
-
-    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-
-    animation: slideIn 0.8s ease;
-
-}
-
-
-@keyframes slideIn {
-
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-h2 {
-    text-align: center;
-    margin-bottom: 30px;
-      margin-top: 0;
-      margin-bottom: 30px;
-}
-
-
-input:not([type="checkbox"]) {
+.auth-card {
+    background: #1E293B;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
     width: 100%;
-    padding: 15px;
-    margin: 12px 0;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    transition: 0.3s;
-}
-input{
-    font-weight: bold;
-    font-size: 16px;
-}
-input::placeholder {
-    font-weight: bold;
-        color: #444;
-    font-size: 16px;
-}
-
-input:focus {
-
-    border-color: #667eea;
-
-    transform: scale(1.03);
-
-    outline: none;
-}
-
-
-button {
-
-    width: 100%;
-
-    padding: 15px;
-     font-size: 17px;
-
-    margin-top: 20px;
-
-    background: #667eea;
-
-    color: white;
-
-    border: none;
-
-    border-radius: 10px;
-
-    cursor: pointer;
-
-    transition: 0.3s;
-}
-
-
-button:hover {
-
-    background: #764ba2;
-
-    transform: scale(1.05);
-
-}
-.page-title {
-
-    position: absolute;
-
-    top: 40px;
-
-    width: 100%;
-
-    text-align: center;
-
-    font-size: 45px;
-
-    color: white;
-
-    font-weight: bold;
-
-}
-.register-title {
-
-    text-align: center;
-
-    font-size: 35px;
-
-    font-weight: bold;
-
-    margin-bottom: 35px;
-
-    color: #4a3aff;
-
-    letter-spacing: 1px;
-
-    animation: titleAnimation 1.2s ease;
-
-}
-
-
-/* Title animation */
-
-@keyframes titleAnimation {
-
-    from {
-
-        opacity: 0;
-
-        transform: translateY(-30px);
-
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform: translateY(0);
-
-    }
-
-}
-.success-message {
-
-    background: #28a745;
-
-    color: white;
-
-    padding: 15px;
-
-    margin-bottom: 20px;
-
-    border-radius: 10px;
-
-    text-align: center;
-
-    font-size: 16px;
-
-    font-weight: bold;
-
-    animation: popup 0.5s ease;
-
-}
-
-
-@keyframes popup {
-
-    from {
-
-        opacity: 0;
-
-        transform: translateY(-20px);
-
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform: translateY(0);
-
-    }
-
-}
-.success-message {
-
-    background: #28a745;
-
-    color: white;
-
-    padding: 15px;
-
-    border-radius: 10px;
-
-    margin-bottom: 20px;
-
-    text-align: center;
-
-    font-weight: bold;
-}
-
-
-.error-message {
-
-    background: #dc3545;
-
-    color: white;
-
-    padding: 15px;
-
-    border-radius: 10px;
-
-    margin-bottom: 20px;
-
-    text-align: center;
-
-    font-weight: bold;
-}
-.login-btn {
-    display: block;
-    width: 100%;
-    margin-top: 15px;
-    padding: 12px;
-    text-align: center;
-    text-decoration: none;
-    background: transparent;
-    color: #2563eb;
-    border: 2px solid #2563eb;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 600;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
-    transition: 0.3s;
 }
 
-.login-btn:hover {
-    background: #2563eb;
-    color: white;
+/* Brand Header */
+.auth-brand {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
-.password-box{
+.auth-brand .brand-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-decoration: none;
+    margin-bottom: 0.75rem;
+}
+
+.auth-brand h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0 0 0.35rem 0;
+}
+
+.auth-subtitle {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #94A3B8;
+}
+
+/* Form Controls */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #A5B4FC;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.input-icon-box {
     position: relative;
     width: 100%;
 }
 
-.password-box input{
+.input-icon-box input {
     width: 100%;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.75rem;
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
     box-sizing: border-box;
-    padding-right: 50px;
+    outline: none;
+    transition: all 0.2s ease;
 }
 
-.password-box i{
+.input-icon-box input:focus {
+    border-color: #6366F1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    background: #0F172A;
+}
+
+/* High-Contrast Lighter Placeholder */
+.input-icon-box input::placeholder {
+    color: #64748B;
+    font-weight: 400;
+    font-size: 0.88rem;
+    opacity: 1;
+}
+
+/* Eye Toggle Icon inside Password Field */
+.eye-toggle {
     position: absolute;
-    right: 18px;
+    right: 1rem;
     top: 50%;
     transform: translateY(-50%);
+    color: #94A3B8;
     cursor: pointer;
-    color: #666;
-    font-size: 18px;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+    padding: 0.2rem;
 }
 
-.password-box i:hover{
-    color: #2563eb;
+.eye-toggle:hover {
+    color: #6366F1;
+}
+
+/* Primary Auth Submit Button */
+.btn-auth-submit {
+    width: 100%;
+    background: #6366F1;
+    color: #FFFFFF;
+    border: none;
+    padding: 0.85rem 1.5rem;
+    border-radius: 2rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-auth-submit:hover {
+    background: #4F46E5;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+.btn-auth-submit:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Switch Links Box */
+.auth-switch-box {
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+    font-size: 0.9rem;
+    color: #94A3B8;
+}
+
+.auth-switch-box p {
+    margin: 0;
+}
+
+.auth-link {
+    color: #818CF8;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+    color: #A5B4FC;
+    text-decoration: underline;
+}
+
+.back-home-link {
+    color: #64748B;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s ease;
+}
+
+.back-home-link:hover {
+    color: #94A3B8;
+}
+
+/* Flash Alerts */
+.flash-alert {
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.88rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.alert-error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #FCA5A5;
+}
+
+.alert-success {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #86EFAC;
+}
+
+.alert-info {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #A5B4FC;
 }

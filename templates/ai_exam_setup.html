@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Exam Preparator — AP E-CET Portal</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dashboard-body">
+    <div id="page-loader"></div>
+
+    <!-- Collapsible Left Sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
+
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ username }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}" class="active"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Top Navigation Header (Single Profile Pill ONLY) -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
+
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ username }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main-content">
+        <div class="exam-setup-card-container">
+            <div class="setup-header">
+                <span class="welcome-badge"><i class="fa-solid fa-file-signature"></i> Professional CBT Exam Generator</span>
+                <h2>AI Exam Preparator Setup</h2>
+                <p>Configure your examination parameters. Select your Engineering Branch, Subject, Syllabus Scheme, and PDF Study Material. Questions are dynamically generated without repeating.</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container" style="margin-bottom: 1.5rem;">
+                {% for category, message in messages %}
+                    <div class="flash-alert alert-{{ category }}" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #FCA5A5; padding: 0.85rem 1.25rem; border-radius: 0.75rem; font-size: 0.9rem; display: flex; align-items: center; gap: 0.6rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('ai_exam') }}" method="POST" class="setup-form" id="examSetupForm">
+                <!-- 1. Engineering Branch -->
+                <div class="form-group-box">
+                    <label for="branchSelect"><i class="fa-solid fa-laptop-code"></i> Engineering Branch</label>
+                    <select name="branch" id="branchSelect" class="setup-select" onchange="updateSubjectsByBranch()">
+                        {% set b_current = active_branch if active_branch else 'cme' %}
+                        <option value="cme" {% if b_current == 'cme' %}selected{% endif %}>Computer Engineering (CME)</option>
+                        <option value="ece" {% if b_current == 'ece' %}selected{% endif %}>Electronics & Communication (ECE)</option>
+                        <option value="eee" {% if b_current == 'eee' %}selected{% endif %}>Electrical & Electronics (EEE)</option>
+                        <option value="mec" {% if b_current == 'mec' %}selected{% endif %}>Mechanical Engineering (MEC)</option>
+                        <option value="civil" {% if b_current == 'civil' %}selected{% endif %}>Civil Engineering (CIVIL)</option>
+                    </select>
+                </div>
+
+                <!-- 2. Subject Dropdown -->
+                <div class="form-group-box">
+                    <label for="subjectSelect"><i class="fa-solid fa-book"></i> Select Subject</label>
+                    <select name="subject" id="subjectSelect" required class="setup-select">
+                        {% for sub in subjects %}
+                            <option value="{{ sub }}">{{ sub }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- 3. Syllabus / Scheme -->
+                <div class="form-group-box">
+                    <label for="schemeSelect"><i class="fa-solid fa-layer-group"></i> Syllabus / Scheme</label>
+                    <select name="scheme" id="schemeSelect" required class="setup-select">
+                        <option value="Other" selected>Other / Not Sure (Use PDF / Uploaded Material)</option>
+                        <option value="C20">C20 Scheme (SBTET Diploma Curriculum)</option>
+                        <option value="C23">C23 Scheme (Revised SBTET Curriculum)</option>
+                    </select>
+                </div>
+
+                <!-- 4. PDF Study Material -->
+                <div class="form-group-box">
+                    <label for="pdfSelect"><i class="fa-solid fa-file-pdf"></i> Select PDF / Study Material Context</label>
+                    <select name="pdf_context" id="pdfSelect" class="setup-select">
+                        <option value="none">-- Select Available PDF Material (Optional) --</option>
+                        {% if available_pdfs %}
+                            {% for pdf in available_pdfs %}
+                                <option value="{{ pdf.filename }}">{{ pdf.title }}</option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="Data_structuresthrough_C.pdf">Data Structures through C (PDF Note)</option>
+                            <option value="Digital_electronics.pdf">Digital Electronics & Microprocessors (PDF Note)</option>
+                            <option value="CN_CS.pdf">Computer Networks & Cybersecurity (PDF Note)</option>
+                            <option value="java.pdf">Java Programming (PDF Note)</option>
+                            <option value="webtechnology.pdf">Web Technologies (PDF Note)</option>
+                        {% endif %}
+                    </select>
+                </div>
+
+                <!-- 5. Number of Questions -->
+                <div class="form-group-box">
+                    <label for="numSelect"><i class="fa-solid fa-list-ol"></i> Number of Questions</label>
+                    <select name="num_questions" id="numSelect" required class="setup-select">
+                        <option value="5">5 Questions (Quick Practice)</option>
+                        <option value="10" selected>10 Questions (Standard Mock)</option>
+                        <option value="15">15 Questions (Extended Mock)</option>
+                        <option value="20">20 Questions (Full CBT Test)</option>
+                    </select>
+                </div>
+
+                <!-- 6. Difficulty Level -->
+                <div class="form-group-box">
+                    <label for="diffSelect"><i class="fa-solid fa-gauge-high"></i> Difficulty Level</label>
+                    <select name="difficulty" id="diffSelect" required class="setup-select">
+                        <option value="Easy">Easy (Fundamentals)</option>
+                        <option value="Medium" selected>Medium (Standard E-CET Level)</option>
+                        <option value="Hard">Hard (Advanced Competitive Level)</option>
+                    </select>
+                </div>
+
+                <!-- 7. Duration -->
+                <div class="form-group-box">
+                    <label for="durSelect"><i class="fa-solid fa-clock"></i> Exam Duration</label>
+                    <select name="duration_mins" id="durSelect" required class="setup-select">
+                        <option value="10" selected>10 Minutes</option>
+                        <option value="15">15 Minutes</option>
+                        <option value="20">20 Minutes</option>
+                        <option value="30">30 Minutes</option>
+                    </select>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="setup-action-bar">
+                    <a href="{{ url_for('ai_tutor') }}" class="btn-cancel-exam-setup">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn-generate-exam" id="btnSubmitExamSetup">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Exam
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        const branchSubjectsMap = {
+            "cme": [
+                "C Programming & Data Structures",
+                "Digital Electronics & Microprocessors",
+                "Java & Web Technologies",
+                "Computer Networks & Cybersecurity",
+                "Python Programming",
+                "Engineering Mathematics",
+                "Engineering Physics & Chemistry"
+            ],
+            "ece": [
+                "Electronic Devices & Circuits",
+                "Digital Electronics & Logic Design",
+                "Circuit Theory & Signals",
+                "Communication Systems",
+                "Microcontrollers & Embedded Systems",
+                "Engineering Mathematics",
+                "Engineering Physics & Chemistry"
+            ],
+            "eee": [
+                "Electrical Circuits & Machines",
+                "Power Systems & Switchgear",
+                "Control Systems",
+                "Power Electronics & Drives",
+                "Electrical Measurements & Instrumentation",
+                "Engineering Mathematics",
+                "Engineering Physics & Chemistry"
+            ],
+            "mec": [
+                "Thermodynamics & Heat Transfer",
+                "Fluid Mechanics & Hydraulic Machinery",
+                "Strength of Materials",
+                "Theory of Machines & Machine Design",
+                "Manufacturing Technology",
+                "Engineering Mathematics",
+                "Engineering Physics & Chemistry"
+            ],
+            "civil": [
+                "Building Materials & Construction",
+                "Surveying & Levelling",
+                "Strength of Materials & Structural Engg",
+                "Hydraulics & Fluid Mechanics",
+                "Transportation & Environmental Engg",
+                "Engineering Mathematics",
+                "Engineering Physics & Chemistry"
+            ]
+        };
+
+        function updateSubjectsByBranch() {
+            const b = document.getElementById("branchSelect").value;
+            const subSelect = document.getElementById("subjectSelect");
+            const list = branchSubjectsMap[b] || branchSubjectsMap["cme"];
+            subSelect.innerHTML = "";
+            list.forEach(sub => {
+                const opt = document.createElement("option");
+                opt.value = sub;
+                opt.innerText = sub;
+                subSelect.appendChild(opt);
+            });
+        }
+
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+
+        const initialButtonHtml = `<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Exam`;
+
+        function resetButtonState() {
+            const btn = document.getElementById("btnSubmitExamSetup");
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove("btn-loading");
+                btn.innerHTML = initialButtonHtml;
+            }
+        }
+
+        // Restore button state on back/forward browser cache navigation
+        window.addEventListener("pageshow", function(event) {
+            resetButtonState();
+        });
+
+        document.getElementById("examSetupForm").addEventListener("submit", function(e) {
+            const branch = document.getElementById("branchSelect").value;
+            const subject = document.getElementById("subjectSelect").value;
+            const scheme = document.getElementById("schemeSelect").value;
+            const numQs = document.getElementById("numSelect").value;
+            const diff = document.getElementById("diffSelect").value;
+            const dur = document.getElementById("durSelect").value;
+
+            if (!branch || !subject || !scheme || !numQs || !diff || !dur) {
+                e.preventDefault();
+                alert("Please select all required exam setup fields before generating the exam.");
+                return false;
+            }
+
+            const btn = document.getElementById("btnSubmitExamSetup");
+            btn.disabled = true;
+            btn.classList.add("btn-loading");
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ⏳ Generating Exam...`;
+        });
+    </script>
+</body>
+</html>

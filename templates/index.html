@@ -52,15 +52,11 @@
 
 <nav class="navbar">
 
-    <ul class="nav-links">
-
-        <li><a href="/"><i class="fa-solid fa-house"></i> Home</a></li>
-
-
-        <li><a href="#about"><i class="fa-solid fa-circle-info"></i> About</a></li>
-
-        <li><a href="/contact"><i class="fa-solid fa-phone"></i> Contact</a></li>
-
+        <ul class="nav-links">
+        <li><a href="/" class="nav-btn active"><i class="fa-solid fa-house"></i> <span>Home</span></a></li>
+        <li><a href="/ai_tutor" class="nav-btn"><i class="fa-solid fa-robot"></i> <span>AI Tutor</span></a></li>
+        <li><a href="#about" class="nav-btn"><i class="fa-solid fa-circle-info"></i> <span>About</span></a></li>
+        <li><a href="/contact" class="nav-btn"><i class="fa-solid fa-phone"></i> <span>Contact</span></a></li>
     </ul>
 
     <div class="nav-buttons">
@@ -108,18 +104,15 @@
         </p>
 
         <div class="hero-buttons">
+            <a href="{{ url_for('notes') if session.get('student_email') else url_for('login') }}" class="primary-btn">
+                <i class="fa-solid fa-book-open"></i>
+                Explore Notes
+            </a>
 
-           <a href="{{ url_for('notes') if session.get('student_id') else url_for('register') }}"
-   class="primary-btn">
-    <i class="fa-solid fa-book-open"></i>
-    Explore Notes
-</a>
-
-<a href="{{ url_for('quiz') if session.get('student_id') else url_for('register') }}"
-   class="secondary-btn">
-    <i class="fa-solid fa-pen"></i>
-    Take Quiz
-</a>
+            <a href="{{ url_for('quiz') if session.get('student_email') else url_for('login') }}" class="secondary-btn">
+                <i class="fa-solid fa-pen"></i>
+                Take Quiz
+            </a>
         </div>
 
     </div>
@@ -148,77 +141,50 @@
         <div class="feature-content">
 
             <h3>Study Notes</h3>
-
             <p>
                 High-quality subject-wise study materials.
             </p>
-
-<a href="{{ url_for('register') }}">View Notes →</a>
-
+            <a href="{{ url_for('notes') if session.get('student_email') else url_for('login') }}">View Notes →</a>
         </div>
-
     </div>
 
-
     <div class="feature-card">
-
         <div class="feature-icon green">
             <i class="fa-solid fa-file-lines"></i>
         </div>
-
         <div class="feature-content">
-
             <h3>Previous Papers</h3>
-
             <p>
                 Practice with previous ECET question papers.
             </p>
-
-<a href="{{ url_for('register') }}">View Papers →</a>
+            <a href="{{ url_for('paper_branches') if session.get('student_email') else url_for('login') }}">View Papers →</a>
         </div>
-
     </div>
 
-
     <div class="feature-card">
-
         <div class="feature-icon orange">
             <i class="fa-solid fa-pen-to-square"></i>
         </div>
-
         <div class="feature-content">
-
             <h3>Online Quiz</h3>
-
             <p>
                 Test your preparation with mock quizzes.
             </p>
-
-          <a href="{{ url_for('register') }}">Start Quiz →</a>
-
-
+            <a href="{{ url_for('quiz') if session.get('student_email') else url_for('login') }}">Start Quiz →</a>
         </div>
-
     </div>
 
-
     <div class="feature-card">
-
         <div class="feature-icon purple">
             <i class="fa-solid fa-chart-column"></i>
         </div>
-
         <div class="feature-content">
-
-            <h3>Results</h3>
-
+            <h3>Results & Leaderboard</h3>
             <p>
                 View your quiz scores and track progress.
             </p>
-
-<a href="{{ url_for('register') }}">View Results →</a>
+            <a href="{{ url_for('leaderboard') if session.get('student_email') else url_for('login') }}">View Ranks →</a>
         </div>
-
     </div>
 
 </section>
@@ -343,6 +309,47 @@
         <p>&copy; 2026 ECET Portal | Developed by Team ECET</p>
     </footer>
 <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+
+<script>
+// Navigation active state and smooth scroll management
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const currentPath = window.location.pathname;
+    const currentHash = window.location.hash;
+
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentPath || (href.startsWith('#') && href === currentHash)) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        }
+
+        if (href.startsWith('#')) {
+            link.addEventListener('click', (e) => {
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        }
+    });
+
+    const aboutSection = document.getElementById('about');
+    if (aboutSection) {
+        window.addEventListener('scroll', () => {
+            const rect = aboutSection.getBoundingClientRect();
+            const homeLink = document.querySelector('.nav-links a[href="/"]');
+            const aboutLink = document.querySelector('.nav-links a[href="#about"]');
+            if (rect.top <= 200 && rect.bottom >= 200) {
+                if (homeLink) homeLink.classList.remove('active');
+                if (aboutLink) aboutLink.classList.add('active');
+            } else if (window.scrollY < 200) {
+                if (aboutLink) aboutLink.classList.remove('active');
+                if (homeLink) homeLink.classList.add('active');
+            }
+        }, { passive: true });
+    }
+});
+</script>
+
 </body>
 </html>
 

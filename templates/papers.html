@@ -1,56 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ECET Previous Papers</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECET Previous Papers — AP E-CET Portal</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static',
-          filename='css/style.css') }}">
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
-
-<body class="papers-page">
+<body class="dashboard-body papers-page">
     <div id="page-loader"></div>
 
-<div class="papers-container">
+    <!-- Collapsible Left Navigation Drawer (Application Menu) -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
 
-{% if branch == 'cme' %}
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
 
-    <h1>📄 CME ECET Previous Papers</h1>
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}" class="active"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
 
-    <a class="paper-btn"
-       href="{{ url_for('static',
-       filename='pdfs/papers/cme/ECET_2024.pdf') }}"
-       target="_blank">
-        ECET 2024 Paper
-    </a>
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
 
-    <a class="paper-btn"
-       href="{{ url_for('static',
-       filename='pdfs/papers/cme/ECET_2023.pdf') }}"
-       target="_blank">
-        ECET 2023 Paper
-    </a>
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <a class="paper-btn"
-       href="{{ url_for('static',
-       filename='pdfs/papers/cme/ECET_2022.pdf') }}"
-       target="_blank">
-        ECET 2022 Paper
-    </a>
+    <main class="dashboard-main-content">
+        <div class="papers-container" style="max-width: 900px; margin: 2rem auto; text-align: center;">
+            <h1 style="font-family: 'Outfit', sans-serif; font-size: 2.2rem; color: white; margin-bottom: 0.5rem;"><i class="fa-solid fa-file-pdf" style="color: #6366F1;"></i> {{ branch.upper() }} ECET Previous Papers</h1>
+            <p style="color: #94A3B8; margin-bottom: 2.5rem;">Download official question papers and answer keys.</p>
 
-{% else %}
+            {% if branch == 'cme' %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+                    <a href="{{ url_for('static', filename='pdfs/papers/cme/ECET_2024.pdf') }}" target="_blank" class="paper-btn" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1.25rem; padding: 2rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                        <i class="fa-solid fa-file-pdf" style="font-size: 2.5rem; color: #6366F1;"></i>
+                        <span style="font-size: 1.2rem; font-weight: 700; font-family: 'Outfit', sans-serif;">ECET 2024 Paper</span>
+                    </a>
 
-    <h1>
-        📄 {{ branch.upper() }} ECET Previous Papers
-    </h1>
+                    <a href="{{ url_for('static', filename='pdfs/papers/cme/ECET_2023.pdf') }}" target="_blank" class="paper-btn" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1.25rem; padding: 2rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                        <i class="fa-solid fa-file-pdf" style="font-size: 2.5rem; color: #6366F1;"></i>
+                        <span style="font-size: 1.2rem; font-weight: 700; font-family: 'Outfit', sans-serif;">ECET 2023 Paper</span>
+                    </a>
 
-    <h2 style="color:white; margin-top:50px;">
-        Papers for this branch will be uploaded soon.
-    </h2>
+                    <a href="{{ url_for('static', filename='pdfs/papers/cme/ECET_2022.pdf') }}" target="_blank" class="paper-btn" style="background: #1E293B; border: 1px solid rgba(99,102,241,0.3); border-radius: 1.25rem; padding: 2rem; color: #A5B4FC; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                        <i class="fa-solid fa-file-pdf" style="font-size: 2.5rem; color: #6366F1;"></i>
+                        <span style="font-size: 1.2rem; font-weight: 700; font-family: 'Outfit', sans-serif;">ECET 2022 Paper</span>
+                    </a>
+                </div>
+            {% else %}
+                <div style="color: #94A3B8; padding: 3rem 0;">
+                    <p>Previous year papers for {{ branch.upper() }} will be uploaded soon.</p>
+                </div>
+            {% endif %}
 
-{% endif %}
+            <div style="margin-top: 2.5rem;">
+                <a href="{{ url_for('paper_branches') }}" class="btn-cancel-exam-setup" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.5rem; border-radius: 2rem; background: rgba(255,255,255,0.08); color: white; text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Branch Selection
+                </a>
+            </div>
+        </div>
+    </main>
 
-</div>
-<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+    </script>
 </body>
 </html>

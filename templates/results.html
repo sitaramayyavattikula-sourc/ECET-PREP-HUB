@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result — AP E-CET Portal</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-body result-page-body">
+    <div id="page-loader"></div>
+
+    <!-- Collapsible Left Navigation Drawer -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
+
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}" class="active"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
+
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-main-content">
+        <div class="quiz-result-wrapper">
+            <div class="result-glass-card">
+                <!-- Header -->
+                <div class="result-header-section">
+                    <div class="result-badge-pill">
+                        <i class="fa-solid fa-circle-check"></i> Examination Completed
+                    </div>
+                    <h1 class="result-main-title">🎉 Quiz Completed!</h1>
+                    <p class="result-main-subtitle">Here is your examination performance</p>
+                </div>
+
+                <!-- 5 Summary Metric Cards -->
+                <div class="result-stat-grid">
+                    <!-- Card 1: Score -->
+                    <div class="result-stat-card stat-score">
+                        <div class="stat-icon-wrap icon-indigo">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div class="stat-meta">
+                            <span class="stat-label">Score</span>
+                            <div class="stat-value">
+                                <span id="statScore">0</span>
+                                <span class="stat-denom">/ {{ total }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Correct Answers -->
+                    <div class="result-stat-card stat-correct">
+                        <div class="stat-icon-wrap icon-emerald">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div class="stat-meta">
+                            <span class="stat-label">Correct Answers</span>
+                            <div class="stat-value text-emerald">
+                                <span id="statCorrect">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Wrong Answers -->
+                    <div class="result-stat-card stat-wrong">
+                        <div class="stat-icon-wrap icon-rose">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                        <div class="stat-meta">
+                            <span class="stat-label">Wrong Answers</span>
+                            <div class="stat-value text-rose">
+                                <span id="statWrong">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Not Attempted (NEW) -->
+                    <div class="result-stat-card stat-unattempted">
+                        <div class="stat-icon-wrap icon-amber">
+                            <i class="fa-solid fa-circle-question"></i>
+                        </div>
+                        <div class="stat-meta">
+                            <span class="stat-label">Not Attempted</span>
+                            <div class="stat-value text-amber">
+                                <span id="statNotAttempted">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Percentage -->
+                    <div class="result-stat-card stat-percentage">
+                        <div class="stat-icon-wrap icon-purple">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <div class="stat-meta">
+                            <span class="stat-label">Percentage</span>
+                            <div class="stat-value text-purple">
+                                <span id="statPercentage" data-target="{{ percentage }}">{{ percentage }}</span><span class="stat-pct-sign">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donut Chart Section -->
+                <div class="result-chart-section">
+                    <div class="donut-chart-box">
+                        <canvas id="resultDonutChart"></canvas>
+                        <div class="donut-center-overlay">
+                            <span id="donutCenterPct" class="donut-pct-text">0.0%</span>
+                            <span class="donut-sublabel-text">Overall Score</span>
+                        </div>
+                    </div>
+
+                    <!-- Readable Legend -->
+                    <div class="result-chart-legend">
+                        <div class="legend-item legend-correct">
+                            <span class="legend-indicator"></span>
+                            <span class="legend-title">Correct Answers</span>
+                            <span class="legend-val" id="legendCorrectVal">0 (0.0%)</span>
+                        </div>
+                        <div class="legend-item legend-wrong">
+                            <span class="legend-indicator"></span>
+                            <span class="legend-title">Wrong Answers</span>
+                            <span class="legend-val" id="legendWrongVal">0 (0.0%)</span>
+                        </div>
+                        <div class="legend-item legend-unattempted" id="legendItemUnattempted">
+                            <span class="legend-indicator"></span>
+                            <span class="legend-title">Not Attempted</span>
+                            <span class="legend-val" id="legendNotAttemptedVal">0 (0.0%)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="result-actions-container">
+                    <a href="{{ url_for('quiz') }}" class="result-btn-primary">
+                        <i class="fa-solid fa-rotate-right"></i> Take Another Quiz
+                    </a>
+                    <a href="{{ url_for('leaderboard') }}" class="result-btn-secondary">
+                        <i class="fa-solid fa-trophy"></i> View Leaderboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            const sb = document.getElementById("appSidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+            if (sb) sb.classList.toggle("open-sidebar");
+            if (overlay) overlay.classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+
+        // =========================================================
+        // Dynamic Result Calculation & Chart Animation
+        // =========================================================
+        const score = Number("{{ score }}") || 0;
+        const total = Number("{{ total }}") || 0;
+        const correct = Number("{{ correct if correct is defined else score }}") || score;
+        const wrong = Number("{{ wrong if wrong is defined else 0 }}") || 0;
+        const notAttempted = Number("{{ not_attempted if not_attempted is defined else (total - correct - wrong) }}") || Math.max(0, total - (correct + wrong));
+
+        const passedPercentage = Number("{{ percentage }}");
+        const finalPercentage = (!isNaN(passedPercentage) && passedPercentage >= 0) ? passedPercentage : (total > 0 ? Number(((correct / total) * 100).toFixed(1)) : 0.0);
+
+        const correctPctStr = total > 0 ? ((correct / total) * 100).toFixed(1) : "0.0";
+        const wrongPctStr = total > 0 ? ((wrong / total) * 100).toFixed(1) : "0.0";
+        const notAttemptedPctStr = total > 0 ? ((notAttempted / total) * 100).toFixed(1) : "0.0";
+
+        document.getElementById("legendCorrectVal").innerText = `${correct} (${correctPctStr}%)`;
+        document.getElementById("legendWrongVal").innerText = `${wrong} (${wrongPctStr}%)`;
+        const legendUnattempted = document.getElementById("legendNotAttemptedVal");
+        if (legendUnattempted) {
+            legendUnattempted.innerText = `${notAttempted} (${notAttemptedPctStr}%)`;
+        }
+
+        // Configure Chart.js Donut Chart
+        const ctx = document.getElementById("resultDonutChart").getContext("2d");
+
+        // Chart segments: Green for Correct, Red for Wrong, Amber for Not Attempted
+        const chartLabels = notAttempted > 0 
+            ? ["Correct Answers", "Wrong Answers", "Not Attempted"]
+            : ["Correct Answers", "Wrong Answers"];
+
+        const chartData = notAttempted > 0
+            ? [correct, wrong, notAttempted]
+            : [correct, wrong];
+
+        const chartBgColors = notAttempted > 0
+            ? ["#10B981", "#EF4444", "#F59E0B"]
+            : ["#10B981", "#EF4444"];
+
+        const chartHoverColors = notAttempted > 0
+            ? ["#059669", "#DC2626", "#D97706"]
+            : ["#059669", "#DC2626"];
+
+        const resultChart = new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    data: chartData,
+                    backgroundColor: chartBgColors,
+                    hoverBackgroundColor: chartHoverColors,
+                    borderColor: "#1E293B",
+                    borderWidth: 3,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: "74%",
+                animation: {
+                    duration: 1800,
+                    easing: "easeOutQuart"
+                },
+                plugins: {
+                    legend: {
+                        display: false // Custom responsive HTML legend used below
+                    },
+                    tooltip: {
+                        backgroundColor: "rgba(15, 23, 42, 0.95)",
+                        titleColor: "#FFFFFF",
+                        bodyColor: "#F8FAFC",
+                        borderColor: "rgba(255, 255, 255, 0.15)",
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 10,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || "";
+                                const val = context.parsed;
+                                const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                                return ` ${label}: ${val} (${pct}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Easing counter animation (0 -> Target over 1.8s)
+        const duration = 1800;
+        const startTimestamp = performance.now();
+
+        function animateCounters(now) {
+            const elapsed = now - startTimestamp;
+            const progress = Math.min(elapsed / duration, 1);
+            // Ease out quart: 1 - (1 - t)^4
+            const ease = 1 - Math.pow(1 - progress, 4);
+
+            const currScore = Math.round(correct * ease);
+            const currCorrect = Math.round(correct * ease);
+            const currWrong = Math.round(wrong * ease);
+            const currNotAttempted = Math.round(notAttempted * ease);
+            const currPct = (finalPercentage * ease).toFixed(1);
+
+            document.getElementById("statScore").innerText = currScore;
+            document.getElementById("statCorrect").innerText = currCorrect;
+            document.getElementById("statWrong").innerText = currWrong;
+            const statNotAttElem = document.getElementById("statNotAttempted");
+            if (statNotAttElem) statNotAttElem.innerText = currNotAttempted;
+            document.getElementById("statPercentage").innerText = currPct;
+            document.getElementById("donutCenterPct").innerText = currPct + "%";
+
+            if (progress < 1) {
+                requestAnimationFrame(animateCounters);
+            } else {
+                document.getElementById("statScore").innerText = correct;
+                document.getElementById("statCorrect").innerText = correct;
+                document.getElementById("statWrong").innerText = wrong;
+                if (statNotAttElem) statNotAttElem.innerText = notAttempted;
+                document.getElementById("statPercentage").innerText = finalPercentage.toFixed(1);
+                document.getElementById("donutCenterPct").innerText = finalPercentage.toFixed(1) + "%";
+            }
+        }
+        requestAnimationFrame(animateCounters);
+
+        // Clean up exam timer and answers from localStorage upon arriving at result page
+        try {
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith("ecet_exam_timer_") || key.startsWith("ecet_exam_answers_"))) {
+                    localStorage.removeItem(key);
+                }
+            }
+        } catch(e) {}
+    </script>
+</body>
+</html>

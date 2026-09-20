@@ -1,77 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Student Login</title>
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/register.css') }}">
-          <link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login — AP E-CET Portal</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 </head>
 <body class="login-page">
     <div id="page-loader"></div>
 
-<div class="register-box">
-
-    <h1 class="register-title">Student Login</h1>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="{{ category }}-message">
-                {{ message }}
+    <div class="auth-card-wrapper">
+        <div class="auth-card">
+            <!-- Brand Header -->
+            <div class="auth-brand">
+                <a href="{{ url_for('home') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap" style="color: #6366F1;"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+                <h2>Welcome Back</h2>
+                <p class="auth-subtitle">Sign in to continue your AP E-CET preparation</p>
             </div>
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
 
-    <form method="POST">
+            <!-- Flash Alert Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-alert alert-{{ category }}">
+                        <i class="fa-solid fa-circle-info"></i> {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
 
-        <input type="email"
-               name="email"
-               placeholder="Enter Email"
-               required>
+            <form method="POST" action="{{ url_for('login') }}" class="auth-form" id="loginForm">
+                <!-- Email or Phone -->
+                <div class="form-group">
+                    <label for="loginInput"><i class="fa-solid fa-envelope"></i> Email or Mobile Number</label>
+                    <div class="input-icon-box">
+                        <input type="text" id="loginInput" name="email" placeholder="Enter your email or 10-digit mobile number" required autocomplete="username">
+                    </div>
+                </div>
 
-     <div class="password-box">
-    <input type="password"
-           id="loginPassword"
-           name="password"
-           placeholder="Password"
-           required>
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fa-solid fa-lock"></i> Password</label>
+                    <div class="input-icon-box">
+                        <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                        <i class="fa-solid fa-eye eye-toggle" id="loginEye" onclick="togglePasswordVisibility('loginPassword', 'loginEye')"></i>
+                    </div>
+                </div>
 
-    <i class="fa-solid fa-eye"
-       id="loginEye"
-       onclick="toggleLoginPassword()"></i>
-</div>
+                <!-- Submit Button -->
+                <button type="submit" class="btn-auth-submit" id="btnLoginSubmit">
+                    <span>Sign In <i class="fa-solid fa-arrow-right"></i></span>
+                </button>
+            </form>
 
+            <!-- Switch to Register Link -->
+            <div class="auth-switch-box">
+                <p>Don't have an account? <a href="{{ url_for('register') }}" class="auth-link">Create one</a></p>
+                <p style="margin-top: 0.75rem;"><a href="{{ url_for('home') }}" class="back-home-link"><i class="fa-solid fa-arrow-left"></i> Back to Home</a></p>
+            </div>
+        </div>
+    </div>
 
-        <button type="submit">
-            Login
-        </button>
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function togglePasswordVisibility(inputId, eyeId) {
+            const input = document.getElementById(inputId);
+            const eye = document.getElementById(eyeId);
+            if (input.type === "password") {
+                input.type = "text";
+                eye.classList.remove("fa-eye");
+                eye.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                eye.classList.remove("fa-eye-slash");
+                eye.classList.add("fa-eye");
+            }
+        }
 
-    </form>
-
-</div>
-<script>
-function toggleLoginPassword() {
-
-    var password =
-        document.getElementById("loginPassword");
-
-    var eye =
-        document.getElementById("loginEye");
-
-    if (password.type === "password") {
-        password.type = "text";
-        eye.classList.remove("fa-eye");
-        eye.classList.add("fa-eye-slash");
-    }
-    else {
-        password.type = "password";
-        eye.classList.remove("fa-eye-slash");
-        eye.classList.add("fa-eye");
-    }
-}
-</script>
-<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+        document.getElementById("loginForm").addEventListener("submit", function() {
+            const btn = document.getElementById("btnLoginSubmit");
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Signing In...`;
+        });
+    </script>
 </body>
 </html>

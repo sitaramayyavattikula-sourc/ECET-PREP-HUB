@@ -20,3 +20,31 @@ Thumbs.db
 
 # macOS
 .DS_Store
+# Backup files
+*.bak
+
+# User uploads
+static/uploads/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# SQLite database
+*.db
+*.sqlite
+*.sqlite3
+
+# Virtual environments
+venv/
+.venv/
+.env
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+
+# macOS
+.DS_Store

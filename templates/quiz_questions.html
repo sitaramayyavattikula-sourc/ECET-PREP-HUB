@@ -1,251 +1,313 @@
-<head> <link rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"></head>
-<body class="quiz-page">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECET Mock Examination — AP E-CET Portal</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dashboard-body quiz-page">
     <div id="page-loader"></div>
 
-<div class="quiz-layout">
-
-    <div class="quiz-main">    
-    <div class="exam-header">
-
-    <div class="exam-title">
-        <h2>ECET Mock Examination</h2>
-        <p>Duration : 03 Hours | Total Questions : 200</p>
-    </div>
-
-    <div class="timer-box">
-
-        <div class="timer-label">
-            ⏰ TIME REMAINING 
+    <!-- Collapsible Left Navigation Drawer (Application Menu) -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
         </div>
 
-        <div id="timer">
-            03:00:00
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
         </div>
 
-    </div>
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}" class="active"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
 
-</div>
-    <div class="timer-box">
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
 
-    <span class="timer-title">
-        ⏰ ALLOTED TIME
-    </span>
-
-    <span id="timer">
-        03:00:00
-    </span>
-
-</div>
-
-<form id="quizForm"
-      action="{{ url_for('submit_quiz') }}"
-      method="POST">
-
-    <input type="hidden"
-           name="branch"
-           value="{{ branch }}">
-
-    {% for q in questions %}
-
-        {% set question_no = loop.index %}
-
-        {% if question_no == 1 %}
-<div class="subject-ribbon math">
-    <div class="subject-left">
-        <div class="subject-icon">📘</div>
-
-        <div class="subject-text">
-            <h2>MATHEMATICS</h2>
-            <p>Questions 1 - 50</p>
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <div class="subject-badge">
-        Section - I
-    </div>
-</div>
+    <main class="dashboard-main-content">
+        <div class="quiz-layout">
+            <div class="quiz-main">    
+                <div class="exam-header" style="display: flex; justify-content: space-between; align-items: center; background: #1E293B; border-radius: 1.25rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+                    <div class="exam-title">
+                        <h2 style="font-family: 'Outfit', sans-serif; margin: 0; color: white;">ECET Mock Examination ({{ branch.upper() }})</h2>
+                        <p style="margin: 0.25rem 0 0 0; color: #94A3B8; font-size: 0.9rem;">Duration : 03 Hours | Total Questions : {{ questions|length }}</p>
+                    </div>
 
-        {% elif question_no == 51 %}
+                    <div class="timer-box" style="background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 0.75rem; padding: 0.75rem 1.25rem; text-align: center;">
+                        <div class="timer-label" style="font-size: 0.75rem; color: #A5B4FC; font-weight: 700;">⏱ TIME REMAINING</div>
+                        <div id="timer" style="font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 700; color: #FFFFFF;">03:00:00</div>
+                    </div>
+                </div>
 
-<div class="subject-ribbon physics">
-    <div class="subject-left">
-        <div class="subject-icon">⚛️</div>
+                <!-- Top Navigation Toolbar -->
+                <div class="exam-nav-toolbar">
+                    <button type="button" class="exam-nav-btn" id="btnPrevTop" onclick="navigateQuestion(-1)" disabled>
+                        <i class="fa-solid fa-chevron-left"></i> Previous Question
+                    </button>
+                    <div class="exam-current-indicator">
+                        Question <strong id="currentQuestionNumTop">1</strong> of <strong>{{ questions|length }}</strong>
+                    </div>
+                    <button type="button" class="exam-nav-btn" id="btnNextTop" onclick="navigateQuestion(1)">
+                        Next Question <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
 
-        <div class="subject-text">
-            <h2>PHYSICS</h2>
-            <p>Questions 51 - 75</p>
+                <form id="quizForm" action="{{ url_for('submit_quiz') }}" method="POST">
+                    <input type="hidden" name="branch" value="{{ branch }}">
+
+                    {% for q in questions %}
+                        {% set question_no = loop.index %}
+                        {% if question_no == 1 %}
+                            <div class="subject-ribbon math" style="background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2)); border: 1px solid rgba(99,102,241,0.3); border-radius: 0.75rem; padding: 1rem 1.25rem; margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center;">
+                                <div class="subject-left" style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="subject-icon" style="font-size: 1.5rem;">📐</div>
+                                    <div class="subject-text">
+                                        <h2 style="font-size: 1.1rem; margin: 0; color: white;">MATHEMATICS</h2>
+                                        <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">Questions 1 - 50</p>
+                                    </div>
+                                </div>
+                                <div class="subject-badge" style="background: #6366F1; color: white; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 1rem;">Section - I</div>
+                            </div>
+                        {% elif question_no == 51 %}
+                            <div class="subject-ribbon physics" style="background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(236,72,153,0.2)); border: 1px solid rgba(139,92,246,0.3); border-radius: 0.75rem; padding: 1rem 1.25rem; margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center;">
+                                <div class="subject-left" style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="subject-icon" style="font-size: 1.5rem;">⚛️</div>
+                                    <div class="subject-text">
+                                        <h2 style="font-size: 1.1rem; margin: 0; color: white;">PHYSICS</h2>
+                                        <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">Questions 51 - 75</p>
+                                    </div>
+                                </div>
+                                <div class="subject-badge" style="background: #8B5CF6; color: white; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 1rem;">Section - II</div>
+                            </div>
+                        {% elif question_no == 76 %}
+                            <div class="subject-ribbon chemistry" style="background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.2)); border: 1px solid rgba(16,185,129,0.3); border-radius: 0.75rem; padding: 1rem 1.25rem; margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center;">
+                                <div class="subject-left" style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="subject-icon" style="font-size: 1.5rem;">🧪</div>
+                                    <div class="subject-text">
+                                        <h2 style="font-size: 1.1rem; margin: 0; color: white;">CHEMISTRY</h2>
+                                        <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">Questions 76 - 100</p>
+                                    </div>
+                                </div>
+                                <div class="subject-badge" style="background: #10B981; color: white; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 1rem;">Section - III</div>
+                            </div>
+                        {% elif question_no == 101 %}
+                            <div class="subject-ribbon cse" style="background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(239,68,68,0.2)); border: 1px solid rgba(245,158,11,0.3); border-radius: 0.75rem; padding: 1rem 1.25rem; margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center;">
+                                <div class="subject-left" style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="subject-icon" style="font-size: 1.5rem;">💻</div>
+                                    <div class="subject-text">
+                                        <h2 style="font-size: 1.1rem; margin: 0; color: white;">CORE ENGINEERING ({{ branch.upper() }})</h2>
+                                        <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">Questions 101 - 200</p>
+                                    </div>
+                                </div>
+                                <div class="subject-badge" style="background: #F59E0B; color: #0F172A; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 1rem;">Section - IV</div>
+                            </div>
+                        {% endif %}
+
+                        <div class="question-card {% if question_no == 1 %}active-question{% endif %}" id="questionCard_{{ question_no }}" data-question="{{ question_no }}" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; transition: border-color 0.2s, box-shadow 0.2s;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                <span style="font-size: 0.8rem; font-weight: 700; color: #A5B4FC; text-transform: uppercase; letter-spacing: 0.05em;">Question {{ question_no }} of {{ questions|length }}</span>
+                            </div>
+                            <h3 style="font-size: 1.05rem; color: white; margin-top: 0; line-height: 1.5;">Q{{ question_no }}. {{ q.question }}</h3>
+                            <div class="options-grid" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+                                {% for opt in q.options %}
+                                    <label class="option-label" style="background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.75rem; padding: 0.75rem 1rem; color: #F8FAFC; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
+                                        <input type="radio" name="question_{{ question_no }}" value="{{ opt }}" style="accent-color: #6366F1;">
+                                        <span>{{ opt }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                                        <!-- Bottom Navigation Toolbar (Between Questions and Question Palette) -->
+                    <div class="exam-nav-toolbar" style="margin-top: 2rem; margin-bottom: 2rem;">
+                        <button type="button" class="exam-nav-btn" id="btnPrevBottom" onclick="navigateQuestion(-1)" disabled>
+                            <i class="fa-solid fa-chevron-left"></i> Previous Question
+                        </button>
+                        <div class="exam-current-indicator">
+                            Question <strong id="currentQuestionNumBottom">1</strong> of <strong>{{ questions|length }}</strong>
+                        </div>
+                        <button type="button" class="exam-nav-btn" id="btnNextBottom" onclick="navigateQuestion(1)">
+                            Next Question <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+<!-- =========================================================
+                         QUESTION PALETTE (Located Before Submit Exam Button)
+                         ========================================================= -->
+                    <div class="exam-palette-container" id="questionPaletteSection">
+                        <div class="palette-header-row">
+                            <div class="palette-header-left">
+                                <h3 class="palette-title">
+                                    <i class="fa-solid fa-table-cells"></i> Question Palette
+                                </h3>
+                                <p class="palette-subtitle">Click any question number to jump directly to it</p>
+                            </div>
+                            <div class="palette-stats-bar">
+                                <span class="stat-badge stat-answered">
+                                    <span class="badge-dot dot-green"></span> Answered: <strong id="paletteAnsweredCount">0</strong>
+                                </span>
+                                <span class="stat-badge stat-unanswered">
+                                    <span class="badge-dot dot-red"></span> Not Answered: <strong id="paletteUnansweredCount">{{ questions|length }}</strong>
+                                </span>
+                                <span class="stat-badge stat-total">
+                                    <span class="badge-dot dot-indigo"></span> Total: <strong id="paletteTotalCount">{{ questions|length }}</strong>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Accessible Color Legend -->
+                        <div class="palette-legend">
+                            <div class="legend-chip">
+                                <span class="legend-box box-current"></span>
+                                <span class="legend-name">Current Question</span>
+                            </div>
+                            <div class="legend-chip">
+                                <span class="legend-box box-answered"></span>
+                                <span class="legend-name">Answered</span>
+                            </div>
+                            <div class="legend-chip">
+                                <span class="legend-box box-unanswered"></span>
+                                <span class="legend-name">Not Answered</span>
+                            </div>
+                        </div>
+
+                        <!-- 200 Questions Grid -->
+                        <div class="palette-grid-wrapper">
+                            <div class="palette-grid" id="paletteGrid">
+                                {% for q in questions %}
+                                    {% set q_idx = loop.index %}
+                                    <button type="button" 
+                                            class="palette-btn {% if q_idx == 1 %}current{% else %}unanswered{% endif %}" 
+                                            id="paletteBtn_{{ q_idx }}" 
+                                            onclick="goToQuestion({{ q_idx }})"
+                                            aria-label="Question {{ q_idx }} — {% if q_idx == 1 %}Current Question{% else %}Not Answered{% endif %}">
+                                        {{ q_idx }}
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Exam Button with Confirmation Modal Trigger -->
+                    <div style="text-align: center; margin: 2.5rem 0;">
+                        <button type="button" class="btn-featured-action" id="btnOpenSubmitModal" onclick="openSubmitModal()" style="padding: 0.95rem 2.75rem; font-size: 1.1rem; border-radius: 2rem; background: #6366F1; color: white; border: none; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4); transition: all 0.2s;">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Exam Answers
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    </main>
 
-    <div class="subject-badge">
-        Section - II
-    </div>
-</div>
-
-        {% elif question_no == 76 %}
-
-<div class="subject-ribbon chemistry">
-    <div class="subject-left">
-        <div class="subject-icon">🧪</div>
-
-        <div class="subject-text">
-            <h2>CHEMISTRY</h2>
-            <p>Questions 76 - 100</p>
-        </div>
-    </div>
-
-    <div class="subject-badge">
-        Section - III
-    </div>
-</div>
-
-        {% elif question_no == 101 %}
-
-<div class="subject-ribbon cse">
-    <div class="subject-left">
-        <div class="subject-icon">💻</div>
-
-        <div class="subject-text">
-            <h2>COMPUTER SCIENCE & ENGINEERING</h2>
-            <p>Questions 101 - 200</p>
-        </div>
-    </div>
-
-    <div class="subject-badge">
-        Section - IV
-    </div>
-</div>
-
-        {% endif %}
-
-<div
-    class="question-box"
-    id="question{{ question_no }}">
-            <h3>
-                {{ question_no }}. {{ q.question }}
-            </h3>
-
-            {% for option in q.options %}
-
-        <label>
-
-    <input
-        type="radio"
-        name="q{{ question_no }}"
-        value="{{ option }}"
-        onchange="markAnswered({{ question_no }})"
-        required>
-
-    {{ option }}
-
-</label>
-
-            <br>
-
-            {% endfor %}
-
-        </div>
-
-    {% endfor %}
-
-<button
-    type="button"
-    class="submit-btn"
-    onclick="openModal()">
-
-    ✅ Submit Test
-
-</button>
-
-</form>
-
-</div>
-
-<!-- ==========================
-        Question Palette
-=========================== -->
-
-<div class="palette-container">
-
-    <h3>Question Palette</h3>
-
-    <div class="palette-grid">
-
-        {% for q in questions %}
-
-        <button
-            type="button"
-            class="palette-btn not-visited"
-            id="palette{{ loop.index }}"
-            onclick="gotoQuestion({{ loop.index }})">
-
-            {{ loop.index }}
-
-        </button>
-
-        {% endfor %}
-
-    </div>
-
-</div>
-
-</div>
-<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
-<script src="{{ url_for('static',
-filename='js/submit.js') }}"></script>
-<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
-<script src="{{ url_for('static',
-filename='js/palette.js') }}"></script>
-<div id="submitModal" class="modal">
-
-    <div class="modal-content">
-
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-
-        <h2>📝 Submit Test</h2>
-
-        <p class="modal-message">
-            Are you sure you want to submit your ECET Mock Test?
-        </p>
-
-        <div class="summary-box">
-
-            <p>✅ Answered Questions :
-                <span id="answeredCount">0</span>
+    <!-- Professional Submit Confirmation Modal -->
+    <div id="submitConfirmModal" class="exam-modal-overlay" style="display: none;">
+        <div class="exam-modal-box">
+            <div class="modal-icon-wrap">
+                <i class="fa-solid fa-file-circle-check"></i>
+            </div>
+            <h3 class="modal-title">Submit Examination?</h3>
+            <p class="modal-subtitle">
+                You have answered <strong id="modalAnsweredCount">0</strong> out of <strong id="modalTotalCount">{{ questions|length }}</strong> questions.
             </p>
 
-            <p>❌ Unanswered Questions :
-                <span id="unansweredCount">0</span>
-            </p>
+            <div class="modal-summary-pills">
+                <div class="summary-pill pill-answered">
+                    <span class="pill-dot dot-green"></span>
+                    <span id="modalPillAnswered">0 Answered</span>
+                </div>
+                <div class="summary-pill pill-unanswered">
+                    <span class="pill-dot dot-red"></span>
+                    <span id="modalPillUnanswered">{{ questions|length }} Not Answered</span>
+                </div>
+            </div>
 
+            <div class="modal-warning-notice">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Once submitted, your examination will be finalized and answers cannot be changed.</span>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="modal-btn-cancel" onclick="closeSubmitModal()">
+                    Cancel
+                </button>
+                <button type="button" class="modal-btn-confirm" onclick="confirmExamSubmit()">
+                    <i class="fa-solid fa-paper-plane"></i> Confirm & Submit
+                </button>
+            </div>
         </div>
-
-        <p class="warning">
-            ⚠ After submission you cannot change your answers.
-        </p>
-
-        <div class="modal-buttons">
-
-            <button
-                class="cancel-btn"
-                onclick="closeModal()">
-
-                Cancel
-
-            </button>
-
-            <button
-                class="submit-final-btn"
-                onclick="submitQuiz()">
-
-                🚀 Submit Test
-
-            </button>
-
-        </div>
-
     </div>
 
-</div>
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/palette.js') }}"></script>
 </body>
+</html>

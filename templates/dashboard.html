@@ -1,81 +1,251 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard — AP E-CET Portal</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static',
-          filename='css/dashboard.css') }}">
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
-
-<body>
+<body class="dashboard-body">
     <div id="page-loader"></div>
 
-<div class="dashboard-container">
+    <!-- Collapsible Left Sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
 
-    <h1 class="dashboard-title">
-        👋 Welcome, {{ session['student_name'] }}
-    </h1>
-    
-<div class="student-card">
+        <div class="sidebar-user-card">
+            <div class="user-avatar"><i class="fa-solid fa-user-gear"></i></div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">{{ active_branch|upper }}</span>
+            </div>
+        </div>
 
-    <h2 class="student-name">
-        {{ session.student_name }}
-    </h2>
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}" class="active"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
 
-    <div class="student-info">
-        <i class="fas fa-envelope"></i>
-        <span>{{ session.student_email }}</span>
-    </div>
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
 
-    <div class="student-info">
-        <i class="fas fa-phone"></i>
-        <span>{{ session.student_phone }}</span>
-    </div>
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% set nav_img = session.get('student_profile_image') %}
+                    {% if nav_img %}
+                        <img src="{{ nav_img }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
-</div>
+    <main class="dashboard-main-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-alert alert-{{ category }}">
+                    <i class="fa-solid fa-circle-info"></i> {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
 
-    <p class="dashboard-subtitle">
-        Welcome to ECET Learning Portal
-    </p>
+        <!-- Personalized Welcome Banner -->
+        <section class="welcome-banner">
+            <div class="welcome-text">
+                <span class="welcome-badge"><i class="fa-solid fa-sparkles"></i> AP E-CET Aspirant Command Hub</span>
+                <h1>Welcome back, <span class="highlight-name">{{ session['student_name'] }}</span> 👋</h1>
+                <p>Track your preparation, access branch-specific study PDFs, practice mock CBT exams, and consult your personal AI Tutor.</p>
+            </div>
 
-    <div class="dashboard-cards">
+            <div class="hero-quick-actions">
+                <a href="{{ url_for('ai_tutor') }}" class="btn-primary-action" id="btnOpenAiTutor"><i class="fa-solid fa-robot"></i> Open AI Tutor</a>
+                <a href="{{ url_for('notes') }}" class="btn-secondary-action" id="btnStudyNotes"><i class="fa-solid fa-book-open"></i> Study Notes</a>
+            </div>
+        </section>
 
-        <a href="{{ url_for('notes') }}"
-           class="dashboard-card">
-            <i class="fas fa-book"></i>
-            <h2>Study Notes</h2>
-        </a>
+        <!-- Branch Selection Section -->
+        <section class="branch-selection-section">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-layer-group"></i> Select Your E-CET Engineering Branch</h2>
+                <p>Choose your engineering discipline to personalize your notes, syllabus, practice quizzes, and AI Tutor.</p>
+            </div>
 
-        <a href="{{ url_for('paper_branches') }}"
-           class="dashboard-card">
-            <i class="fas fa-file-pdf"></i>
-            <h2>Previous Papers</h2>
-        </a>
+            <div class="branch-grid">
+                <!-- CME -->
+                <div class="branch-card {% if active_branch == 'cme' %}active-branch{% endif %}" onclick="selectBranch('cme')">
+                    <div class="branch-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                    <div class="branch-info">
+                        <h3>CME</h3>
+                        <p>Computer Engineering & IT</p>
+                    </div>
+                    {% if active_branch == 'cme' %}
+                    <span class="status-badge"><i class="fa-solid fa-circle-check"></i> Active</span>
+                    {% endif %}
+                </div>
 
-        <a href="{{ url_for('quiz') }}"
-           class="dashboard-card">
-            <i class="fas fa-pen"></i>
-            <h2>Quiz</h2>
-        </a>
-        <a href="{{ url_for('leaderboard') }}">
-    🏆 Leaderboard
-</a>
+                <!-- ECE -->
+                <div class="branch-card {% if active_branch == 'ece' %}active-branch{% endif %}" onclick="selectBranch('ece')">
+                    <div class="branch-icon"><i class="fa-solid fa-microchip"></i></div>
+                    <div class="branch-info">
+                        <h3>ECE</h3>
+                        <p>Electronics & Communication</p>
+                    </div>
+                    {% if active_branch == 'ece' %}
+                    <span class="status-badge"><i class="fa-solid fa-circle-check"></i> Active</span>
+                    {% endif %}
+                </div>
 
-        
+                <!-- EEE -->
+                <div class="branch-card {% if active_branch == 'eee' %}active-branch{% endif %}" onclick="selectBranch('eee')">
+                    <div class="branch-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="branch-info">
+                        <h3>EEE</h3>
+                        <p>Electrical & Electronics</p>
+                    </div>
+                    {% if active_branch == 'eee' %}
+                    <span class="status-badge"><i class="fa-solid fa-circle-check"></i> Active</span>
+                    {% endif %}
+                </div>
 
-    </div>
+                <!-- MEC -->
+                <div class="branch-card {% if active_branch == 'mec' %}active-branch{% endif %}" onclick="selectBranch('mec')">
+                    <div class="branch-icon"><i class="fa-solid fa-gears"></i></div>
+                    <div class="branch-info">
+                        <h3>MEC</h3>
+                        <p>Mechanical Engineering</p>
+                    </div>
+                    {% if active_branch == 'mec' %}
+                    <span class="status-badge"><i class="fa-solid fa-circle-check"></i> Active</span>
+                    {% endif %}
+                </div>
 
-    <a href="{{ url_for('logout') }}"
-       class="logout-btn">
-        <i class="fas fa-sign-out-alt"></i>
-        Logout
-    </a>
+                <!-- CIVIL -->
+                <div class="branch-card {% if active_branch == 'civil' %}active-branch{% endif %}" onclick="selectBranch('civil')">
+                    <div class="branch-icon"><i class="fa-solid fa-building-columns"></i></div>
+                    <div class="branch-info">
+                        <h3>CIVIL</h3>
+                        <p>Civil Engineering</p>
+                    </div>
+                    {% if active_branch == 'civil' %}
+                    <span class="status-badge"><i class="fa-solid fa-circle-check"></i> Active</span>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
 
-</div>
-<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+        <!-- Quick Access Feature Cards Grid -->
+        <section class="branch-selection-section">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-star"></i> Primary Preparation Features</h2>
+                <p>Direct access to your target branch study materials, CBT mock exams, and AI exam preparator.</p>
+            </div>
+
+            <div class="ai-hub-cards-grid">
+                <!-- Notes -->
+                <div class="ai-hub-card">
+                    <div class="hub-card-icon"><i class="fa-solid fa-book-open"></i></div>
+                    <div class="hub-card-badge">Study Engine</div>
+                    <h3>Notes & Syllabus</h3>
+                    <p>Semester-wise study PDFs, topic notes, and key formulas for <strong>{{ active_branch|upper }}</strong> branch.</p>
+                    <a href="{{ url_for('notes') }}" class="btn-hub-action"><i class="fa-solid fa-arrow-right"></i> Browse Notes</a>
+                </div>
+
+                <!-- AI Tutor -->
+                <div class="ai-hub-card featured-hub-card">
+                    <div class="hub-card-icon"><i class="fa-solid fa-robot"></i></div>
+                    <div class="hub-card-badge featured-badge">Gemini AI</div>
+                    <h3>AI Tutor & Exam Preparator</h3>
+                    <p>Multilingual doubt solver, persistent chat sessions, and custom CBT AI exam generation.</p>
+                    <a href="{{ url_for('ai_tutor') }}" class="btn-hub-action btn-featured-action"><i class="fa-solid fa-play"></i> Open AI Workspace</a>
+                </div>
+
+                <!-- CBT Quiz -->
+                <div class="ai-hub-card">
+                    <div class="hub-card-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+                    <div class="hub-card-badge">CBT Simulator</div>
+                    <h3>Mock Exams & Ranks</h3>
+                    <p>Real 3-hour competitive exam practice with score history and state rank leaderboard.</p>
+                    <a href="{{ url_for('quiz') }}" class="btn-hub-action"><i class="fa-solid fa-arrow-right"></i> Start CBT Test</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p>&copy; 2026 AP E-CET Portal | Powered by Google Gemini AI</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+
+        async function selectBranch(branchName) {
+            try {
+                const response = await fetch("/set_branch", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ branch: branchName })
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    location.reload();
+                } else {
+                    alert(data.message || "Failed to update branch.");
+                }
+            } catch (err) {
+                alert("Connection error while updating branch.");
+            }
+        }
+    </script>
 </body>
 </html>

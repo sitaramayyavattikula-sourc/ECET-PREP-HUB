@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Dashboard — AP E-CET Portal</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        :root {
+            --bg-dark: #070d1e;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --card-border: rgba(59, 130, 246, 0.2);
+            --primary-blue: #2563eb;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+        }
+
+        body.admin-page-body {
+            background: linear-gradient(135deg, #070d1e 0%, #0c1836 50%, #091227 100%);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 17, 34, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .admin-logo-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #ffffff;
+        }
+        .admin-logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+        .admin-brand-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+        .admin-brand-sub {
+            font-size: 0.75rem;
+            color: #60a5fa;
+            display: block;
+        }
+        .admin-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .admin-nav-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .admin-nav-item:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .admin-nav-item.active {
+            color: #ffffff;
+            background: rgba(37, 99, 235, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+        .unread-pill {
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .admin-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .portal-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .admin-logout-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-main {
+            flex: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 24px 60px;
+            box-sizing: border-box;
+        }
+        .dash-welcome {
+            margin-bottom: 28px;
+        }
+        .dash-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 6px;
+        }
+        .dash-sub {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .dash-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .dash-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .dash-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+        .dash-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .dash-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .icon-blue { background: rgba(37, 99, 235, 0.18); color: #60a5fa; }
+        .icon-amber { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
+        .icon-green { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+        .dash-card-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+        }
+        .dash-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 4px;
+        }
+        .dash-card-desc {
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .dash-card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #60a5fa;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: gap 0.2s ease;
+        }
+        .dash-card-link:hover {
+            gap: 12px;
+            color: #93c5fd;
+        }
+
+        @media (max-width: 900px) {
+            .dash-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="admin-page-body">
+    <header class="admin-nav">
+        <div class="admin-nav-left">
+            <a href="{{ url_for('admin') }}" class="admin-logo-badge">
+                <div class="admin-logo-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <span class="admin-brand-title">ECET ADMIN</span>
+                    <span class="admin-brand-sub">Management Portal</span>
+                </div>
+            </a>
+            <nav class="admin-nav-links">
+                <a href="{{ url_for('admin') }}" class="admin-nav-item active">
+                    <i class="fa-solid fa-gauge-high"></i> Dashboard
+                </a>
+                <a href="{{ url_for('admin_contact_messages') }}" class="admin-nav-item">
+                    <i class="fa-solid fa-envelope"></i> Contact Messages
+                    {% if stats.new > 0 %}
+                        <span class="unread-pill">{{ stats.new }} New</span>
+                    {% endif %}
+                </a>
+            </nav>
+        </div>
+
+        <div class="admin-nav-right">
+            <a href="{{ url_for('home') }}" target="_blank" class="portal-btn">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Student Portal
+            </a>
+            <a href="{{ url_for('admin_logout') }}" class="admin-logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="dash-welcome">
+            <h1 class="dash-title">Welcome to Administrator Portal</h1>
+            <p class="dash-sub">Monitor student inquiries, manage contact messages, and ensure smooth portal operations.</p>
+        </div>
+
+        <div class="dash-cards-grid">
+            <div class="dash-card">
+                <div>
+                    <div class="dash-card-top">
+                        <div class="dash-icon icon-blue">
+                            <i class="fa-solid fa-inbox"></i>
+                        </div>
+                        <div class="dash-card-val">{{ stats.total }}</div>
+                    </div>
+                    <div class="dash-card-title">Total Contact Inquiries</div>
+                    <p class="dash-card-desc">All inquiries received from students through the Contact Us form.</p>
+                </div>
+                <a href="{{ url_for('admin_contact_messages') }}" class="dash-card-link">
+                    View All Messages <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="dash-card">
+                <div>
+                    <div class="dash-card-top">
+                        <div class="dash-icon icon-amber">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                        <div class="dash-card-val" style="color: #fbbf24;">{{ stats.new }}</div>
+                    </div>
+                    <div class="dash-card-title">New Inquiries Pending</div>
+                    <p class="dash-card-desc">Inquiries awaiting administrator review and attention.</p>
+                </div>
+                <a href="{{ url_for('admin_contact_messages', status='New') }}" class="dash-card-link">
+                    Review New Messages <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="dash-card">
+                <div>
+                    <div class="dash-card-top">
+                        <div class="dash-icon icon-green">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div class="dash-card-val" style="color: #34d399;">{{ stats.replied }}</div>
+                    </div>
+                    <div class="dash-card-title">Resolved & Replied</div>
+                    <p class="dash-card-desc">Student questions that have been addressed and resolved.</p>
+                </div>
+                <a href="{{ url_for('admin_contact_messages', status='Replied') }}" class="dash-card-link">
+                    View Resolved <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

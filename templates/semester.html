@@ -1,70 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Select Semester</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Semester — AP E-CET Portal</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static',
-          filename='css/style.css') }}">
-
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
-
-<body class="semester-page">
+<body class="dashboard-body semester-page">
     <div id="page-loader"></div>
 
-<div class="semester-container">
-
-    <div class="semester-box">
-
-        <h1 class="semester-title">
-            📚 Select Your Semester
-        </h1>
-
-        <div class="semester-cards">
-
-            <a class="semester-card"
-               href="{{ url_for('subject_notes',
-               branch=branch,
-               semester='first_year') }}">
-                <i class="fas fa-book-open"></i>
-                <h2>First Year</h2>
-                <p>Semester 1 & 2 Notes</p>
+    <!-- Collapsible Left Navigation Drawer (Application Menu) -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
             </a>
-
-            <a class="semester-card"
-               href="{{ url_for('subject_notes',
-               branch=branch,
-               semester='third_sem') }}">
-                <i class="fas fa-graduation-cap"></i>
-                <h2>Third Semester</h2>
-                <p>Study Materials</p>
-            </a>
-
-            <a class="semester-card"
-               href="{{ url_for('subject_notes',
-               branch=branch,
-               semester='fourth_sem') }}">
-                <i class="fas fa-laptop-code"></i>
-                <h2>Fourth Semester</h2>
-                <p>Lecture Notes</p>
-            </a>
-
-            <a class="semester-card"
-               href="{{ url_for('subject_notes',
-               branch=branch,
-               semester='fifth_sem') }}">
-                <i class="fas fa-user-graduate"></i>
-                <h2>Fifth Semester</h2>
-                <p>Final Year Subjects</p>
-            </a>
-
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
         </div>
 
-    </div>
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
 
-</div>
-<script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}" class="active"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
+
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main-content">
+        <div class="semester-container" style="max-width: 900px; margin: 2rem auto; text-align: center;">
+            <h1 style="font-family: 'Outfit', sans-serif; font-size: 2.2rem; color: white; margin-bottom: 0.5rem;"><i class="fa-solid fa-graduation-cap" style="color: #6366F1;"></i> Select Your Semester</h1>
+            <p style="color: #94A3B8; margin-bottom: 2.5rem;">Branch: <strong style="color: #A5B4FC; text-transform: uppercase;">{{ branch }}</strong></p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='first_year') }}" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-book-open" style="font-size: 2.5rem; color: #6366F1;"></i>
+                    <h2 style="font-size: 1.3rem; margin: 0; font-family: 'Outfit', sans-serif;">First Year</h2>
+                    <p style="margin: 0; font-size: 0.85rem; color: #94A3B8;">Semester 1 & 2 Notes</p>
+                </a>
+
+                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='third_sem') }}" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-graduation-cap" style="font-size: 2.5rem; color: #8B5CF6;"></i>
+                    <h2 style="font-size: 1.3rem; margin: 0; font-family: 'Outfit', sans-serif;">Third Semester</h2>
+                    <p style="margin: 0; font-size: 0.85rem; color: #94A3B8;">Study Materials</p>
+                </a>
+
+                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='fourth_sem') }}" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-laptop-code" style="font-size: 2.5rem; color: #10B981;"></i>
+                    <h2 style="font-size: 1.3rem; margin: 0; font-family: 'Outfit', sans-serif;">Fourth Semester</h2>
+                    <p style="margin: 0; font-size: 0.85rem; color: #94A3B8;">Lecture Notes</p>
+                </a>
+
+                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='fifth_sem') }}" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
+                    <i class="fa-solid fa-user-graduate" style="font-size: 2.5rem; color: #F59E0B;"></i>
+                    <h2 style="font-size: 1.3rem; margin: 0; font-family: 'Outfit', sans-serif;">Fifth Semester</h2>
+                    <p style="margin: 0; font-size: 0.85rem; color: #94A3B8;">Final Year Subjects</p>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+    </script>
 </body>
 </html>

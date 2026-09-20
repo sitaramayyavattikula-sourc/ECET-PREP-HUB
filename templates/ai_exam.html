@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-CET Online CBT Examination — AP E-CET Portal</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        body.cbt-exam-page {
+            background-color: #0F172A !important;
+            background-image: none !important;
+            color: #F8FAFC;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .cbt-exam-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .cbt-top-bar {
+            background: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.25rem 1.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .cbt-exam-meta h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            margin: 0 0 0.25rem 0;
+            color: #FFFFFF;
+        }
+
+        .cbt-exam-meta p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #94A3B8;
+        }
+
+        .cbt-timer-badge {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #FCA5A5;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .cbt-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 1.5rem;
+        }
+
+        .cbt-question-window {
+            background: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 480px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .cbt-q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .cbt-q-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #A5B4FC;
+            padding: 0.35rem 0.85rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .cbt-q-text {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #FFFFFF;
+            line-height: 1.6;
+            margin-bottom: 1.75rem;
+        }
+
+        .cbt-options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        .cbt-option-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 0.85rem;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cbt-option-card:hover {
+            border-color: #6366F1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .cbt-option-card.selected-card {
+            background: rgba(99, 102, 241, 0.25) !important;
+            border-color: #6366F1 !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .cbt-opt-radio {
+            width: 18px;
+            height: 18px;
+            accent-color: #6366F1;
+            cursor: pointer;
+        }
+
+        .cbt-opt-prefix {
+            font-weight: 700;
+            color: #A5B4FC;
+            font-size: 0.95rem;
+            width: 20px;
+        }
+
+        .cbt-opt-text {
+            font-size: 0.98rem;
+            color: #E2E8F0;
+            line-height: 1.4;
+        }
+
+        .cbt-palette-card {
+            background: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .cbt-palette-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+
+        .cbt-pal-btn {
+            width: 100%;
+            aspect-ratio: 1;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 0.5rem;
+            color: #94A3B8;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cbt-pal-btn:hover {
+            border-color: #6366F1;
+            color: #FFFFFF;
+        }
+
+        .cbt-pal-btn.answered-pal {
+            background: #22C55E !important;
+            border-color: #22C55E !important;
+            color: #FFFFFF !important;
+        }
+
+        .cbt-pal-btn.active-pal {
+            border: 2px solid #6366F1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        @media (max-width: 900px) {
+            .cbt-grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-body cbt-exam-page">
+    <div id="page-loader"></div>
+
+    <!-- Collapsible Left Navigation Drawer (Application Menu) -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <aside id="appSidebar" class="app-sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>ECET <strong>PORTAL</strong></span>
+            </a>
+            <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
+        </div>
+
+        <div class="sidebar-user-card">
+            <div class="user-avatar">
+                {% if session.get('student_profile_image') %}
+                    <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    <i class="fa-solid fa-user-gear"></i>
+                {% endif %}
+            </div>
+            <div class="user-details">
+                <span class="user-name">{{ session.get('student_name', 'Student') }}</span>
+                <span class="user-branch-badge">STUDENT</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+            <a href="{{ url_for('paper_branches') }}"><i class="fa-solid fa-file-pdf"></i> PYQs</a>
+            <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Quiz</a>
+            <a href="{{ url_for('leaderboard') }}"><i class="fa-solid fa-trophy"></i> Ranks & Scores</a>
+            <a href="{{ url_for('ai_tutor') }}"><i class="fa-solid fa-robot"></i> AI Tutor Workspace</a>
+            <a href="{{ url_for('ai_exam_setup') }}" class="active"><i class="fa-solid fa-file-signature"></i> AI Exam Preparator</a>
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-id-card"></i> Student Profile</a>
+            <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Top Sticky Header -->
+    <header class="app-navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Open Navigation Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>ECET <strong>PORTAL</strong></span>
+                </a>
+            </div>
+
+            <div class="user-profile-menu">
+                <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
+                    {% if session.get('student_profile_image') %}
+                        <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-user-circle"></i>
+                    {% endif %}
+                    <span>{{ session.get('student_name', 'Student') }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="cbt-exam-wrapper">
+        <!-- Top Bar Header -->
+        <header class="cbt-top-bar">
+            <div class="cbt-exam-meta">
+                <h2><i class="fa-solid fa-graduation-cap" style="color: #6366F1;"></i> E-CET ONLINE EXAMINATION</h2>
+                <p>Branch: <strong>{{ branch|upper }}</strong> | Subject: <strong>{{ subject }}</strong> | Scheme: <strong>{{ scheme }}</strong> | Level: <strong>{{ difficulty }}</strong></p>
+            </div>
+
+            <div class="cbt-timer-badge">
+                <i class="fa-solid fa-stopwatch"></i>
+                <span id="timerCountdown">{{ duration_mins }}:00</span>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="cbt-grid-layout">
+            <!-- Question Window -->
+            <main class="cbt-question-window">
+                <form id="cbtForm" action="{{ url_for('submit_ai_exam') }}" method="POST">
+                    {% if not questions %}
+                    <div style="text-align: center; padding: 3rem 1.5rem;" id="aiUnavailableNotice">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; color: #FCA5A5; margin-bottom: 1rem;"></i>
+                        <h3 style="color: #FFFFFF; font-size: 1.25rem; margin-bottom: 0.5rem;">AI Question Generation Unavailable</h3>
+                        <p style="color: #94A3B8; max-width: 450px; margin: 0 auto 1.5rem auto;">AI question generation is temporarily unavailable. Please try again.</p>
+                        <a href="{{ url_for('ai_exam_setup') }}" class="btn-featured-action" style="padding: 0.65rem 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-arrow-left"></i> Return to Exam Setup</a>
+                    </div>
+                    {% endif %}
+
+                    {% for q in questions %}
+                    {% set q_num = loop.index %}
+                    <div class="q-container-box" id="qBox_{{ q_num }}" style="{% if not loop.first %}display: none;{% endif %}">
+                        <div class="cbt-q-header">
+                            <span class="cbt-q-badge">Question {{ q_num }} of {{ num_questions }}</span>
+                            <span style="font-size: 0.85rem; color: #94A3B8;">Marks: +1</span>
+                        </div>
+
+                        <div class="cbt-q-text">{{ q.question }}</div>
+
+                        <div class="cbt-options-grid">
+                            {% for option in q.options %}
+                            <div class="cbt-option-card" id="optCard_{{ q_num }}_{{ loop.index0 }}" onclick="chooseOption({{ q_num }}, '{{ option|escape }}', {{ loop.index0 }})">
+                                <input type="radio" name="q{{ q_num }}" value="{{ option }}" class="cbt-opt-radio" id="optRadio_{{ q_num }}_{{ loop.index0 }}">
+                                <span class="cbt-opt-prefix">{{ ['A', 'B', 'C', 'D'][loop.index0] }}.</span>
+                                <span class="cbt-opt-text">{{ option }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Nav Action Bar -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08);">
+                        <button type="button" class="btn-cancel-exam-setup" id="btnPrev" onclick="navigateQuestion(-1)" disabled>
+                            <i class="fa-solid fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn-featured-action" id="btnNext" onclick="navigateQuestion(1)" style="padding: 0.65rem 1.75rem;">
+                            Next <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </main>
+
+            <!-- Question Palette Sidebar -->
+            <aside class="cbt-palette-card">
+                <h3 style="font-size: 1rem; font-family: 'Outfit', sans-serif; margin: 0 0 0.5rem 0; color: #FFFFFF;">Question Palette</h3>
+                <p style="font-size: 0.8rem; color: #94A3B8; margin: 0 0 1rem 0;">Click any question number to jump directly.</p>
+
+                <div class="cbt-palette-grid">
+                    {% for q in questions %}
+                    {% set q_num = loop.index %}
+                    <button type="button" class="cbt-pal-btn {% if loop.first %}active-pal{% endif %}" id="palBtn_{{ q_num }}" onclick="jumpToQuestion({{ q_num }})">
+                        {{ q_num }}
+                    </button>
+                    {% endfor %}
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08);">
+                    <button type="button" class="btn-auth-submit" onclick="confirmSubmitExam()" style="background: #22C55E; margin-top: 0; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.35);">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Examination
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script>
+        const totalQs = {{ num_questions }};
+        let currentQ = 1;
+        let examDurationMins = {{ duration_mins }};
+        let totalSeconds = {{ remaining_seconds if remaining_seconds is defined else (duration_mins * 60) }};
+
+        function toggleSidebar() {
+            document.getElementById("appSidebar").classList.toggle("open-sidebar");
+            document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
+        }
+
+        function confirmLogout() {
+            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+                window.location.href = "{{ url_for('logout') }}";
+            }
+        }
+
+        // Timer Countdown
+        const timerElem = document.getElementById("timerCountdown");
+        const mInit = Math.floor(Math.max(0, totalSeconds) / 60);
+        const sInit = Math.max(0, totalSeconds) % 60;
+        if (timerElem) {
+            timerElem.innerText = `${mInit.toString().padStart(2, '0')}:${sInit.toString().padStart(2, '0')}`;
+        }
+        const countdownInterval = setInterval(() => {
+            if (totalSeconds <= 0) {
+                clearInterval(countdownInterval);
+                alert("Exam time has expired! Submitting your answers automatically.");
+                document.getElementById("cbtForm").submit();
+                return;
+            }
+            totalSeconds--;
+            const m = Math.floor(totalSeconds / 60);
+            const s = totalSeconds % 60;
+            timerElem.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }, 1000);
+
+        function jumpToQuestion(qNum) {
+            document.getElementById(`qBox_${currentQ}`).style.display = "none";
+            document.getElementById(`palBtn_${currentQ}`).classList.remove("active-pal");
+
+            currentQ = qNum;
+
+            document.getElementById(`qBox_${currentQ}`).style.display = "block";
+            document.getElementById(`palBtn_${currentQ}`).classList.add("active-pal");
+
+            document.getElementById("btnPrev").disabled = (currentQ === 1);
+            const btnNext = document.getElementById("btnNext");
+            if (currentQ === totalQs) {
+                btnNext.innerHTML = `<i class="fa-solid fa-check"></i> Review & Finish`;
+            } else {
+                btnNext.innerHTML = `Next <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        }
+
+        function navigateQuestion(direction) {
+            let target = currentQ + direction;
+            if (target >= 1 && target <= totalQs) {
+                jumpToQuestion(target);
+            } else if (target > totalQs) {
+                confirmSubmitExam();
+            }
+        }
+
+        function chooseOption(qNum, optVal, optIdx) {
+            const radio = document.getElementById(`optRadio_${qNum}_${optIdx}`);
+            radio.checked = true;
+
+            for (let i = 0; i < 4; i++) {
+                const card = document.getElementById(`optCard_${qNum}_${i}`);
+                if (card) card.classList.remove("selected-card");
+            }
+            document.getElementById(`optCard_${qNum}_${optIdx}`).classList.add("selected-card");
+
+            const palBtn = document.getElementById(`palBtn_${qNum}`);
+            if (palBtn) palBtn.classList.add("answered-pal");
+        }
+
+        function confirmSubmitExam() {
+            if (confirm("Are you sure you want to submit your AP E-CET Examination?")) {
+                document.getElementById("cbtForm").submit();
+            }
+        }
+    </script>
+</body>
+</html>

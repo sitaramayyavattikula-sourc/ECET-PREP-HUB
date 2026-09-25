@@ -186,7 +186,7 @@ def contact():
             return render_template("contact.html", name=name, email=email, subject=subject, message=message)
 
         # 4. Show success message ONLY after successful database insertion and commit
-        success_msg = "✓ Message Sent Successfully! Thank you for contacting ECET Portal. We will get back to you soon."
+        success_msg = "✓ Message Sent Successfully! Thank you for contacting ECET-PREPHUB. We will get back to you soon."
         if is_ajax:
             return jsonify({"success": True, "message": success_msg})
 
@@ -789,10 +789,16 @@ Explain why the correct answer is '{correct_ans}' and briefly explain why the ot
             from google import genai
             client = genai.Client(api_key=api_key)
             system_ctx = f"You are the official AP E-CET AI Exam Preparation Assistant for {student_branch} branch."
-            res = client.models.generate_content(
-                model='gemini-3.6-flash',
-                contents=f"{system_ctx}\n\n{user_prompt}"
-            )
+            for m_name in ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.6-flash']:
+                try:
+                    res = client.models.generate_content(
+                        model=m_name,
+                        contents=f"{system_ctx}\n\n{user_prompt}"
+                    )
+                    if res and res.text:
+                        break
+                except Exception:
+                    continue
             ai_reply = res.text.strip()
         except Exception as e:
             print("AI Tutor Solution Generation Error:", e)
@@ -856,10 +862,16 @@ Format requirements:
 2. Provide key formulas or core engineering principles.
 3. Keep the explanation concise, academic, and exam-focused.
 """
-            response = client.models.generate_content(
-                model='gemini-3.6-flash',
-                contents=prompt
-            )
+            for m_name in ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.6-flash']:
+                try:
+                    response = client.models.generate_content(
+                        model=m_name,
+                        contents=prompt
+                    )
+                    if response and response.text:
+                        break
+                except Exception:
+                    continue
             explanation = response.text.strip()
         except Exception as err:
             print("Gemini Solution Generator Error:", err)
@@ -1203,26 +1215,22 @@ def classify_ai_error(err):
     err_msg = str(err)
     if "500" in err_msg or "503" in err_msg or "UNAVAILABLE" in err_msg.upper() or "high demand" in err_msg.lower():
         category = "SERVICE_ERROR"
-        user_message = "Sorry, I couldn't generate a response right now. The AI service is currently experiencing high demand. Please try again."
+        user_message = "AI service is temporarily unavailable. Please try again in a moment."
     elif "401" in err_msg or "403" in err_msg or "API_KEY" in err_msg.upper() or "INVALID_ARGUMENT" in err_msg.upper():
         category = "AUTHENTICATION_ERROR"
-        user_message = "Sorry, I couldn't generate a response right now. Please verify API key configuration."
+        user_message = "AI Tutor authentication/configuration requires attention. Please contact the administrator."
     elif "404" in err_msg or "NOT_FOUND" in err_msg:
         category = "MODEL_ERROR"
-        user_message = "Sorry, I couldn't generate a response right now. The AI model is temporarily unavailable."
+        user_message = "AI service is temporarily unavailable. Please try again in a moment."
     elif "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "quota" in err_msg.lower():
-        if "free_tier_requests" in err_msg or "per_day" in err_msg.lower():
-            category = "QUOTA_ERROR"
-            user_message = "Sorry, I couldn't generate a response right now. Daily AI quota limit reached. Please try again shortly."
-        else:
-            category = "RATE_LIMIT_ERROR"
-            user_message = "Sorry, I couldn't generate a response right now. Request rate limit reached. Please try again in a moment."
+        category = "RATE_LIMIT_ERROR"
+        user_message = "AI service request limit has been reached. Please try again later."
     elif "connection" in err_msg.lower() or "network" in err_msg.lower() or "timeout" in err_msg.lower() or "disconnected" in err_msg.lower():
         category = "NETWORK_ERROR"
-        user_message = "Sorry, I couldn't generate a response right now. Network connection timed out. Please try again."
+        user_message = "Network connection timed out. Please check your connection and try again."
     else:
-        category = "SERVICE_ERROR"
-        user_message = "Sorry, I couldn't generate a response right now. Please try again."
+        category = "SERVER_ERROR"
+        user_message = "AI Tutor is temporarily unavailable. Please try again."
     return category, user_message
 
 
@@ -1264,9 +1272,9 @@ def ai_chat():
 
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        reply = "Sorry, I couldn't generate a response right now. Please set your `GEMINI_API_KEY` to enable live responses."
+        reply = "AI Tutor configuration is incomplete. Please contact the administrator."
         add_ai_message(conv_id, "assistant", reply)
-        return jsonify({"reply": reply, "conversation_id": conv_id, "title": title})
+        return jsonify({"reply": reply, "conversation_id": conv_id, "title": title, "error_category": "CONFIGURATION_ERROR"})
 
     try:
         # Build multi-turn conversational dialogue context (last 8 messages)
@@ -1355,37 +1363,34 @@ MULTI-TURN CONVERSATION & TOPIC HANDLING:
         reply = None
         last_err = None
 
-        candidate_models = ['gemini-3.6-flash', 'gemini-3.1-flash-lite', 'gemini-3-flash-preview']
+        candidate_models = [
+            'gemini-3.5-flash-lite',
+            'gemini-flash-lite-latest',
+            'gemini-3.6-flash',
+            'gemini-flash-latest'
+        ]
         for model_name in candidate_models:
-            for attempt in range(2):
-                try:
-                    if client:
-                        response = client.models.generate_content(
-                            model=model_name,
-                            contents=full_prompt,
-                        )
-                        reply = response.text
-                    else:
-                        import google.generativeai as legacy_genai
-                        legacy_genai.configure(api_key=api_key)
-                        model = legacy_genai.GenerativeModel(model_name)
-                        res = model.generate_content(full_prompt)
-                        reply = res.text
-                    if reply:
-                        break
-                except Exception as e:
-                    last_err = e
-                    err_str = str(e).lower()
-                    # If 429 quota exhaustion or 404 model not found, switch immediately to next candidate model
-                    if "429" in err_str or "resource_exhausted" in err_str or "404" in err_str or "not_found" in err_str:
-                        break
-                    # If 503 transient server error, retry once
-                    if ("503" in err_str or "unavailable" in err_str or "high demand" in err_str) and attempt < 1:
-                        time.sleep(1.5)
-                        continue
+            try:
+                print(f"[AI Chat] Calling model: {model_name}")
+                if client:
+                    response = client.models.generate_content(
+                        model=model_name,
+                        contents=full_prompt,
+                    )
+                    reply = response.text
+                else:
+                    import google.generativeai as legacy_genai
+                    legacy_genai.configure(api_key=api_key)
+                    model = legacy_genai.GenerativeModel(model_name)
+                    res = model.generate_content(full_prompt)
+                    reply = res.text
+                if reply and reply.strip():
+                    print(f"[AI Chat] Model {model_name} generated reply ({len(reply)} chars).")
                     break
-            if reply:
-                break
+            except Exception as e:
+                last_err = e
+                print(f"[AI Chat] Model {model_name} failed: {type(e).__name__} - {str(e)[:120]}")
+                continue
 
         if not reply and last_err:
             raise last_err
@@ -1502,10 +1507,16 @@ CRITICAL REQUIREMENTS:
 ]
 Do not include markdown code block formatting (```json) or commentary. Output ONLY raw JSON string.
 """
-            response = client.models.generate_content(
-                model='gemini-3.6-flash',
-                contents=prompt
-            )
+            for m_name in ['gemini-flash-lite-latest', 'gemini-3.5-flash-lite', 'gemini-3.6-flash']:
+                try:
+                    response = client.models.generate_content(
+                        model=m_name,
+                        contents=prompt
+                    )
+                    if response and response.text:
+                        break
+                except Exception:
+                    continue
             raw_text = response.text.strip()
             if raw_text.startswith("```"):
                 raw_text = re.sub(r"^```(?:json)?\s*", "", raw_text, flags=re.IGNORECASE)

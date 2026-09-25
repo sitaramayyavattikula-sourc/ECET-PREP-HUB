@@ -1,80 +1,461 @@
 /* =========================================================
-   AP E-CET PORTAL — PROFESSIONAL AUTHENTICATION SYSTEM CSS
+   AP ECET-PREPHUB — TRUE 3D FLIP AUTHENTICATION DESIGN SYSTEM
+   Soft Neumorphic Styling + Card Corner Bubbles + Traveling Blue Light
    ========================================================= */
 
-body.login-page, body.register-page {
-    background-color: #0F172A;
-    background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15), transparent 70%);
-    font-family: 'Inter', sans-serif;
-    color: #F8FAFC;
+:root {
+    --neuro-bg: #EEF3F8;
+    --neuro-bg-light: #F4F8FD;
+    --neuro-surface: #EEF3F8;
+    --neuro-shadow-dark: rgba(163, 177, 198, 0.42);
+    --neuro-shadow-light: rgba(255, 255, 255, 0.95);
+    --neuro-inset-dark: rgba(163, 177, 198, 0.45);
+    --neuro-inset-light: rgba(255, 255, 255, 0.95);
+    
+    --neuro-primary: #3B82F6;
+    --neuro-primary-hover: #2563EB;
+    --neuro-primary-active: #1D4ED8;
+    --neuro-primary-glow: rgba(59, 130, 246, 0.35);
+
+    --neuro-text-title: #1E293B;
+    --neuro-text-body: #475569;
+    --neuro-text-muted: #64748B;
+    --neuro-text-light: #94A3B8;
+
+    --neuro-border-soft: rgba(255, 255, 255, 0.85);
+    --neuro-border-subtle: rgba(163, 177, 198, 0.25);
+}
+
+/* Base Body Styles */
+body.login-page, 
+body.register-page {
+    background-color: var(--neuro-bg);
+    background-image: 
+        radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.9) 0%, transparent 45%),
+        radial-gradient(circle at 88% 82%, rgba(199, 215, 235, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(240, 245, 252, 0.6) 0%, transparent 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--neuro-text-body);
     margin: 0;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    padding: 2.5rem 1.25rem;
     box-sizing: border-box;
+    position: relative;
+    overflow-x: hidden;
 }
 
-/* Remove floating decorative circles that interfere with text readability */
-body::before, body::after {
-    display: none !important;
+/* =========================================================
+   PAGE BACKGROUND DECORATIONS (BEHIND CARD)
+   ========================================================= */
+.auth-bg-bubbles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
 }
 
-.auth-card-wrapper {
+.auth-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--neuro-bg);
+    box-shadow: 
+        14px 14px 28px var(--neuro-shadow-dark),
+        -14px -14px 28px var(--neuro-shadow-light);
+    pointer-events: none;
+    will-change: transform;
+}
+
+.bubble-1 { width: 220px; height: 220px; top: -50px; left: -50px; }
+.bubble-2 { width: 120px; height: 120px; top: 10%; right: 8%; box-shadow: 10px 10px 20px var(--neuro-shadow-dark), -10px -10px 20px var(--neuro-shadow-light); }
+.bubble-3 { width: 260px; height: 260px; bottom: -70px; right: -60px; box-shadow: 16px 16px 32px var(--neuro-shadow-dark), -16px -16px 32px var(--neuro-shadow-light); }
+.bubble-4 { width: 85px; height: 85px; top: 50%; left: 4%; box-shadow: 8px 8px 16px var(--neuro-shadow-dark), -8px -8px 16px var(--neuro-shadow-light); }
+.bubble-5 { width: 140px; height: 140px; bottom: 6%; left: 10%; box-shadow: 10px 10px 20px var(--neuro-shadow-dark), -10px -10px 20px var(--neuro-shadow-light); }
+
+/* =========================================================
+   3D PERSPECTIVE SCENE & CARD WRAPPER
+   ========================================================= */
+.auth-scene {
+    perspective: 1400px;
+    -webkit-perspective: 1400px;
     width: 100%;
     max-width: 440px;
     display: flex;
     justify-content: center;
+    position: relative;
+    z-index: 2;
+}
+
+.auth-card-wrapper {
+    width: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .auth-card {
-    background: #1E293B;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 1.5rem;
-    padding: 2.5rem 2rem;
     width: 100%;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    box-sizing: border-box;
+    position: relative;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transform-origin: center center;
+    border-radius: 2rem;
+    will-change: transform;
 }
 
-/* Brand Header */
+/* =========================================================
+   TWO CARD FACES (LOGIN FACE & REGISTER FACE)
+   ========================================================= */
+.auth-face {
+    width: 100%;
+    background: var(--neuro-surface);
+    border: 1px solid var(--neuro-border-soft);
+    border-radius: 2rem;
+    padding: 2.25rem 2rem;
+    box-shadow: 
+        16px 18px 40px var(--neuro-shadow-dark),
+        -16px -18px 40px var(--neuro-shadow-light),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.85);
+    box-sizing: border-box;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Subtle light reflection on upper surface of card face */
+.auth-face::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    height: 38%;
+    border-radius: 2rem 2rem 100% 100% / 2rem 2rem 35px 35px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+/* =========================================================
+   CARD CORNER BUBBLES (+12-14% REFINED SIZE & ENHANCED INNER BLUE LIGHT)
+   Soft White Neumorphic Sphere + Stationary Bubble + Breathing Luminous Blue Core
+   ========================================================= */
+.card-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: #F4F8FC;
+    box-shadow: 
+        10px 10px 22px var(--neuro-shadow-dark),
+        -10px -10px 22px var(--neuro-shadow-light),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden; /* Keeps inner light strictly contained inside bubble */
+}
+
+/* Tactile white neumorphic surface specular highlight */
+.card-bubble::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(
+        circle at 32% 32%,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.45) 40%,
+        transparent 70%
+    );
+    z-index: 1;
+}
+
+/* Internal soft light-blue animated illumination layer */
+.card-bubble::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+    will-change: transform, opacity;
+}
+
+/* Bubble 1: Top-Left Corner of Card (88px, +12.8% size refinement) */
+.card-bubble.bubble-tl {
+    width: 88px;
+    height: 88px;
+    top: -32px;
+    left: -32px;
+}
+
+/* Blue illumination concentrating toward lower-right edge where bubble overlaps card (+25% intensity & area) */
+.bubble-tl::after {
+    width: 155%;
+    height: 155%;
+    bottom: -25%;
+    right: -25%;
+    background: radial-gradient(
+        circle at 64% 64%,
+        rgba(96, 165, 250, 0.64) 0%,
+        rgba(147, 197, 253, 0.48) 28%,
+        rgba(191, 219, 254, 0.26) 52%,
+        rgba(191, 219, 254, 0.08) 68%,
+        transparent 78%
+    );
+    filter: blur(1.5px);
+}
+
+/* Bubble 2: Bottom-Down / Lower-Right Corner of Card (100px, +13.6% size refinement) */
+.card-bubble.bubble-br {
+    width: 100px;
+    height: 100px;
+    bottom: -36px;
+    right: -36px;
+}
+
+/* Blue illumination concentrating toward upper-left edge where bubble overlaps card (+25% intensity & area) */
+.bubble-br::after {
+    width: 155%;
+    height: 155%;
+    top: -25%;
+    left: -25%;
+    background: radial-gradient(
+        circle at 36% 36%,
+        rgba(96, 165, 250, 0.64) 0%,
+        rgba(147, 197, 253, 0.48) 28%,
+        rgba(191, 219, 254, 0.26) 52%,
+        rgba(191, 219, 254, 0.08) 68%,
+        transparent 78%
+    );
+    filter: blur(1.5px);
+}
+
+/* Staggered breathing durations & delays across all 4 card bubbles */
+.login-face .bubble-tl::after {
+    animation: bubbleBlueLightTL 3.8s ease-in-out 0s infinite alternate;
+}
+.login-face .bubble-br::after {
+    animation: bubbleBlueLightBR 4.2s ease-in-out 1.2s infinite alternate;
+}
+.register-face .bubble-tl::after {
+    animation: bubbleBlueLightTL 3.9s ease-in-out 0.6s infinite alternate;
+}
+.register-face .bubble-br::after {
+    animation: bubbleBlueLightBR 4.3s ease-in-out 1.8s infinite alternate;
+}
+
+/* Slow, elegant breathing & subtle inner light movement (bubble remains stationary) */
+@keyframes bubbleBlueLightTL {
+    0% {
+        transform: translate(-4px, -4px) scale(0.92);
+        opacity: 0.62;
+    }
+    50% {
+        transform: translate(2px, 2px) scale(1.05);
+        opacity: 0.98;
+    }
+    100% {
+        transform: translate(5px, 5px) scale(1.10);
+        opacity: 0.78;
+    }
+}
+
+@keyframes bubbleBlueLightBR {
+    0% {
+        transform: translate(4px, 4px) scale(0.92);
+        opacity: 0.62;
+    }
+    50% {
+        transform: translate(-2px, -2px) scale(1.05);
+        opacity: 0.98;
+    }
+    100% {
+        transform: translate(-5px, -5px) scale(1.10);
+        opacity: 0.78;
+    }
+}
+
+/* Soften bubble light during 3D flip to prevent visual distraction */
+.auth-card.is-flipping .card-bubble::after {
+    opacity: 0.35 !important;
+    transition: opacity 0.3s ease;
+}
+
+/* =========================================================
+   STRICT 3D FACE VISIBILITY & STACKING (NO LEAKAGE)
+   ========================================================= */
+
+/* Normal Front (Login Active): Login is relative, Register is completely hidden */
+.auth-card.is-login-active .login-face {
+    position: relative;
+    transform: rotateY(0deg);
+    -webkit-transform: rotateY(0deg);
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 2;
+}
+
+.auth-card.is-login-active .register-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: 1;
+}
+
+/* Normal Back (Register Active): Register is relative, Login is completely hidden */
+.auth-card.is-register-active .register-face {
+    position: relative;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 2;
+}
+
+.auth-card.is-register-active .login-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transform: rotateY(0deg);
+    -webkit-transform: rotateY(0deg);
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: 1;
+}
+
+/* While actively flipping: both are visible in 3D with backface hidden */
+.auth-card.is-flipping .login-face,
+.auth-card.is-flipping .register-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: none !important;
+}
+
+/* =========================================================
+   BRAND & RAISED ICON HEADER
+   ========================================================= */
 .auth-brand {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
 }
 
 .auth-brand .brand-logo {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #FFFFFF;
+    gap: 0.55rem;
     text-decoration: none;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    transition: transform 0.25s ease;
+}
+
+.auth-brand .brand-logo:hover {
+    transform: translateY(-1px);
+}
+
+.brand-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-primary-hover));
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    box-shadow: 0 3px 8px var(--neuro-primary-glow);
+}
+
+.brand-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--neuro-text-title);
+    letter-spacing: -0.01em;
+}
+
+.brand-text strong {
+    color: var(--neuro-primary);
+    font-weight: 800;
+}
+
+/* Raised Circular Neumorphic Icon Badge */
+.auth-icon-badge {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--neuro-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.95rem auto;
+    box-shadow: 
+        6px 6px 14px var(--neuro-shadow-dark),
+        -6px -6px 14px var(--neuro-shadow-light);
+    border: 1px solid var(--neuro-border-soft);
+    color: var(--neuro-primary);
+    font-size: 1.35rem;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.auth-face:hover .auth-icon-badge {
+    transform: scale(1.05);
+    box-shadow: 
+        7px 7px 16px var(--neuro-shadow-dark),
+        -7px -7px 16px var(--neuro-shadow-light);
 }
 
 .auth-brand h2 {
     font-family: 'Outfit', sans-serif;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--neuro-text-title);
     margin: 0 0 0.35rem 0;
+    letter-spacing: -0.02em;
 }
 
 .auth-subtitle {
     margin: 0;
-    font-size: 0.9rem;
-    color: #94A3B8;
+    font-size: 0.88rem;
+    color: var(--neuro-text-muted);
+    font-weight: 400;
 }
 
-/* Form Controls */
+/* =========================================================
+   FORM CONTROLS & WIDER TRAVELING BLUE LIGHT BORDER EFFECT
+   ========================================================= */
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.15rem;
+    position: relative;
+    z-index: 2;
 }
 
 .form-group {
@@ -86,160 +467,558 @@ body::before, body::after {
 .form-group label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #A5B4FC;
+    color: var(--neuro-text-body);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
+    letter-spacing: 0.01em;
 }
 
+.form-group label i {
+    color: var(--neuro-primary);
+    font-size: 0.85rem;
+}
+
+/* Input container: widened padding for 1.5x wider visible light track */
 .input-icon-box {
     position: relative;
     width: 100%;
-}
-
-.input-icon-box input {
-    width: 100%;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 0.75rem;
-    color: #FFFFFF;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    padding: 2.5px;
     box-sizing: border-box;
-    outline: none;
-    transition: all 0.2s ease;
+    background: transparent;
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
 }
 
-.input-icon-box input:focus {
-    border-color: #6366F1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-    background: #0F172A;
+/* Traveling blue light border track */
+.input-light-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
-/* High-Contrast Lighter Placeholder */
-.input-icon-box input::placeholder {
-    color: #64748B;
-    font-weight: 400;
-    font-size: 0.88rem;
+/* Spinning gradient beam along border (1.5x wider, medium-blue core, soft glow) */
+.input-light-track::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 55deg,
+        rgba(59, 130, 246, 0.4) 68deg,
+        rgba(59, 130, 246, 0.9) 80deg,
+        #3B82F6 88deg,
+        #60A5FA 93deg,
+        #93C5FD 97deg,
+        #60A5FA 102deg,
+        rgba(59, 130, 246, 0.9) 110deg,
+        rgba(59, 130, 246, 0.4) 122deg,
+        transparent 135deg,
+        transparent 360deg
+    );
+    animation: borderLightSpin 2s linear infinite;
+    opacity: 0;
+    filter: blur(0.6px);
+    transition: opacity 0.3s ease;
+}
+
+/* Base static subtle border */
+.input-light-track::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: calc(1rem - 1px);
+    border: 1px solid var(--neuro-border-soft);
+    pointer-events: none;
+}
+
+@keyframes borderLightSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Hover: subtle blue highlight */
+.input-icon-box:hover .input-light-track {
+    opacity: 0.6;
+}
+.input-icon-box:hover .input-light-track::before {
+    opacity: 0.65;
+}
+
+/* Focus: active traveling blue light animation with luminous core & ambient halo */
+.input-icon-box:focus-within {
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.22);
+}
+.input-icon-box:focus-within .input-light-track {
+    opacity: 1;
+}
+.input-icon-box:focus-within .input-light-track::before {
     opacity: 1;
 }
 
-/* Eye Toggle Icon inside Password Field */
-.eye-toggle {
+/* The actual Neumorphic Inset Input */
+.input-icon-box input {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    background: var(--neuro-bg);
+    border: 1px solid transparent;
+    border-radius: calc(1rem - 2px);
+    color: var(--neuro-text-title);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.93rem;
+    padding: 0.82rem 2.8rem 0.82rem 1.1rem;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: 
+        inset 3px 3px 6px var(--neuro-inset-dark),
+        inset -3px -3px 6px var(--neuro-inset-light);
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.input-icon-box input:focus {
+    background: #F4F8FD;
+    box-shadow: 
+        inset 2px 2px 5px rgba(59, 130, 246, 0.25),
+        inset -2px -2px 5px var(--neuro-inset-light),
+        0 0 10px rgba(59, 130, 246, 0.16);
+}
+
+.input-icon-box input::placeholder {
+    color: var(--neuro-text-light);
+    font-weight: 400;
+    font-size: 0.86rem;
+    opacity: 1;
+}
+
+/* Password Eye Visibility Button */
+.eye-toggle-btn {
     position: absolute;
-    right: 1rem;
+    right: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #94A3B8;
+    background: transparent;
+    border: none;
+    padding: 0.4rem;
     cursor: pointer;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
-    padding: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    outline: none;
+    z-index: 10;
+    transition: all 0.2s ease;
 }
 
+.eye-toggle-btn:focus-visible {
+    box-shadow: 0 0 0 2px var(--neuro-primary);
+}
+
+.eye-toggle {
+    color: var(--neuro-text-light);
+    font-size: 0.92rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.eye-toggle-btn:hover .eye-toggle,
 .eye-toggle:hover {
-    color: #6366F1;
+    color: var(--neuro-primary);
+    transform: scale(1.12);
 }
 
-/* Primary Auth Submit Button */
+/* =========================================================
+   PRIMARY AUTHENTICATION SUBMIT BUTTON
+   ========================================================= */
 .btn-auth-submit {
     width: 100%;
-    background: #6366F1;
+    background: linear-gradient(135deg, var(--neuro-primary) 0%, var(--neuro-primary-hover) 100%);
     color: #FFFFFF;
     border: none;
-    padding: 0.85rem 1.5rem;
+    padding: 0.88rem 1.4rem;
     border-radius: 2rem;
     font-family: 'Outfit', sans-serif;
     font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 
+        5px 7px 18px var(--neuro-primary-glow),
+        -3px -3px 8px var(--neuro-shadow-light);
     margin-top: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-auth-submit::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 2rem 2rem 0 0;
+    pointer-events: none;
 }
 
 .btn-auth-submit:hover {
-    background: #4F46E5;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+    background: linear-gradient(135deg, var(--neuro-primary-hover) 0%, var(--neuro-primary-active) 100%);
+    transform: translateY(-2px);
+    box-shadow: 
+        7px 10px 24px rgba(37, 99, 235, 0.48),
+        -4px -4px 10px var(--neuro-shadow-light);
+}
+
+.btn-auth-submit:active {
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 
+        2px 3px 8px var(--neuro-primary-glow),
+        inset 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.btn-auth-submit:focus-visible {
+    box-shadow: 
+        0 0 0 3px rgba(59, 130, 246, 0.45),
+        5px 7px 18px var(--neuro-primary-glow);
 }
 
 .btn-auth-submit:disabled {
-    opacity: 0.75;
+    opacity: 0.78;
     cursor: not-allowed;
     transform: none;
+    box-shadow: 3px 4px 12px var(--neuro-primary-glow);
 }
 
-/* Switch Links Box */
-.auth-switch-box {
+/* =========================================================
+   BOTTOM NAVIGATION / FLIP SWITCH CONTROLS
+   ========================================================= */
+.auth-switch-section {
     margin-top: 1.75rem;
     padding-top: 1.25rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    text-align: center;
-    font-size: 0.9rem;
-    color: #94A3B8;
+    border-top: 1px solid var(--neuro-border-subtle);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+    position: relative;
+    z-index: 2;
 }
 
-.auth-switch-box p {
+.switch-prompt-text {
+    font-size: 0.88rem;
+    color: var(--neuro-text-muted);
+    font-weight: 500;
     margin: 0;
 }
 
-.auth-link {
-    color: #818CF8;
+/* Small Circular Switch Button */
+.auth-switch-circle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: var(--neuro-surface);
+    border: 1px solid var(--neuro-border-soft);
+    border-radius: 2rem;
+    padding: 0.38rem 1.2rem 0.38rem 0.42rem;
+    cursor: pointer;
+    box-shadow: 
+        5px 5px 12px var(--neuro-shadow-dark),
+        -5px -5px 12px var(--neuro-shadow-light);
+    color: var(--neuro-text-title);
+    font-family: 'Outfit', sans-serif;
     font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s ease;
+    font-size: 0.9rem;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    outline: none;
+    user-select: none;
 }
 
-.auth-link:hover {
-    color: #A5B4FC;
-    text-decoration: underline;
+.auth-switch-circle:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        7px 7px 16px rgba(163, 177, 198, 0.5),
+        -7px -7px 16px rgba(255, 255, 255, 1);
+    color: var(--neuro-primary-hover);
+}
+
+.auth-switch-circle:active {
+    transform: translateY(1px);
+    box-shadow: 
+        inset 2px 2px 5px var(--neuro-shadow-dark),
+        inset -2px -2px 5px var(--neuro-shadow-light);
+}
+
+.auth-switch-circle:focus-visible {
+    box-shadow: 
+        0 0 0 3px rgba(59, 130, 246, 0.35),
+        5px 5px 12px var(--neuro-shadow-dark);
+}
+
+.circle-icon-wrap {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--neuro-primary), var(--neuro-primary-hover));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 0.85rem;
+    box-shadow: 0 3px 8px var(--neuro-primary-glow);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.auth-switch-circle:hover .circle-icon-wrap {
+    transform: rotate(15deg) scale(1.1);
+}
+
+.auth-switch-circle.is-back:hover .circle-icon-wrap {
+    transform: rotate(-15deg) scale(1.1);
 }
 
 .back-home-link {
-    color: #64748B;
-    font-size: 0.85rem;
+    color: var(--neuro-text-muted);
+    font-size: 0.84rem;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    margin-top: 0.2rem;
     transition: color 0.2s ease;
 }
 
 .back-home-link:hover {
-    color: #94A3B8;
+    color: var(--neuro-text-title);
 }
 
-/* Flash Alerts */
+/* =========================================================
+   FLASH ALERTS & VALIDATION MESSAGES
+   ========================================================= */
+.flash-container {
+    margin-bottom: 1.15rem;
+}
+
 .flash-alert {
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    font-size: 0.88rem;
-    margin-bottom: 1.25rem;
+    padding: 0.8rem 1.1rem;
+    border-radius: 1rem;
+    font-size: 0.86rem;
+    font-weight: 500;
+    margin-bottom: 0.9rem;
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.65rem;
+    box-shadow: 
+        4px 4px 10px var(--neuro-shadow-dark),
+        -4px -4px 10px var(--neuro-shadow-light);
 }
 
 .alert-error {
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #FCA5A5;
+    background: #FEF2F2;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #991B1B;
+}
+.alert-error i {
+    color: #DC2626;
 }
 
 .alert-success {
-    background: rgba(34, 197, 94, 0.15);
-    border: 1px solid rgba(34, 197, 94, 0.4);
-    color: #86EFAC;
+    background: #F0FDF4;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #166534;
+}
+.alert-success i {
+    color: #16A34A;
 }
 
 .alert-info {
-    background: rgba(99, 102, 241, 0.15);
-    border: 1px solid rgba(99, 102, 241, 0.4);
-    color: #A5B4FC;
+    background: #EFF6FF;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #1E40AF;
+}
+.alert-info i {
+    color: #2563EB;
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN FOR MOBILE & TABLETS
+   ========================================================= */
+@media (max-width: 768px) {
+    .auth-scene {
+        perspective: 1100px;
+        -webkit-perspective: 1100px;
+    }
+
+    body.login-page, body.register-page {
+        padding: 1.5rem 1rem;
+    }
+
+    .bubble-1 { width: 170px; height: 170px; top: -40px; left: -40px; }
+    .bubble-3 { width: 190px; height: 190px; bottom: -50px; right: -40px; }
+    .bubble-2, .bubble-4, .bubble-5 { opacity: 0.55; }
+}
+
+@media (max-width: 480px) {
+    .auth-scene {
+        perspective: 900px;
+        -webkit-perspective: 900px;
+    }
+
+    body.login-page, body.register-page {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .auth-face {
+        padding: 1.85rem 1.25rem;
+        border-radius: 1.6rem;
+    }
+
+    /* Responsive card corner bubbles on mobile (+12% size refinement) */
+    .card-bubble.bubble-tl {
+        width: 65px;
+        height: 65px;
+        top: -22px;
+        left: -22px;
+    }
+
+    .card-bubble.bubble-br {
+        width: 74px;
+        height: 74px;
+        bottom: -25px;
+        right: -25px;
+    }
+
+    .auth-icon-badge {
+        width: 52px;
+        height: 52px;
+        font-size: 1.2rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .auth-brand h2 {
+        font-size: 1.4rem;
+    }
+
+    .input-icon-box input {
+        padding: 0.78rem 2.6rem 0.78rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .btn-auth-submit {
+        padding: 0.82rem 1.2rem;
+        font-size: 0.96rem;
+    }
+}
+
+/* Small Mobile Viewports (<= 360px) */
+@media (max-width: 360px) {
+    .auth-face {
+        padding: 1.65rem 1.1rem;
+    }
+    
+    .auth-brand h2 {
+        font-size: 1.3rem;
+    }
+    
+    .brand-text {
+        font-size: 1.1rem;
+    }
+}
+
+/* =========================================================
+   PREFERS-REDUCED-MOTION SUPPORT
+   ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+    .auth-bubble,
+    .card-bubble,
+    .card-bubble::after {
+        animation: none !important;
+        transition: none !important;
+        opacity: 0.65 !important;
+    }
+
+    .input-light-track::before {
+        animation: none !important;
+    }
+
+    .auth-card,
+    .auth-face,
+    .btn-auth-submit,
+    .auth-switch-circle,
+    .circle-icon-wrap,
+    .auth-icon-badge {
+        transition: none !important;
+    }
+}
+
+
+/* =========================================================
+   NIGHT MODE OVERRIDES FOR AUTHENTICATION PAGES
+   ========================================================= */
+html[data-theme="dark"] {
+    --neuro-bg: #0B1220;
+    --neuro-bg-light: #111827;
+    --neuro-surface: #172033;
+    --neuro-shadow-dark: rgba(0, 0, 0, 0.5);
+    --neuro-shadow-light: rgba(38, 52, 73, 0.4);
+    --neuro-inset-dark: rgba(0, 0, 0, 0.45);
+    --neuro-inset-light: rgba(38, 52, 73, 0.25);
+
+    --neuro-text-title: #F8FAFC;
+    --neuro-text-body: #CBD5E1;
+    --neuro-text-muted: #94A3B8;
+    --neuro-text-light: #64748B;
+
+    --neuro-border-soft: rgba(38, 52, 73, 0.8);
+    --neuro-border-subtle: rgba(38, 52, 73, 0.5);
+}
+
+html[data-theme="dark"] body.login-page,
+html[data-theme="dark"] body.register-page {
+    background-color: #0B1220;
+    background-image:
+        radial-gradient(circle at 12% 18%, rgba(99, 102, 241, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 88% 82%, rgba(59, 130, 246, 0.06) 0%, transparent 50%);
+}
+
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .auth-face {
+    background-color: #172033;
+    border-color: #263449;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="dark"] .auth-input-wrapper {
+    background-color: #111827;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.4), inset -2px -2px 5px rgba(38, 52, 73, 0.2);
+}
+
+html[data-theme="dark"] .auth-input-wrapper input {
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .auth-input-wrapper input::placeholder {
+    color: #64748B;
+}
+
+html[data-theme="dark"] .auth-input-wrapper:focus-within {
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }

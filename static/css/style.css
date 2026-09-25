@@ -1,5 +1,5 @@
 /* =========================================================
-   AP E-CET PORTAL — PREMIUM DESIGN SYSTEM v2.0
+   AP ECET-PREPHUB — PREMIUM DESIGN SYSTEM v2.0
    Global Reset, Typography, Landing Page, Footer
    ========================================================= */
 
@@ -120,8 +120,19 @@ body::before {
 
 
 /* =========================================================
-   HEADER
+   HEADER & BRANDING
    ========================================================= */
+@keyframes brandEntrance {
+    0% {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .top-header {
     background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
     display: flex;
@@ -133,46 +144,123 @@ body::before {
 }
 
 .logo-section {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 1rem;
+    text-decoration: none;
+    animation: brandEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.logo-section img {
+.logo-section img,
+.logo-section .brand-logo {
     width: 52px;
     height: 52px;
     object-fit: contain;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    border-radius: var(--radius-sm);
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.logo-section:hover img,
+.logo-section:hover .brand-logo {
+    transform: translateY(-1px) scale(1.03);
+    border-color: rgba(165, 180, 252, 0.6);
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.45);
 }
 
 .portal-title {
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
-.portal-title h1 {
+.portal-title h1,
+.portal-title .brand-name {
     margin: 0;
-    color: white;
     font-family: 'Outfit', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.85rem;
     font-weight: 800;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+    white-space: nowrap;
+    color: #FFFFFF;
+    background: linear-gradient(125deg, #FFFFFF 0%, #EFF6FF 25%, #BFDBFE 60%, #C7D2FE 82%, #DDD6FE 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.4)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.28));
+    transition: filter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.portal-title p {
+.portal-title h1::after,
+.portal-title .brand-name::after {
+    content: "";
+    display: block;
+    width: 44px;
+    height: 2.5px;
+    margin-top: 4px;
+    margin-bottom: 3px;
+    background: linear-gradient(90deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
+    border-radius: 9999px;
+    box-shadow: 0 1px 5px rgba(56, 189, 248, 0.4);
+    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+
+.logo-section:hover .portal-title h1,
+.logo-section:hover .portal-title .brand-name {
+    filter: drop-shadow(0 3px 12px rgba(129, 140, 248, 0.55)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+}
+
+.logo-section:hover .portal-title h1::after,
+.logo-section:hover .portal-title .brand-name::after {
+    width: 64px;
+    box-shadow: 0 2px 9px rgba(129, 140, 248, 0.65);
+}
+
+.portal-title p,
+.portal-title .brand-subtitle {
     margin: 0;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 0.8rem;
-    font-weight: 400;
+    color: rgba(224, 231, 255, 0.88);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.76rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    line-height: 1.3;
+    opacity: 0.92;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 .college-logo img {
     width: 52px;
     height: 52px;
     object-fit: contain;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    border-radius: var(--radius-sm);
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.college-logo:hover img {
+    transform: translateY(-1px) scale(1.03);
+    border-color: rgba(165, 180, 252, 0.6);
+    box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .logo-section {
+        animation: none !important;
+    }
 }
 
 
@@ -1463,6 +1551,23 @@ footer p {
 
 /* Tablet */
 @media (max-width: 1024px) {
+    .top-header {
+        padding: 0.75rem 1.5rem;
+    }
+    .portal-title h1,
+    .portal-title .brand-name {
+        font-size: 1.65rem;
+    }
+    .portal-title p,
+    .portal-title .brand-subtitle {
+        font-size: 0.74rem;
+    }
+    .logo-section img,
+    .logo-section .brand-logo,
+    .college-logo img {
+        width: 48px;
+        height: 48px;
+    }
     .hero {
         padding: 3rem 1.5rem;
         gap: 2rem;
@@ -1490,16 +1595,37 @@ footer p {
     .top-header {
         padding: 0.6rem 1rem;
     }
-    .portal-title h1 {
-        font-size: 1.2rem;
+    .logo-section {
+        gap: 0.75rem;
     }
-    .portal-title p {
-        font-size: 0.7rem;
+    .portal-title h1,
+    .portal-title .brand-name {
+        font-size: 1.35rem;
+        letter-spacing: 0.015em;
+    }
+    .portal-title h1::after,
+    .portal-title .brand-name::after {
+        width: 36px;
+        height: 2px;
+        margin-top: 3px;
+        margin-bottom: 2px;
+    }
+    .logo-section:hover .portal-title h1::after,
+    .logo-section:hover .portal-title .brand-name::after {
+        width: 48px;
+    }
+    .portal-title p,
+    .portal-title .brand-subtitle {
+        font-size: 0.68rem;
+        letter-spacing: 0.015em;
     }
     .logo-section img,
+    .logo-section .brand-logo,
     .college-logo img {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        padding: 3px;
     }
     .navbar {
         padding: 0.6rem 1rem;
@@ -1555,13 +1681,40 @@ footer p {
     .top-header {
         padding: 0.5rem 0.75rem;
     }
-    .portal-title h1 {
-        font-size: 1rem;
+    .logo-section {
+        gap: 0.55rem;
+    }
+    .portal-title h1,
+    .portal-title .brand-name {
+        font-size: 1.15rem;
+        letter-spacing: 0.01em;
+    }
+    .portal-title h1::after,
+    .portal-title .brand-name::after {
+        width: 28px;
+        height: 1.8px;
+        margin-top: 2px;
+        margin-bottom: 2px;
+    }
+    .logo-section:hover .portal-title h1::after,
+    .logo-section:hover .portal-title .brand-name::after {
+        width: 38px;
+    }
+    .portal-title p,
+    .portal-title .brand-subtitle {
+        font-size: 0.6rem;
+        letter-spacing: 0.01em;
+        white-space: normal;
+        max-width: 190px;
+        line-height: 1.2;
     }
     .logo-section img,
+    .logo-section .brand-logo,
     .college-logo img {
-        width: 34px;
-        height: 34px;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        padding: 2px;
     }
     .nav-buttons {
         gap: 0.4rem;
@@ -1913,3 +2066,1024 @@ footer p {
         transform: none !important;
     }
 }
+
+/* Progressive enhancement: disable competing CSS keyframes when GSAP is active */
+.gsap-loaded .hero-content,
+.gsap-loaded .hero-image,
+.gsap-loaded .feature-card {
+    animation: none !important;
+    opacity: 1;
+}
+
+
+/* =========================================================
+   COMPACT MODERN SEGMENTED THEME TOGGLE: [ ☀ / 🌙 ]
+   ========================================================= */
+.theme-toggle-btn {
+    position: relative;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 4px;
+    height: 34px;
+    min-height: 34px;
+    width: auto;
+    background: #F1F5F9;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 9999px;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    margin: 0;
+    vertical-align: middle;
+    z-index: 10;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.theme-toggle-btn:hover {
+    border-color: rgba(99, 102, 241, 0.45);
+    background: #EEF2FF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.18);
+}
+
+.theme-toggle-btn:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.theme-toggle-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.45), 0 2px 6px rgba(0, 0, 0, 0.08);
+    border-color: #6366f1;
+}
+
+/* Inner Pill Slider */
+.theme-toggle-slider {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 1px 2px;
+}
+
+/* Sliding active indicator */
+.theme-toggle-indicator {
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    background: #FFFFFF;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, box-shadow 0.25s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Options */
+.theme-toggle-option {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.82rem;
+    transition: color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-option-light {
+    color: #F59E0B; /* Warm Golden Sun */
+}
+
+.theme-toggle-divider {
+    position: relative;
+    z-index: 2;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94A3B8;
+    line-height: 1;
+    opacity: 0.65;
+    padding: 0 1px;
+    user-select: none;
+}
+
+.theme-option-dark {
+    color: #64748B; /* Slate Moon */
+}
+
+/* ── Active Light Mode Indicator State ── */
+.theme-toggle-btn.is-light .theme-toggle-indicator,
+html:not([data-theme="dark"]) .theme-toggle-btn:not(.is-dark) .theme-toggle-indicator {
+    transform: translateX(0);
+}
+
+.theme-toggle-btn.is-light .theme-option-light i,
+html:not([data-theme="dark"]) .theme-toggle-btn:not(.is-dark) .theme-option-light i {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.45));
+}
+
+/* ── Active Night Mode Indicator State ── */
+html[data-theme="dark"] .theme-toggle-btn,
+.theme-toggle-btn.is-dark {
+    background: #111827;
+    border-color: #263449;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .theme-toggle-btn:hover,
+.theme-toggle-btn.is-dark:hover {
+    background: #172033;
+    border-color: rgba(99, 102, 241, 0.55);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+html[data-theme="dark"] .theme-toggle-btn .theme-toggle-indicator,
+.theme-toggle-btn.is-dark .theme-toggle-indicator {
+    transform: translateX(36px);
+    background: #1E293B;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 8px rgba(99, 102, 241, 0.35);
+}
+
+html[data-theme="dark"] .theme-option-light,
+.theme-toggle-btn.is-dark .theme-option-light {
+    color: #64748B;
+}
+
+html[data-theme="dark"] .theme-option-dark,
+.theme-toggle-btn.is-dark .theme-option-dark {
+    color: #818CF8; /* Vibrant Indigo Moon */
+}
+
+html[data-theme="dark"] .theme-option-dark i,
+.theme-toggle-btn.is-dark .theme-option-dark i {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.6));
+}
+
+html[data-theme="dark"] .theme-toggle-divider,
+.theme-toggle-btn.is-dark .theme-toggle-divider {
+    color: #475569;
+}
+
+/* =========================================================
+   GLOBAL THEME SYSTEM: LIGHT MODE & NIGHT MODE TOKENS
+   ========================================================= */
+
+/* Root / Light Mode Tokens (Default) */
+:root,
+html[data-theme="light"] {
+    --theme-bg-main: #FAFBFF;
+    --theme-bg-secondary: #F1F5F9;
+    --theme-card-bg: #FFFFFF;
+    --theme-card-hover: #F8FAFC;
+    --theme-text-primary: #1E293B;
+    --theme-text-secondary: #475569;
+    --theme-text-muted: #94A3B8;
+    --theme-border: #E2E8F0;
+    --theme-navbar-bg: rgba(255, 255, 255, 0.94);
+    --theme-navbar-border: rgba(226, 232, 240, 0.8);
+    --theme-header-bg: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+}
+
+/* Night Mode Tokens (Navy / Slate Palette) */
+html[data-theme="dark"] {
+    --bg-body: #0B1220;
+    --theme-bg-main: #0B1220;
+    --theme-bg-secondary: #111827;
+    --theme-card-bg: #172033;
+    --theme-card-hover: #1E2B45;
+    --theme-text-primary: #F8FAFC;
+    --theme-text-secondary: #CBD5E1;
+    --theme-text-muted: #94A3B8;
+    --theme-border: #263449;
+    --theme-navbar-bg: rgba(17, 24, 39, 0.94);
+    --theme-navbar-border: rgba(38, 52, 73, 0.85);
+    --theme-header-bg: linear-gradient(135deg, #0D1527 0%, #151D33 100%);
+
+    --slate-50: #0B1220;
+    --slate-100: #111827;
+    --slate-200: #1E2D42;
+    --slate-300: #263449;
+    --slate-600: #94A3B8;
+    --slate-700: #CBD5E1;
+    --slate-800: #E2E8F0;
+    --slate-900: #F8FAFC;
+}
+
+/* Smooth Transitions (200-350ms) */
+body,
+.navbar,
+.feature-card,
+.about-section,
+.about-container,
+.why-card,
+.stat-box,
+.footer,
+.contact-wrapper,
+.contact-card,
+.contact-info-card,
+.auth-scene,
+.auth-card,
+.auth-face,
+.admin-card,
+.admin-main,
+.dashboard-main-content,
+.branch-card,
+.quiz-card {
+    transition: background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                color 0.28s ease,
+                box-shadow 0.28s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* =========================================================
+   NIGHT MODE PAGE STYLES
+   ========================================================= */
+
+html[data-theme="dark"] body {
+    background: #0B1220;
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] body::before {
+    background-image:
+        radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.08), transparent 45%),
+        radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.06), transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(99, 102, 241, 0.05), transparent 50%);
+}
+
+html[data-theme="dark"] .top-header {
+    background: linear-gradient(135deg, #0D1527 0%, #151D33 100%);
+    border-bottom: 1px solid #263449;
+}
+
+html[data-theme="dark"] .logo-section img,
+html[data-theme="dark"] .logo-section .brand-logo,
+html[data-theme="dark"] .college-logo img {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+}
+
+html[data-theme="dark"] .logo-section:hover img,
+html[data-theme="dark"] .logo-section:hover .brand-logo,
+html[data-theme="dark"] .college-logo:hover img {
+    border-color: rgba(129, 140, 248, 0.45);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+html[data-theme="dark"] .portal-title h1,
+html[data-theme="dark"] .portal-title .brand-name {
+    color: #FFFFFF;
+    background: linear-gradient(125deg, #FFFFFF 0%, #E0F2FE 30%, #93C5FD 60%, #A5B4FC 85%, #C4B5FD 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 10px rgba(99, 102, 241, 0.45)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.6));
+}
+
+html[data-theme="dark"] .logo-section:hover .portal-title h1,
+html[data-theme="dark"] .logo-section:hover .portal-title .brand-name {
+    filter: drop-shadow(0 3px 14px rgba(129, 140, 248, 0.65)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.7));
+}
+
+html[data-theme="dark"] .portal-title h1::after,
+html[data-theme="dark"] .portal-title .brand-name::after {
+    background: linear-gradient(90deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
+    box-shadow: 0 1px 6px rgba(99, 102, 241, 0.5);
+}
+
+html[data-theme="dark"] .portal-title p,
+html[data-theme="dark"] .portal-title .brand-subtitle {
+    color: rgba(203, 213, 225, 0.82);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+html[data-theme="dark"] .navbar {
+    background: rgba(17, 24, 39, 0.94);
+    border-bottom: 1px solid #263449;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .nav-links a,
+html[data-theme="dark"] .nav-links .nav-btn {
+    color: #CBD5E1;
+    background: rgba(255, 255, 255, 0.04);
+    border-color: #263449;
+}
+
+html[data-theme="dark"] .nav-links a:hover,
+html[data-theme="dark"] .nav-links .nav-btn:hover {
+    color: #FFFFFF;
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+html[data-theme="dark"] .nav-links a.active,
+html[data-theme="dark"] .nav-links .nav-btn.active {
+    background: linear-gradient(135deg, #4F46E5, #6366F1);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.45);
+}
+
+html[data-theme="dark"] .login-btn {
+    color: #93C5FD;
+    border-color: #3B82F6;
+    background: rgba(59, 130, 246, 0.08);
+}
+
+html[data-theme="dark"] .login-btn:hover {
+    background: #3B82F6;
+    color: #FFFFFF;
+    border-color: #3B82F6;
+}
+
+html[data-theme="dark"] .hero-badge {
+    background: rgba(99, 102, 241, 0.15);
+    color: #A5B4FC;
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+html[data-theme="dark"] .hero-content h2 {
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .hero-content p {
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .feature-card {
+    background: #172033;
+    border: 1px solid #263449;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"] .feature-card:hover {
+    background: #1E2B45;
+    border-color: rgba(99, 102, 241, 0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="dark"] .feature-card h3 {
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .feature-card p {
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .about-section {
+    background: #0B1220;
+}
+
+html[data-theme="dark"] .about-container {
+    background: #172033;
+    border: 1px solid #263449;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"] .about-content h2 {
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .about-content p {
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .why-card {
+    background: #111827;
+    border: 1px solid #263449;
+}
+
+html[data-theme="dark"] .why-card h4 {
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .why-card p {
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .stat-box {
+    background: #172033;
+    border: 1px solid #263449;
+}
+
+html[data-theme="dark"] .stat-box h2 {
+    color: #818CF8;
+}
+
+html[data-theme="dark"] .stat-box p {
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .footer {
+    background: #070D18;
+    border-top: 1px solid #263449;
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .footer-col h3 {
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .footer-links a {
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .footer-links a:hover {
+    color: #818CF8;
+}
+
+html[data-theme="dark"] .footer-bottom {
+    border-top: 1px solid #1E293B;
+    color: #94A3B8;
+}
+
+/* Contact Page Dark Mode */
+html[data-theme="dark"] .contact-wrapper {
+    background: #0B1220;
+}
+
+html[data-theme="dark"] .contact-hero h1 {
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .contact-hero-subtitle {
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .contact-card {
+    background: #172033;
+    border: 1px solid #263449;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="dark"] .contact-card h2 {
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .contact-card p {
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .contact-info-card {
+    background: #172033;
+    border: 1px solid #263449;
+}
+
+html[data-theme="dark"] .contact-info-content h3 {
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .contact-info-content p {
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .contact-input,
+html[data-theme="dark"] .contact-textarea,
+html[data-theme="dark"] .form-group input,
+html[data-theme="dark"] .form-group textarea,
+html[data-theme="dark"] .form-group select {
+    background: #111827;
+    border: 1.5px solid #263449;
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .contact-input:focus,
+html[data-theme="dark"] .contact-textarea:focus,
+html[data-theme="dark"] .form-group input:focus,
+html[data-theme="dark"] .form-group textarea:focus,
+html[data-theme="dark"] .form-group select:focus {
+    background: #0F172A;
+    border-color: #6366F1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .contact-input::placeholder,
+html[data-theme="dark"] .contact-textarea::placeholder {
+    color: #64748B;
+}
+
+/* Auth Screens (Login / Register / Admin Login) */
+html[data-theme="dark"] .login-page,
+html[data-theme="dark"] .register-page,
+html[data-theme="dark"] .admin-login-body {
+    background: #0B1220;
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .auth-face,
+html[data-theme="dark"] .admin-login-card {
+    background: #172033 !important;
+    border: 1px solid #263449 !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.55) !important;
+}
+
+html[data-theme="dark"] .auth-brand h2,
+html[data-theme="dark"] .admin-login-header h2 {
+    color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .auth-subtitle,
+html[data-theme="dark"] .admin-login-header p {
+    color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] .input-group {
+    background: #111827 !important;
+    border-color: #263449 !important;
+}
+
+html[data-theme="dark"] .input-group input {
+    background: transparent !important;
+    color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .input-icon {
+    color: #818CF8 !important;
+}
+
+html[data-theme="dark"] .auth-footer,
+html[data-theme="dark"] .auth-footer p,
+html[data-theme="dark"] .form-label {
+    color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] .auth-footer a {
+    color: #93C5FD !important;
+}
+
+/* Top-right corner toggle for Auth pages */
+.auth-theme-toggle-corner {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.5rem;
+    z-index: 999;
+}
+
+/* Admin Dashboard in Dark Mode */
+html[data-theme="dark"] .admin-body,
+html[data-theme="dark"] .admin-main {
+    background: #0B1220 !important;
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .admin-header {
+    background: #111827 !important;
+    border-bottom: 1px solid #263449 !important;
+}
+
+html[data-theme="dark"] .admin-card,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .messages-table-card,
+html[data-theme="dark"] .admin-table-container {
+    background: #172033 !important;
+    border-color: #263449 !important;
+    color: #CBD5E1;
+}
+
+html[data-theme="dark"] .admin-table th {
+    background: #111827 !important;
+    color: #F8FAFC !important;
+    border-color: #263449 !important;
+}
+
+html[data-theme="dark"] .admin-table td {
+    border-color: #263449 !important;
+    color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] .admin-table tr:hover td {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* App Navbar for Dashboard / Internal Pages */
+.app-navbar .user-profile-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+html[data-theme="dark"] .app-navbar {
+    background: rgba(11, 18, 32, 0.92) !important;
+    border-bottom: 1px solid #263449 !important;
+}
+
+html[data-theme="dark"] .user-pill {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: #263449 !important;
+    color: #F8FAFC !important;
+}
+
+/* Mobile responsive adjustments for theme toggle */
+@media (max-width: 768px) {
+    .theme-toggle-btn {
+        height: 30px;
+        min-height: 30px;
+        padding: 1px 3px;
+    }
+    .theme-toggle-option {
+        width: 22px;
+        height: 22px;
+        font-size: 0.74rem;
+    }
+    .theme-toggle-indicator {
+        width: 22px;
+        height: 22px;
+    }
+    html[data-theme="dark"] .theme-toggle-btn .theme-toggle-indicator,
+    .theme-toggle-btn.is-dark .theme-toggle-indicator {
+        transform: translateX(31px);
+    }
+}
+
+
+/* =========================================================
+   PAGE HEADER HEADINGS & TITLES (THEME-AWARE)
+   ========================================================= */
+.page-header-title,
+.branch-container h1,
+.papers-container h1,
+.quiz-container h1 {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 0.5rem;
+    transition: color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Bright / Light Mode: Deep high-contrast dark navy (#0F172A) */
+:root .page-header-title,
+:root .branch-container h1,
+:root .papers-container h1,
+:root .quiz-container h1,
+html[data-theme="light"] .page-header-title,
+html[data-theme="light"] .branch-container h1,
+html[data-theme="light"] .papers-container h1,
+html[data-theme="light"] .quiz-container h1,
+html:not([data-theme="dark"]) .page-header-title,
+html:not([data-theme="dark"]) .branch-container h1,
+html:not([data-theme="dark"]) .papers-container h1,
+html:not([data-theme="dark"]) .quiz-container h1 {
+    color: #0F172A !important;
+}
+
+/* Night / Dark Mode: Clean crisp light text (#F8FAFC) */
+html[data-theme="dark"] .page-header-title,
+html[data-theme="dark"] .branch-container h1,
+html[data-theme="dark"] .papers-container h1,
+html[data-theme="dark"] .quiz-container h1 {
+    color: #F8FAFC !important;
+}
+
+/* Accent icon spacing and alignment */
+.page-header-title i,
+.branch-container h1 i,
+.papers-container h1 i,
+.quiz-container h1 i {
+    margin-right: 0.35rem;
+    vertical-align: middle;
+}
+
+/* Subtitle styling */
+.page-header-subtitle,
+.branch-container > p,
+.papers-container > p,
+.quiz-container > p {
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.5;
+    transition: color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme="light"] .page-header-subtitle,
+html[data-theme="light"] .branch-container > p,
+html[data-theme="light"] .papers-container > p,
+html[data-theme="light"] .quiz-container > p,
+html:not([data-theme="dark"]) .page-header-subtitle,
+html:not([data-theme="dark"]) .branch-container > p,
+html:not([data-theme="dark"]) .papers-container > p,
+html:not([data-theme="dark"]) .quiz-container > p {
+    color: #475569 !important;
+}
+
+html[data-theme="dark"] .page-header-subtitle,
+html[data-theme="dark"] .branch-container > p,
+html[data-theme="dark"] .papers-container > p,
+html[data-theme="dark"] .quiz-container > p {
+    color: #CBD5E1 !important;
+}
+
+/* Responsive typography */
+@media (max-width: 1024px) {
+    .page-header-title,
+    .branch-container h1,
+    .papers-container h1,
+    .quiz-container h1 {
+        font-size: 1.95rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header-title,
+    .branch-container h1,
+    .papers-container h1,
+    .quiz-container h1 {
+        font-size: 1.65rem;
+    }
+    .page-header-subtitle,
+    .branch-container > p,
+    .papers-container > p,
+    .quiz-container > p {
+        font-size: 0.92rem;
+        margin-bottom: 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header-title,
+    .branch-container h1,
+    .papers-container h1,
+    .quiz-container h1 {
+        font-size: 1.45rem;
+    }
+}
+
+/* =========================================================
+   ABOUT SECTION / PAGE — BRIGHT / LIGHT MODE TEXT VISIBILITY FIX
+   Scoped specifically to Bright/Light Mode. Dark Mode preserved.
+   ========================================================= */
+
+/* Scoped Bright / Light Mode Theme Tokens for About Section */
+html[data-theme="light"] .about,
+html[data-theme="light"] #about,
+html[data-theme="light"] .about-section,
+html[data-theme="light"] .about-page,
+html[data-theme="light"] .about-container,
+html:not([data-theme="dark"]) .about,
+html:not([data-theme="dark"]) #about,
+html:not([data-theme="dark"]) .about-section,
+html:not([data-theme="dark"]) .about-page,
+html:not([data-theme="dark"]) .about-container {
+    --text-primary: #172033;
+    --text-secondary: #334155;
+    --text-muted: #64748B;
+    --theme-text-primary: #172033;
+    --theme-text-secondary: #334155;
+    --theme-text-muted: #64748B;
+}
+
+/* Bright / Light Mode: About Container Surface & Border */
+html[data-theme="light"] .about-container,
+html:not([data-theme="dark"]) .about-container {
+    background: #FFFFFF !important;
+    border: 1px solid var(--slate-200) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+/* Bright / Light Mode: Main Heading (High-contrast Dark Navy #172033) */
+html[data-theme="light"] .about h2,
+html[data-theme="light"] #about h2,
+html[data-theme="light"] .about-section h2,
+html[data-theme="light"] .about-page h2,
+html[data-theme="light"] .about-container h2,
+html[data-theme="light"] .about-text h2,
+html[data-theme="light"] .about-content h2,
+html:not([data-theme="dark"]) .about h2,
+html:not([data-theme="dark"]) #about h2,
+html:not([data-theme="dark"]) .about-section h2,
+html:not([data-theme="dark"]) .about-page h2,
+html:not([data-theme="dark"]) .about-container h2,
+html:not([data-theme="dark"]) .about-text h2,
+html:not([data-theme="dark"]) .about-content h2 {
+    color: #172033 !important;
+    font-weight: 800;
+}
+
+/* Bright / Light Mode: Section Headings & Subtitles (Strong Dark #1E293B) */
+html[data-theme="light"] .about h3,
+html[data-theme="light"] #about h3,
+html[data-theme="light"] .about-section h3,
+html[data-theme="light"] .about-page h3,
+html[data-theme="light"] .about-container h3,
+html[data-theme="light"] .about-text h3,
+html[data-theme="light"] .about-content h3,
+html:not([data-theme="dark"]) .about h3,
+html:not([data-theme="dark"]) #about h3,
+html:not([data-theme="dark"]) .about-section h3,
+html:not([data-theme="dark"]) .about-page h3,
+html:not([data-theme="dark"]) .about-container h3,
+html:not([data-theme="dark"]) .about-text h3,
+html:not([data-theme="dark"]) .about-content h3 {
+    color: #1E293B !important;
+    font-weight: 700;
+}
+
+/* Bright / Light Mode: Body Paragraphs & Project Descriptions (Dark Slate #334155) */
+html[data-theme="light"] .about p,
+html[data-theme="light"] #about p,
+html[data-theme="light"] .about-section p,
+html[data-theme="light"] .about-page p,
+html[data-theme="light"] .about-container p,
+html[data-theme="light"] .about-text p,
+html[data-theme="light"] .about-content p,
+html:not([data-theme="dark"]) .about p,
+html:not([data-theme="dark"]) #about p,
+html:not([data-theme="dark"]) .about-section p,
+html:not([data-theme="dark"]) .about-page p,
+html:not([data-theme="dark"]) .about-container p,
+html:not([data-theme="dark"]) .about-text p,
+html:not([data-theme="dark"]) .about-content p {
+    color: #334155 !important;
+    line-height: 1.8;
+}
+
+/* Bright / Light Mode: Feature List Items & Checklists (Dark Slate #1E293B) */
+html[data-theme="light"] .about li,
+html[data-theme="light"] #about li,
+html[data-theme="light"] .about-section li,
+html[data-theme="light"] .about-page li,
+html[data-theme="light"] .about-container li,
+html[data-theme="light"] .about-text li,
+html[data-theme="light"] .about-content li,
+html:not([data-theme="dark"]) .about li,
+html:not([data-theme="dark"]) #about li,
+html:not([data-theme="dark"]) .about-section li,
+html:not([data-theme="dark"]) .about-page li,
+html:not([data-theme="dark"]) .about-container li,
+html:not([data-theme="dark"]) .about-text li,
+html:not([data-theme="dark"]) .about-content li {
+    color: #1E293B !important;
+    font-weight: 500;
+}
+
+/* Bright / Light Mode: Secondary / Supporting Text / Labels / Captions (#64748B) */
+html[data-theme="light"] .about .subtitle,
+html[data-theme="light"] .about-text .subtitle,
+html[data-theme="light"] .about-subtitle,
+html[data-theme="light"] .about small,
+html[data-theme="light"] .about-text small,
+html[data-theme="light"] .about-caption,
+html[data-theme="light"] .about-label,
+html[data-theme="light"] .about .text-muted,
+html[data-theme="light"] .about-text .text-muted,
+html:not([data-theme="dark"]) .about .subtitle,
+html:not([data-theme="dark"]) .about-text .subtitle,
+html:not([data-theme="dark"]) .about-subtitle,
+html:not([data-theme="dark"]) .about small,
+html:not([data-theme="dark"]) .about-text small,
+html:not([data-theme="dark"]) .about-caption,
+html:not([data-theme="dark"]) .about-label,
+html:not([data-theme="dark"]) .about .text-muted,
+html:not([data-theme="dark"]) .about-text .text-muted {
+    color: #64748B !important;
+}
+
+/* Bright / Light Mode: Links within About Section */
+html[data-theme="light"] .about a:not(.btn):not(.primary-btn):not(.nav-btn),
+html[data-theme="light"] .about-text a:not(.btn):not(.primary-btn):not(.nav-btn),
+html[data-theme="light"] .about-content a:not(.btn):not(.primary-btn):not(.nav-btn),
+html:not([data-theme="dark"]) .about a:not(.btn):not(.primary-btn):not(.nav-btn),
+html:not([data-theme="dark"]) .about-text a:not(.btn):not(.primary-btn):not(.nav-btn),
+html:not([data-theme="dark"]) .about-content a:not(.btn):not(.primary-btn):not(.nav-btn) {
+    color: #4F46E5 !important;
+}
+html[data-theme="light"] .about a:not(.btn):not(.primary-btn):not(.nav-btn):hover,
+html[data-theme="light"] .about-text a:not(.btn):not(.primary-btn):not(.nav-btn):hover,
+html[data-theme="light"] .about-content a:not(.btn):not(.primary-btn):not(.nav-btn):hover,
+html:not([data-theme="dark"]) .about a:not(.btn):not(.primary-btn):not(.nav-btn):hover,
+html:not([data-theme="dark"]) .about-text a:not(.btn):not(.primary-btn):not(.nav-btn):hover,
+html:not([data-theme="dark"]) .about-content a:not(.btn):not(.primary-btn):not(.nav-btn):hover {
+    color: #3730A3 !important;
+}
+
+/* =========================================================
+   ABOUT SECTION / PAGE — DARK / NIGHT MODE TEXT VISIBILITY & CONTRAST
+   Scoped strictly to Dark Mode (html[data-theme="dark"]).
+   ========================================================= */
+
+/* Scoped Dark / Night Mode Theme Tokens for About Section */
+html[data-theme="dark"] .about,
+html[data-theme="dark"] #about,
+html[data-theme="dark"] .about-section,
+html[data-theme="dark"] .about-page,
+html[data-theme="dark"] .about-container {
+    --text-primary: #F8FAFC;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --theme-text-primary: #F8FAFC;
+    --theme-text-secondary: #CBD5E1;
+    --theme-text-muted: #94A3B8;
+}
+
+/* Dark Mode: About Container Surface, Border & Shadow */
+html[data-theme="dark"] .about-container {
+    background: #172033 !important;
+    border: 1px solid #263449 !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Dark Mode: Main Heading (Near-white #FFFFFF with subtle professional blue glow/accent) */
+html[data-theme="dark"] .about h2,
+html[data-theme="dark"] #about h2,
+html[data-theme="dark"] .about-section h2,
+html[data-theme="dark"] .about-page h2,
+html[data-theme="dark"] .about-container h2,
+html[data-theme="dark"] .about-text h2,
+html[data-theme="dark"] .about-content h2 {
+    color: #FFFFFF !important;
+    font-weight: 800;
+    text-shadow: 0 2px 10px rgba(99, 102, 241, 0.35);
+}
+
+/* Dark Mode: Section Heading / Subtitle (Light Blue #93C5FD with crisp contrast) */
+html[data-theme="dark"] .about h3,
+html[data-theme="dark"] #about h3,
+html[data-theme="dark"] .about-section h3,
+html[data-theme="dark"] .about-page h3,
+html[data-theme="dark"] .about-container h3,
+html[data-theme="dark"] .about-text h3,
+html[data-theme="dark"] .about-content h3 {
+    color: #93C5FD !important;
+    font-weight: 700;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Dark Mode: Body Paragraphs & Description (Light Gray / Very Light Blue #CBD5E1) */
+html[data-theme="dark"] .about p,
+html[data-theme="dark"] #about p,
+html[data-theme="dark"] .about-section p,
+html[data-theme="dark"] .about-page p,
+html[data-theme="dark"] .about-container p,
+html[data-theme="dark"] .about-text p,
+html[data-theme="dark"] .about-content p {
+    color: #CBD5E1 !important;
+    line-height: 1.8;
+}
+
+/* Dark Mode: Feature List Items & Checklists (Light Slate / White #E2E8F0) */
+html[data-theme="dark"] .about li,
+html[data-theme="dark"] #about li,
+html[data-theme="dark"] .about-section li,
+html[data-theme="dark"] .about-page li,
+html[data-theme="dark"] .about-container li,
+html[data-theme="dark"] .about-text li,
+html[data-theme="dark"] .about-content li {
+    color: #E2E8F0 !important;
+    font-weight: 500;
+}
+
+/* Dark Mode: Secondary / Supporting Labels / Captions (#94A3B8) */
+html[data-theme="dark"] .about .subtitle,
+html[data-theme="dark"] .about-text .subtitle,
+html[data-theme="dark"] .about-subtitle,
+html[data-theme="dark"] .about small,
+html[data-theme="dark"] .about-text small,
+html[data-theme="dark"] .about-caption,
+html[data-theme="dark"] .about-label,
+html[data-theme="dark"] .about .text-muted,
+html[data-theme="dark"] .about-text .text-muted {
+    color: #94A3B8 !important;
+}
+
+/* Dark Mode: Links within About Section (Readable Indigo/Blue #818CF8) */
+html[data-theme="dark"] .about a:not(.btn):not(.primary-btn):not(.nav-btn),
+html[data-theme="dark"] .about-text a:not(.btn):not(.primary-btn):not(.nav-btn),
+html[data-theme="dark"] .about-content a:not(.btn):not(.primary-btn):not(.nav-btn) {
+    color: #818CF8 !important;
+}
+html[data-theme="dark"] .about a:not(.btn):not(.primary-btn):not(.nav-btn):hover,
+html[data-theme="dark"] .about-text a:not(.btn):not(.primary-btn):not(.nav-btn):hover,
+html[data-theme="dark"] .about-content a:not(.btn):not(.primary-btn):not(.nav-btn):hover {
+    color: #A5B4FC !important;
+}
+
+/* Dark Mode: Selection Highlight in About Section */
+html[data-theme="dark"] .about ::selection,
+html[data-theme="dark"] #about ::selection,
+html[data-theme="dark"] .about-container ::selection {
+    background: rgba(99, 102, 241, 0.45);
+    color: #FFFFFF;
+}
+

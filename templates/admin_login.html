@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrator Login — AP E-CET Portal</title>
+    <title>Administrator Login — ECET-PREPHUB</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
@@ -178,8 +178,37 @@
             color: #60a5fa;
         }
     </style>
+    <!-- Anti-FOUC Theme Script (Immediate execution before paint) -->
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('ecet-prephub-theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
 </head>
 <body class="admin-login-body">
+    <!-- Theme Switcher Corner Toggle -->
+    <div class="auth-theme-toggle-corner">
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" role="switch" aria-checked="false" aria-label="Switch to Night Mode" title="Switch to Night Mode">
+            <span class="theme-toggle-slider">
+                <span class="theme-toggle-indicator"></span>
+                <span class="theme-toggle-option theme-option-light" aria-hidden="true">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span class="theme-toggle-divider" aria-hidden="true">/</span>
+                <span class="theme-toggle-option theme-option-dark" aria-hidden="true">
+                    <i class="fa-solid fa-moon"></i>
+                </span>
+            </span>
+        </button>
+    </div>
     <div class="admin-login-glow"></div>
 
     <div class="admin-login-card">
@@ -187,7 +216,7 @@
             <i class="fa-solid fa-shield-halved"></i> Admin Portal
         </div>
         <h1 class="admin-login-title">Administrator Login</h1>
-        <p class="admin-login-sub">Sign in with authorized administrator credentials to manage ECET Portal inquiries.</p>
+        <p class="admin-login-sub">Sign in with authorized administrator credentials to manage ECET-PREPHUB inquiries.</p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -223,7 +252,7 @@
         </form>
 
         <a href="{{ url_for('home') }}" class="back-link">
-            <i class="fa-solid fa-arrow-left"></i> Return to ECET Portal Home
+            <i class="fa-solid fa-arrow-left"></i> Return to ECET-PREPHUB Home
         </a>
     </div>
 </body>

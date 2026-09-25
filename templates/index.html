@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECET Portal</title>
+    <title>ECET-PREPHUB</title>
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -14,6 +14,20 @@
     <!-- Font Awesome -->
     <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- Anti-FOUC Theme Script (Immediate execution before paint) -->
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('ecet-prephub-theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
 </head>
 
 <body>
@@ -26,13 +40,13 @@
     <div class="logo-section">
 
         <img src="{{ url_for('static', filename='images/apsbtet.png') }}"
-             alt="APSBTET Logo">
+             alt="APSBTET Logo" class="brand-logo">
 
         <div class="portal-title">
 
-            <h1>ECET PORTAL</h1>
+            <h1 class="brand-name">ECET-PREPHUB</h1>
 
-            <p>AITAM Diploma Students Learning Platform</p>
+            <p class="brand-subtitle">AITAM Diploma Students Learning Platform</p>
 
         </div>
 
@@ -60,6 +74,19 @@
     </ul>
 
     <div class="nav-buttons">
+        <!-- Theme Switcher (Light / Night Mode) -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" role="switch" aria-checked="false" aria-label="Switch to Night Mode" title="Switch to Night Mode">
+            <span class="theme-toggle-slider">
+                <span class="theme-toggle-indicator"></span>
+                <span class="theme-toggle-option theme-option-light" aria-hidden="true">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span class="theme-toggle-divider" aria-hidden="true">/</span>
+                <span class="theme-toggle-option theme-option-dark" aria-hidden="true">
+                    <i class="fa-solid fa-moon"></i>
+                </span>
+            </span>
+        </button>
 
         <a href="/login" class="login-btn">
             <i class="fa-solid fa-user"></i>
@@ -82,7 +109,7 @@
     <div class="hero-content">
 
         <span class="hero-badge">
-            Welcome to the official ECET Learning Portal
+            Welcome to the official ECET-PREPHUB Platform
         </span>
 
         <h2>
@@ -212,7 +239,7 @@
             <h3>Engineering Common Entrance Test (ECET)</h3>
 
             <p>
-               ECET Portal is an integrated online learning platform designed to support diploma students in their ECET preparation journey. It offers comprehensive study materials, semester-wise notes, previous examination papers, real-time mock tests, detailed result analysis, and an intuitive interface that enhances the learning experience. The platform aims to provide students with a reliable, efficient, and interactive environment to strengthen their knowledge, evaluate their performance, and improve their chances of success in the Engineering Common Entrance Test.
+               ECET-PREPHUB is an integrated online learning platform designed to support diploma students in their ECET preparation journey. It offers comprehensive study materials, semester-wise notes, previous examination papers, real-time mock tests, detailed result analysis, and an intuitive interface that enhances the learning experience. The platform aims to provide students with a reliable, efficient, and interactive environment to strengthen their knowledge, evaluate their performance, and improve their chances of success in the Engineering Common Entrance Test.
             </p>
 
             <ul>
@@ -306,9 +333,10 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 ECET Portal | Developed by Team ECET</p>
+        <p>&copy; 2026 ECET-PREPHUB | Developed by Team ECET</p>
     </footer>
 <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='dist/main.js') }}"></script>
 
 <script>
 // Navigation active state and smooth scroll management

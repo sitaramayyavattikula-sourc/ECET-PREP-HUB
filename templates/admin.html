@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrator Dashboard — AP E-CET Portal</title>
+    <title>Administrator Dashboard — ECET-PREPHUB</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
@@ -243,6 +243,20 @@
             }
         }
     </style>
+    <!-- Anti-FOUC Theme Script (Immediate execution before paint) -->
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('ecet-prephub-theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
 </head>
 <body class="admin-page-body">
     <header class="admin-nav">
@@ -270,6 +284,19 @@
         </div>
 
         <div class="admin-nav-right">
+        <!-- Theme Switcher (Light / Night Mode) -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" role="switch" aria-checked="false" aria-label="Switch to Night Mode" title="Switch to Night Mode">
+            <span class="theme-toggle-slider">
+                <span class="theme-toggle-indicator"></span>
+                <span class="theme-toggle-option theme-option-light" aria-hidden="true">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span class="theme-toggle-divider" aria-hidden="true">/</span>
+                <span class="theme-toggle-option theme-option-dark" aria-hidden="true">
+                    <i class="fa-solid fa-moon"></i>
+                </span>
+            </span>
+        </button>
             <a href="{{ url_for('home') }}" target="_blank" class="portal-btn">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Student Portal
             </a>

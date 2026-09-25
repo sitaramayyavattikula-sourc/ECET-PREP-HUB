@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Exam Performance Analytics — AP E-CET Portal</title>
+    <title>AI Exam Performance Analytics — ECET-PREPHUB</title>
 
     <!-- Google Fonts & Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -12,6 +12,20 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <!-- Anti-FOUC Theme Script (Immediate execution before paint) -->
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('ecet-prephub-theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
 </head>
 <body class="dashboard-body">
     <div id="page-loader"></div>
@@ -22,7 +36,7 @@
         <div class="sidebar-header">
             <a href="{{ url_for('dashboard') }}" class="brand-logo">
                 <i class="fa-solid fa-graduation-cap"></i>
-                <span>ECET <strong>PORTAL</strong></span>
+                <span>ECET-<strong>PREPHUB</strong></span>
             </a>
             <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
         </div>
@@ -63,11 +77,24 @@
                 </button>
                 <a href="{{ url_for('dashboard') }}" class="brand-logo">
                     <i class="fa-solid fa-graduation-cap"></i>
-                    <span>ECET <strong>PORTAL</strong></span>
+                    <span>ECET-<strong>PREPHUB</strong></span>
                 </a>
             </div>
 
             <div class="user-profile-menu">
+        <!-- Theme Switcher (Light / Night Mode) -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" role="switch" aria-checked="false" aria-label="Switch to Night Mode" title="Switch to Night Mode">
+            <span class="theme-toggle-slider">
+                <span class="theme-toggle-indicator"></span>
+                <span class="theme-toggle-option theme-option-light" aria-hidden="true">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span class="theme-toggle-divider" aria-hidden="true">/</span>
+                <span class="theme-toggle-option theme-option-dark" aria-hidden="true">
+                    <i class="fa-solid fa-moon"></i>
+                </span>
+            </span>
+        </button>
                 <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
                     {% if session.get('student_profile_image') %}
                         <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
@@ -191,7 +218,7 @@
         }
 
         function confirmLogout() {
-            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+            if (confirm("Are you sure you want to log out of ECET-PREPHUB?")) {
                 window.location.href = "{{ url_for('logout') }}";
             }
         }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Login — AP E-CET Portal</title>
+    <title>Student Login — ECET-PREPHUB</title>
 
     <!-- Google Fonts & Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -12,72 +12,256 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    <!-- Anti-FOUC Theme Script (Immediate execution before paint) -->
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('ecet-prephub-theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
 </head>
 <body class="login-page">
+    <!-- Theme Switcher Corner Toggle -->
+    <div class="auth-theme-toggle-corner">
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" role="switch" aria-checked="false" aria-label="Switch to Night Mode" title="Switch to Night Mode">
+            <span class="theme-toggle-slider">
+                <span class="theme-toggle-indicator"></span>
+                <span class="theme-toggle-option theme-option-light" aria-hidden="true">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span class="theme-toggle-divider" aria-hidden="true">/</span>
+                <span class="theme-toggle-option theme-option-dark" aria-hidden="true">
+                    <i class="fa-solid fa-moon"></i>
+                </span>
+            </span>
+        </button>
+    </div>
     <div id="page-loader"></div>
 
-    <div class="auth-card-wrapper">
-        <div class="auth-card">
-            <!-- Brand Header -->
-            <div class="auth-brand">
-                <a href="{{ url_for('home') }}" class="brand-logo">
-                    <i class="fa-solid fa-graduation-cap" style="color: #6366F1;"></i>
-                    <span>ECET <strong>PORTAL</strong></span>
-                </a>
-                <h2>Welcome Back</h2>
-                <p class="auth-subtitle">Sign in to continue your AP E-CET preparation</p>
-            </div>
+    <!-- Soft Neumorphic Floating Background Bubbles (Behind Card) -->
+    <div class="auth-bg-bubbles" aria-hidden="true">
+        <div class="auth-bubble bubble-1"></div>
+        <div class="auth-bubble bubble-2"></div>
+        <div class="auth-bubble bubble-3"></div>
+        <div class="auth-bubble bubble-4"></div>
+        <div class="auth-bubble bubble-5"></div>
+    </div>
 
-            <!-- Flash Alert Messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-container">
-                {% for category, message in messages %}
-                    <div class="flash-alert alert-{{ category }}">
-                        <i class="fa-solid fa-circle-info"></i> {{ message }}
+    <!-- 3D Perspective Scene Container -->
+    <div class="auth-scene">
+        <div class="auth-card-wrapper" id="authCardWrapper">
+            <div class="auth-card is-login-active" id="authFlipCard" data-initial-face="login">
+                
+                <!-- ========================================== -->
+                <!-- FRONT FACE: LOGIN                          -->
+                <!-- ========================================== -->
+                <div class="auth-face login-face" id="loginFace">
+                    <!-- Soft White Neumorphic Bubbles on Login Card -->
+                    <div class="card-bubble bubble-tl" aria-hidden="true"></div>
+                    <div class="card-bubble bubble-br" aria-hidden="true"></div>
+
+                    <!-- Brand Header -->
+                    <div class="auth-brand">
+                        <a href="{{ url_for('home') }}" class="brand-logo" title="Back to Home">
+                            <span class="brand-badge"><i class="fa-solid fa-graduation-cap"></i></span>
+                            <span class="brand-text">ECET-<strong>PREPHUB</strong></span>
+                        </a>
+
+                        <div class="auth-icon-badge">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+
+                        <h2>Welcome Back</h2>
+                        <p class="auth-subtitle">Sign in to continue your AP E-CET preparation</p>
                     </div>
-                {% endfor %}
-                </div>
-            {% endif %}
-            {% endwith %}
 
-            <form method="POST" action="{{ url_for('login') }}" class="auth-form" id="loginForm">
-                <!-- Email or Phone -->
-                <div class="form-group">
-                    <label for="loginInput"><i class="fa-solid fa-envelope"></i> Email or Mobile Number</label>
-                    <div class="input-icon-box">
-                        <input type="text" id="loginInput" name="email" placeholder="Enter your email or 10-digit mobile number" required autocomplete="username">
+                    <!-- Flash Alert Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash-alert alert-{{ category }}">
+                                <i class="fa-solid fa-circle-info"></i> {{ message }}
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <!-- Login Credential Form -->
+                    <form method="POST" action="{{ url_for('login') }}" class="auth-form" id="loginForm">
+                        <!-- Email or Phone -->
+                        <div class="form-group">
+                            <label for="loginInput"><i class="fa-solid fa-envelope"></i> Email or Mobile Number</label>
+                            <div class="input-icon-box">
+                                <div class="input-light-track" aria-hidden="true"></div>
+                                <input type="text" id="loginInput" name="email" placeholder="Enter your email or 10-digit mobile number" required autocomplete="username">
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="loginPassword"><i class="fa-solid fa-lock"></i> Password</label>
+                            <div class="input-icon-box">
+                                <div class="input-light-track" aria-hidden="true"></div>
+                                <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required autocomplete="current-password">
+                                <button type="button" class="eye-toggle-btn" id="loginEyeBtn" onclick="togglePasswordVisibility('loginPassword', 'loginEye')" aria-label="Toggle password visibility">
+                                    <i class="fa-solid fa-eye eye-toggle" id="loginEye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button (Sign In) -->
+                        <button type="submit" class="btn-auth-submit" id="btnLoginSubmit">
+                            <span>Sign In <i class="fa-solid fa-arrow-right"></i></span>
+                        </button>
+                    </form>
+
+                    <!-- Bottom Navigation Switch Section (Flip to Register) -->
+                    <div class="auth-switch-section">
+                        <p class="switch-prompt-text">Don't have an account?</p>
+                        <button type="button" class="auth-switch-circle" id="flipToRegisterBtn" aria-label="Switch to Create Account">
+                            <span class="circle-icon-wrap">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </span>
+                            <span>Create Account</span>
+                        </button>
+                        <a href="{{ url_for('home') }}" class="back-home-link"><i class="fa-solid fa-house"></i> Back to Home</a>
                     </div>
                 </div>
 
-                <!-- Password -->
-                <div class="form-group">
-                    <label for="loginPassword"><i class="fa-solid fa-lock"></i> Password</label>
-                    <div class="input-icon-box">
-                        <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required autocomplete="current-password">
-                        <i class="fa-solid fa-eye eye-toggle" id="loginEye" onclick="togglePasswordVisibility('loginPassword', 'loginEye')"></i>
+                <!-- ========================================== -->
+                <!-- BACK FACE: REGISTER                        -->
+                <!-- ========================================== -->
+                <div class="auth-face register-face" id="registerFace">
+                    <!-- Soft White Neumorphic Bubbles on Register Card -->
+                    <div class="card-bubble bubble-tl" aria-hidden="true"></div>
+                    <div class="card-bubble bubble-br" aria-hidden="true"></div>
+
+                    <!-- Brand Header -->
+                    <div class="auth-brand">
+                        <a href="{{ url_for('home') }}" class="brand-logo" title="Back to Home">
+                            <span class="brand-badge"><i class="fa-solid fa-graduation-cap"></i></span>
+                            <span class="brand-text">ECET-<strong>PREPHUB</strong></span>
+                        </a>
+
+                        <div class="auth-icon-badge">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+
+                        <h2>Create Your Account</h2>
+                        <p class="auth-subtitle">Start your personalized AP E-CET preparation</p>
+                    </div>
+
+                    <!-- Flash Alert Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-container">
+                        {% for category, message in messages %}
+                            <div class="flash-alert alert-{{ category }}">
+                                <i class="fa-solid fa-circle-info"></i> {{ message }}
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <!-- Client-side Validation Error Alert Box -->
+                    <div id="validationError" class="flash-alert alert-error" style="display: none; margin-bottom: 1.15rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> <span id="validationErrorText"></span>
+                    </div>
+
+                    <!-- Register Credential Form -->
+                    <form method="POST" action="{{ url_for('register') }}" class="auth-form" id="registerForm">
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label for="regName"><i class="fa-solid fa-user"></i> Full Name</label>
+                            <div class="input-icon-box">
+                                <div class="input-light-track" aria-hidden="true"></div>
+                                <input type="text" id="regName" name="name" placeholder="Enter your full name" required autocomplete="name">
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label for="regEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                            <div class="input-icon-box">
+                                <div class="input-light-track" aria-hidden="true"></div>
+                                <input type="email" id="regEmail" name="email" placeholder="Enter your email address" required autocomplete="email">
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="form-group">
+                            <label for="regPhone"><i class="fa-solid fa-phone"></i> Mobile Number</label>
+                            <div class="input-icon-box">
+                                <div class="input-light-track" aria-hidden="true"></div>
+                                <input type="tel" id="regPhone" name="phone" placeholder="Enter your 10-digit mobile number" required maxlength="10" autocomplete="tel">
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="regPassword"><i class="fa-solid fa-lock"></i> Password</label>
+                            <div class="input-icon-box">
+                                <div class="input-light-track" aria-hidden="true"></div>
+                                <input type="password" id="regPassword" name="password" placeholder="Create a strong password (min. 6 characters)" required minlength="6" autocomplete="new-password">
+                                <button type="button" class="eye-toggle-btn" id="regEyeBtn" onclick="togglePasswordVisibility('regPassword', 'regEye')" aria-label="Toggle password visibility">
+                                    <i class="fa-solid fa-eye eye-toggle" id="regEye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-group">
+                            <label for="regConfirmPassword"><i class="fa-solid fa-shield-halved"></i> Confirm Password</label>
+                            <div class="input-icon-box">
+                                <div class="input-light-track" aria-hidden="true"></div>
+                                <input type="password" id="regConfirmPassword" name="confirm_password" placeholder="Re-enter your password" required minlength="6" autocomplete="new-password">
+                                <button type="button" class="eye-toggle-btn" id="regConfirmEyeBtn" onclick="togglePasswordVisibility('regConfirmPassword', 'regConfirmEye')" aria-label="Toggle confirm password visibility">
+                                    <i class="fa-solid fa-eye eye-toggle" id="regConfirmEye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button (Create Account) -->
+                        <button type="submit" class="btn-auth-submit" id="btnRegSubmit">
+                            <span>Create Account <i class="fa-solid fa-arrow-right"></i></span>
+                        </button>
+                    </form>
+
+                    <!-- Bottom Navigation Switch Section (Flip to Login) -->
+                    <div class="auth-switch-section">
+                        <p class="switch-prompt-text">Already have an account?</p>
+                        <button type="button" class="auth-switch-circle is-back" id="flipToLoginBtn" aria-label="Switch to Sign In">
+                            <span class="circle-icon-wrap">
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                            </span>
+                            <span>Sign In</span>
+                        </button>
+                        <a href="{{ url_for('home') }}" class="back-home-link"><i class="fa-solid fa-house"></i> Back to Home</a>
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn-auth-submit" id="btnLoginSubmit">
-                    <span>Sign In <i class="fa-solid fa-arrow-right"></i></span>
-                </button>
-            </form>
-
-            <!-- Switch to Register Link -->
-            <div class="auth-switch-box">
-                <p>Don't have an account? <a href="{{ url_for('register') }}" class="auth-link">Create one</a></p>
-                <p style="margin-top: 0.75rem;"><a href="{{ url_for('home') }}" class="back-home-link"><i class="fa-solid fa-arrow-left"></i> Back to Home</a></p>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='dist/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
     <script>
         function togglePasswordVisibility(inputId, eyeId) {
             const input = document.getElementById(inputId);
             const eye = document.getElementById(eyeId);
+            if (!input || !eye) return;
             if (input.type === "password") {
                 input.type = "text";
                 eye.classList.remove("fa-eye");
@@ -89,11 +273,55 @@
             }
         }
 
-        document.getElementById("loginForm").addEventListener("submit", function() {
-            const btn = document.getElementById("btnLoginSubmit");
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Signing In...`;
-        });
+        const loginForm = document.getElementById("loginForm");
+        if (loginForm) {
+            loginForm.addEventListener("submit", function() {
+                const btn = document.getElementById("btnLoginSubmit");
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Signing In...`;
+                }
+            });
+        }
+
+        const registerForm = document.getElementById("registerForm");
+        if (registerForm) {
+            registerForm.addEventListener("submit", function(e) {
+                const phone = document.getElementById("regPhone").value.trim();
+                const pass = document.getElementById("regPassword").value;
+                const confirmPass = document.getElementById("regConfirmPassword").value;
+                const errBox = document.getElementById("validationError");
+                const errText = document.getElementById("validationErrorText");
+
+                if (errBox) errBox.style.display = "none";
+
+                // Mobile validation (exactly 10 digits)
+                if (!/^\d{10}$/.test(phone)) {
+                    e.preventDefault();
+                    if (errText && errBox) {
+                        errText.innerText = "Please enter a valid 10-digit mobile number.";
+                        errBox.style.display = "flex";
+                    }
+                    return false;
+                }
+
+                // Confirm password match validation
+                if (pass !== confirmPass) {
+                    e.preventDefault();
+                    if (errText && errBox) {
+                        errText.innerText = "Passwords do not match. Please re-check.";
+                        errBox.style.display = "flex";
+                    }
+                    return false;
+                }
+
+                const btn = document.getElementById("btnRegSubmit");
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...`;
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Tutor — AP E-CET Portal</title>
+    <title>AI Tutor — ECET-PREPHUB</title>
 
     <!-- Google Fonts & Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -15,6 +15,20 @@
 
     <!-- Marked.js Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Anti-FOUC Theme Script (Immediate execution before paint) -->
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('ecet-prephub-theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
 </head>
 <body class="dashboard-body ai-tutor-body">
     <div id="page-loader"></div>
@@ -25,7 +39,7 @@
         <div class="sidebar-header">
             <a href="{{ url_for('dashboard') }}" class="brand-logo">
                 <i class="fa-solid fa-graduation-cap"></i>
-                <span>ECET <strong>PORTAL</strong></span>
+                <span>ECET-<strong>PREPHUB</strong></span>
             </a>
             <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
         </div>
@@ -52,11 +66,24 @@
                 </button>
                 <a href="{{ url_for('dashboard') }}" class="brand-logo">
                     <i class="fa-solid fa-graduation-cap"></i>
-                    <span>ECET <strong>PORTAL</strong></span>
+                    <span>ECET-<strong>PREPHUB</strong></span>
                 </a>
             </div>
 
             <div class="user-profile-menu">
+        <!-- Theme Switcher (Light / Night Mode) -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" role="switch" aria-checked="false" aria-label="Switch to Night Mode" title="Switch to Night Mode">
+            <span class="theme-toggle-slider">
+                <span class="theme-toggle-indicator"></span>
+                <span class="theme-toggle-option theme-option-light" aria-hidden="true">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span class="theme-toggle-divider" aria-hidden="true">/</span>
+                <span class="theme-toggle-option theme-option-dark" aria-hidden="true">
+                    <i class="fa-solid fa-moon"></i>
+                </span>
+            </span>
+        </button>
                 <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
                     {% if session.get('student_profile_image') %}
                         <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
@@ -70,12 +97,18 @@
     </header>
 
     <main class="dashboard-main-content">
-        <!-- Main AI Chat Workspace Layout (Matching Reference Screenshot) -->
+        <!-- Main AI Chat Workspace Layout -->
         <div class="workspace-layout">
-            <!-- Left Fixed Workspace Sidebar (~260px) -->
-            <aside class="workspace-sidebar">
-                <div class="sidebar-brand-title">
-                    <i class="fa-solid fa-robot"></i> E-CET AI Tutor
+            <!-- Mobile Chat History Drawer Overlay -->
+            <div id="workspaceDrawerOverlay" class="workspace-drawer-overlay" onclick="closeChatDrawer()"></div>
+
+            <!-- Left Workspace Sidebar (Desktop Fixed Sidebar & Mobile Off-canvas Drawer) -->
+            <aside class="workspace-sidebar" id="workspaceSidebar">
+                <div class="sidebar-header-row">
+                    <div class="sidebar-brand-title">
+                        <i class="fa-solid fa-robot"></i> E-CET AI Tutor
+                    </div>
+                    <button type="button" class="drawer-close-btn" onclick="closeChatDrawer()" aria-label="Close conversation history">&times;</button>
                 </div>
 
                 <!-- New Chat Button -->
@@ -152,29 +185,68 @@
             <!-- Right Main Content Area -->
             <section class="workspace-chat-container">
                 <div class="workspace-header">
-                    <h2><i class="fa-solid fa-robot"></i> AI Tutor</h2>
-                    {% if from_review %}
-                        <a href="{{ url_for('ai_exam_setup') }}" class="btn-secondary-action" style="padding: 0.4rem 1.1rem; border-radius: 1.5rem; font-size: 0.85rem; background: rgba(99, 102, 241, 0.2); color: #A5B4FC; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(99, 102, 241, 0.4);">
-                            <i class="fa-solid fa-arrow-left"></i> Return to Exam Review
-                        </a>
-                    {% endif %}
+                    <div class="workspace-header-left">
+                        <button type="button" class="mobile-drawer-toggle" id="mobileDrawerToggle" onclick="toggleChatDrawer(event)" aria-label="Open conversation history" title="Conversation History">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                        <div class="workspace-header-brand">
+                            <i class="fa-solid fa-robot"></i>
+                            <span>AI Tutor</span>
+                        </div>
+                    </div>
+
+                    <div class="workspace-header-actions">
+                        {% if from_review %}
+                            <a href="{{ url_for('ai_exam_setup') }}" class="btn-review-return" title="Return to Exam Review">
+                                <i class="fa-solid fa-arrow-left"></i> <span class="return-text">Exam Review</span>
+                            </a>
+                        {% endif %}
+                        <button type="button" class="mobile-new-chat-btn" onclick="startNewChat()" aria-label="Start new chat" title="New chat">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <div class="mobile-portal-dropdown-wrapper">
+                            <button type="button" class="mobile-more-btn" onclick="togglePortalMenu(event)" aria-label="Portal Navigation" title="More options">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <div class="mobile-portal-dropdown" id="mobilePortalDropdown">
+                                <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Portal Home</a>
+                                <a href="{{ url_for('quiz') }}"><i class="fa-solid fa-pen-to-square"></i> CBT Mock Quiz</a>
+                                <a href="{{ url_for('notes') }}"><i class="fa-solid fa-book-open"></i> Notes & PDFs</a>
+                                <a href="{{ url_for('profile') }}"><i class="fa-solid fa-user"></i> Student Profile</a>
+                                <a href="javascript:void(0)" onclick="confirmLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Chat Display Window with Centered Empty State -->
                 <div id="aiChatWindow" class="chat-window">
                     <div class="empty-chat-state" id="emptyChatState">
-                        <h2>Ready when you are.</h2>
+                        <div class="empty-state-icon"><i class="fa-solid fa-robot"></i></div>
+                        <h2>AI Tutor</h2>
+                        <p class="empty-state-subtitle">Ask me anything about ECET preparation, engineering subjects, formulas, or code.</p>
+                        <div class="empty-state-suggestions">
+                            <button type="button" class="chip-suggestion" onclick="fillPrompt('Explain Dijkstra\'s algorithm with an example')">
+                                <i class="fa-solid fa-lightbulb"></i> Dijkstra's Algorithm
+                            </button>
+                            <button type="button" class="chip-suggestion" onclick="fillPrompt('What are the ACID properties in DBMS?')">
+                                <i class="fa-solid fa-database"></i> ACID Properties
+                            </button>
+                            <button type="button" class="chip-suggestion" onclick="fillPrompt('Important integration formulas for ECET Mathematics')">
+                                <i class="fa-solid fa-square-root-variable"></i> Math Formulas
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Bottom Centered Pill-Shaped Chat Composer -->
-                <div class="chat-composer-container">
+                <div class="chat-composer-container" id="chatComposerContainer">
                     <form id="aiDoubtForm" class="chat-composer-box">
-                        <button type="button" class="composer-attach-btn" title="Add File or Context">
+                        <button type="button" class="composer-attach-btn" title="Add File or Context" aria-label="Attach File or Code">
                             <i class="fa-solid fa-plus"></i>
                         </button>
-                        <textarea id="aiDoubtInput" rows="1" placeholder="Ask anything..." required></textarea>
-                        <button type="submit" id="sendBtn" class="composer-send-btn" title="Send Message" disabled>
+                        <textarea id="aiDoubtInput" rows="1" placeholder="Ask AI Tutor anything..." aria-label="Message prompt" required></textarea>
+                        <button type="submit" id="sendBtn" class="composer-send-btn" title="Send Message" aria-label="Send message" disabled>
                             <i class="fa-solid fa-arrow-up"></i>
                         </button>
                     </form>
@@ -184,6 +256,7 @@
     </main>
 
     <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='dist/main.js') }}"></script>
     <script>
         let currentConvId = null;
         const doubtForm = document.getElementById("aiDoubtForm");
@@ -191,13 +264,66 @@
         const sendBtn = document.getElementById("sendBtn");
         const chatWindow = document.getElementById("aiChatWindow");
 
+        function openChatDrawer() {
+            const drawer = document.getElementById("workspaceSidebar");
+            const overlay = document.getElementById("workspaceDrawerOverlay");
+            if (!drawer || !overlay) return;
+            drawer.classList.add("drawer-open");
+            overlay.classList.add("overlay-open");
+            if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                gsap.to(overlay, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+                gsap.fromTo(drawer, { x: '-100%' }, { x: '0%', duration: 0.3, ease: 'power3.out' });
+            }
+        }
+
+        function closeChatDrawer() {
+            const drawer = document.getElementById("workspaceSidebar");
+            const overlay = document.getElementById("workspaceDrawerOverlay");
+            if (!drawer || !overlay) return;
+            if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && drawer.classList.contains("drawer-open")) {
+                gsap.to(overlay, { opacity: 0, duration: 0.2, ease: 'power2.in' });
+                gsap.to(drawer, { x: '-100%', duration: 0.25, ease: 'power3.in', onComplete: () => {
+                    drawer.classList.remove("drawer-open");
+                    overlay.classList.remove("overlay-open");
+                    gsap.set(drawer, { clearProps: 'transform' });
+                    gsap.set(overlay, { clearProps: 'opacity' });
+                }});
+            } else {
+                drawer.classList.remove("drawer-open");
+                overlay.classList.remove("overlay-open");
+            }
+        }
+
+        function toggleChatDrawer(e) {
+            if (e) e.stopPropagation();
+            const drawer = document.getElementById("workspaceSidebar");
+            if (drawer && drawer.classList.contains("drawer-open")) {
+                closeChatDrawer();
+            } else {
+                openChatDrawer();
+            }
+        }
+
+        function togglePortalMenu(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById("mobilePortalDropdown");
+            if (menu) menu.classList.toggle("show-dropdown");
+        }
+
+        function fillPrompt(text) {
+            if (!doubtInput) return;
+            doubtInput.value = text;
+            doubtInput.focus();
+            doubtInput.dispatchEvent(new Event('input'));
+        }
+
         function toggleSidebar() {
             document.getElementById("appSidebar").classList.toggle("open-sidebar");
             document.getElementById("sidebarOverlay").classList.toggle("open-overlay");
         }
 
         function confirmLogout() {
-            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+            if (confirm("Are you sure you want to log out of ECET-PREPHUB?")) {
                 window.location.href = "{{ url_for('logout') }}";
             }
         }
@@ -224,12 +350,17 @@
 
         document.addEventListener("click", function() {
             document.querySelectorAll(".dropdown-chat-menu").forEach(m => m.classList.remove("show-menu", "open-upward"));
+            const portalDropdown = document.getElementById("mobilePortalDropdown");
+            if (portalDropdown) portalDropdown.classList.remove("show-dropdown");
         });
 
-        // Close menus and sidebar on Escape key
+        // Close menus, drawer, and sidebar on Escape key
         document.addEventListener("keydown", function(e) {
             if (e.key === "Escape") {
                 document.querySelectorAll(".dropdown-chat-menu").forEach(m => m.classList.remove("show-menu", "open-upward"));
+                const portalDropdown = document.getElementById("mobilePortalDropdown");
+                if (portalDropdown) portalDropdown.classList.remove("show-dropdown");
+                closeChatDrawer();
                 const sidebar = document.getElementById("appSidebar");
                 const overlay = document.getElementById("sidebarOverlay");
                 if (sidebar && sidebar.classList.contains("open-sidebar")) {
@@ -239,14 +370,31 @@
             }
         });
 
-        function startNewChat() {
-            currentConvId = null;
-            chatWindow.innerHTML = `
-                <div class="empty-chat-state" id="emptyChatState">
-                    <h2>Ready when you are.</h2>
+        const EMPTY_STATE_HTML = `
+            <div class="empty-chat-state" id="emptyChatState">
+                <div class="empty-state-icon"><i class="fa-solid fa-robot"></i></div>
+                <h2>AI Tutor</h2>
+                <p class="empty-state-subtitle">Ask me anything about ECET preparation, engineering subjects, formulas, or code.</p>
+                <div class="empty-state-suggestions">
+                    <button type="button" class="chip-suggestion" onclick="fillPrompt('Explain Dijkstra\'s algorithm with an example')">
+                        <i class="fa-solid fa-lightbulb"></i> Dijkstra's Algorithm
+                    </button>
+                    <button type="button" class="chip-suggestion" onclick="fillPrompt('What are the ACID properties in DBMS?')">
+                        <i class="fa-solid fa-database"></i> ACID Properties
+                    </button>
+                    <button type="button" class="chip-suggestion" onclick="fillPrompt('Important integration formulas for ECET Mathematics')">
+                        <i class="fa-solid fa-square-root-variable"></i> Math Formulas
+                    </button>
                 </div>
-            `;
+            </div>
+        `;
+
+        function startNewChat() {
+            if (window.stopTypingWave) window.stopTypingWave();
+            currentConvId = null;
+            chatWindow.innerHTML = EMPTY_STATE_HTML;
             document.querySelectorAll(".chat-session-item").forEach(el => el.classList.remove("active-session"));
+            if (window.innerWidth <= 768) closeChatDrawer();
             doubtInput.focus();
         }
 
@@ -326,10 +474,12 @@
         });
 
         async function loadConversation(convId) {
+            if (window.stopTypingWave) window.stopTypingWave();
             currentConvId = convId;
             document.querySelectorAll(".chat-session-item").forEach(el => el.classList.remove("active-session"));
             const targetItem = document.getElementById("convItem" + convId);
             if (targetItem) targetItem.classList.add("active-session");
+            if (window.innerWidth <= 768) closeChatDrawer();
 
             chatWindow.innerHTML = `<div class="chat-bubble assistant-bubble"><div class="bubble-text">Loading conversation...</div></div>`;
 
@@ -339,11 +489,7 @@
                 if (data.messages) {
                     chatWindow.innerHTML = "";
                     if (data.messages.length === 0) {
-                        chatWindow.innerHTML = `
-                            <div class="empty-chat-state" id="emptyChatState">
-                                <h2>Ready when you are.</h2>
-                            </div>
-                        `;
+                        chatWindow.innerHTML = EMPTY_STATE_HTML;
                     } else {
                         data.messages.forEach(m => {
                             appendBubble(m.role, m.content);
@@ -468,6 +614,13 @@
             div.innerHTML = `<div class="bubble-text">${contentHtml}</div>`;
             chatWindow.appendChild(div);
             chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                gsap.fromTo(div,
+                    { opacity: 0, y: 12 },
+                    { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }
+                );
+            }
         }
 
         function appendLoadingBubble() {
@@ -475,15 +628,45 @@
             const div = document.createElement("div");
             div.className = "chat-bubble assistant-bubble loading-bubble";
             div.id = id;
-            div.innerHTML = `<div class="typing-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+            div.innerHTML = `<div class="typing-dots" aria-label="AI Tutor is thinking"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
             chatWindow.appendChild(div);
             chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Start smooth continuous left-to-right wave animation
+            if (typeof window.startTypingWave === "function") {
+                window.startTypingWave(div);
+            } else if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                const dots = div.querySelectorAll('.dot');
+                if (dots && dots.length > 0) {
+                    gsap.set(dots, { y: 0, scale: 1, opacity: 0.45 });
+                    div._typingTween = gsap.to(dots, {
+                        y: -6.5,
+                        scale: 1.15,
+                        opacity: 1,
+                        duration: 0.5,
+                        stagger: { each: 0.15, repeat: -1, yoyo: true },
+                        ease: "sine.inOut"
+                    });
+                }
+            } else {
+                const dotsContainer = div.querySelector('.typing-dots');
+                if (dotsContainer) dotsContainer.classList.add('fallback-wave');
+            }
             return id;
         }
 
         function removeBubble(id) {
+            // Stop and kill GSAP wave animation to prevent memory leaks and duplicate timelines
+            if (typeof window.stopTypingWave === "function") {
+                window.stopTypingWave(id);
+            }
             const el = document.getElementById(id);
-            if (el) el.remove();
+            if (el) {
+                if (el._typingTween && el._typingTween.kill) {
+                    el._typingTween.kill();
+                }
+                el.remove();
+            }
         }
 
         // Auto-load conversation if passed via active_conv_id or URL parameter

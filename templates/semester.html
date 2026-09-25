@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Semester — AP E-CET Portal</title>
+    <title>Select Semester — ECET-PREPHUB</title>
 
     <!-- Google Fonts & Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -12,6 +12,20 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <!-- Anti-FOUC Theme Script (Immediate execution before paint) -->
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('ecet-prephub-theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
 </head>
 <body class="dashboard-body semester-page">
     <div id="page-loader"></div>
@@ -22,7 +36,7 @@
         <div class="sidebar-header">
             <a href="{{ url_for('dashboard') }}" class="brand-logo">
                 <i class="fa-solid fa-graduation-cap"></i>
-                <span>ECET <strong>PORTAL</strong></span>
+                <span>ECET-<strong>PREPHUB</strong></span>
             </a>
             <button class="btn-close-sidebar" onclick="toggleSidebar()">&times;</button>
         </div>
@@ -63,11 +77,24 @@
                 </button>
                 <a href="{{ url_for('dashboard') }}" class="brand-logo">
                     <i class="fa-solid fa-graduation-cap"></i>
-                    <span>ECET <strong>PORTAL</strong></span>
+                    <span>ECET-<strong>PREPHUB</strong></span>
                 </a>
             </div>
 
             <div class="user-profile-menu">
+        <!-- Theme Switcher (Light / Night Mode) -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" role="switch" aria-checked="false" aria-label="Switch to Night Mode" title="Switch to Night Mode">
+            <span class="theme-toggle-slider">
+                <span class="theme-toggle-indicator"></span>
+                <span class="theme-toggle-option theme-option-light" aria-hidden="true">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span class="theme-toggle-divider" aria-hidden="true">/</span>
+                <span class="theme-toggle-option theme-option-dark" aria-hidden="true">
+                    <i class="fa-solid fa-moon"></i>
+                </span>
+            </span>
+        </button>
                 <div class="user-pill" onclick="window.location.href='{{ url_for('profile') }}'" style="cursor: pointer;" title="View Profile">
                     {% if session.get('student_profile_image') %}
                         <img src="{{ session['student_profile_image'] }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
@@ -82,38 +109,39 @@
 
     <main class="dashboard-main-content">
         <div class="semester-container" style="max-width: 900px; margin: 2rem auto; text-align: center;">
-            <h1 style="font-family: 'Outfit', sans-serif; font-size: 2.2rem; color: white; margin-bottom: 0.5rem;"><i class="fa-solid fa-graduation-cap" style="color: #6366F1;"></i> Select Your Semester</h1>
-            <p style="color: #94A3B8; margin-bottom: 2.5rem;">Branch: <strong style="color: #A5B4FC; text-transform: uppercase;">{{ branch }}</strong></p>
+            <h1 class="page-header-title"><i class="fa-solid fa-graduation-cap" style="color: #6366F1;"></i> Select Your Semester</h1>
+            <p class="page-header-subtitle">Branch: <strong style="color: #A5B4FC; text-transform: uppercase;">{{ branch }}</strong></p>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
-                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='first_year') }}" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
-                    <i class="fa-solid fa-book-open" style="font-size: 2.5rem; color: #6366F1;"></i>
-                    <h2 style="font-size: 1.3rem; margin: 0; font-family: 'Outfit', sans-serif;">First Year</h2>
-                    <p style="margin: 0; font-size: 0.85rem; color: #94A3B8;">Semester 1 & 2 Notes</p>
+                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='first_year') }}" aria-label="First Year - Semester 1 & 2 Notes">
+                    <i class="fa-solid fa-book-open semester-icon" style="color: #6366F1;"></i>
+                    <h2 class="semester-title">First Year</h2>
+                    <p class="semester-desc">Semester 1 & 2 Notes</p>
                 </a>
 
-                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='third_sem') }}" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
-                    <i class="fa-solid fa-graduation-cap" style="font-size: 2.5rem; color: #8B5CF6;"></i>
-                    <h2 style="font-size: 1.3rem; margin: 0; font-family: 'Outfit', sans-serif;">Third Semester</h2>
-                    <p style="margin: 0; font-size: 0.85rem; color: #94A3B8;">Study Materials</p>
+                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='third_sem') }}" aria-label="Third Semester - Study Materials">
+                    <i class="fa-solid fa-graduation-cap semester-icon" style="color: #8B5CF6;"></i>
+                    <h2 class="semester-title">Third Semester</h2>
+                    <p class="semester-desc">Study Materials</p>
                 </a>
 
-                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='fourth_sem') }}" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
-                    <i class="fa-solid fa-laptop-code" style="font-size: 2.5rem; color: #10B981;"></i>
-                    <h2 style="font-size: 1.3rem; margin: 0; font-family: 'Outfit', sans-serif;">Fourth Semester</h2>
-                    <p style="margin: 0; font-size: 0.85rem; color: #94A3B8;">Lecture Notes</p>
+                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='fourth_sem') }}" aria-label="Fourth Semester - Lecture Notes">
+                    <i class="fa-solid fa-laptop-code semester-icon" style="color: #10B981;"></i>
+                    <h2 class="semester-title">Fourth Semester</h2>
+                    <p class="semester-desc">Lecture Notes</p>
                 </a>
 
-                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='fifth_sem') }}" style="background: #1E293B; border: 1px solid rgba(255,255,255,0.12); border-radius: 1.25rem; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: all 0.2s;">
-                    <i class="fa-solid fa-user-graduate" style="font-size: 2.5rem; color: #F59E0B;"></i>
-                    <h2 style="font-size: 1.3rem; margin: 0; font-family: 'Outfit', sans-serif;">Fifth Semester</h2>
-                    <p style="margin: 0; font-size: 0.85rem; color: #94A3B8;">Final Year Subjects</p>
+                <a class="semester-card" href="{{ url_for('subject_notes', branch=branch, semester='fifth_sem') }}" aria-label="Fifth Semester - Final Year Subjects">
+                    <i class="fa-solid fa-user-graduate semester-icon" style="color: #F59E0B;"></i>
+                    <h2 class="semester-title">Fifth Semester</h2>
+                    <p class="semester-desc">Final Year Subjects</p>
                 </a>
             </div>
         </div>
     </main>
 
     <script src="{{ url_for('static', filename='js/loader.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='dist/main.js') }}"></script>
     <script>
         function toggleSidebar() {
             document.getElementById("appSidebar").classList.toggle("open-sidebar");
@@ -121,10 +149,18 @@
         }
 
         function confirmLogout() {
-            if (confirm("Are you sure you want to log out of AP E-CET Portal?")) {
+            if (confirm("Are you sure you want to log out of ECET-PREPHUB?")) {
                 window.location.href = "{{ url_for('logout') }}";
             }
         }
+        // Pointer-follow subtle radial illumination
+        document.querySelectorAll('.semester-card').forEach(function(card) {
+            card.addEventListener('mousemove', function(e) {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px');
+                card.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px');
+            });
+        });
     </script>
 </body>
 </html>

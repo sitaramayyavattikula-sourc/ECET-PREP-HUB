@@ -1,4 +1,4 @@
-/* E-CET Portal Dashboard & AI Assistant Stylesheet */
+/* ECET-PREPHUB Dashboard & AI Assistant Stylesheet */
 :root {
     --bg-dark: #0B0F19;
     --surface-glass: rgba(30, 41, 59, 0.7);
@@ -890,11 +890,11 @@ body.dashboard-body {
     flex-wrap: nowrap !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 6px !important;
+    gap: 7px !important;
     padding: 6px 12px !important;
     line-height: 1 !important;
-    font-size: 0 !important;
     white-space: nowrap !important;
+    min-height: 24px !important;
 }
 
 .typing-dots span, 
@@ -908,44 +908,48 @@ body.dashboard-body {
     max-height: 8px !important;
     border-radius: 50% !important;
     background-color: #818CF8 !important;
-    opacity: 0.35 !important;
-    transform: scale(0.8) !important;
-    animation: typingPulse 1.4s infinite ease-in-out both !important;
+    opacity: 0.45;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-    color: transparent !important;
-    overflow: hidden !important;
-    box-shadow: 0 0 8px rgba(129, 140, 248, 0.4) !important;
+    box-shadow: 0 0 6px rgba(129, 140, 248, 0.35) !important;
+    will-change: transform, opacity;
 }
 
-.typing-dots span:nth-child(1),
-.typing-dots .dot:nth-child(1) {
-    animation-delay: -0.32s !important;
+.chat-bubble.loading-bubble {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0.5rem 0.85rem !important;
+    background: rgba(30, 41, 59, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 1.25rem !important;
+    border-bottom-left-radius: 0.35rem !important;
+    width: fit-content !important;
+    max-width: 90px !important;
+    min-height: 38px !important;
+    box-sizing: border-box !important;
 }
 
-.typing-dots span:nth-child(2),
-.typing-dots .dot:nth-child(2) {
-    animation-delay: -0.16s !important;
+/* Fallback CSS Wave Animation (without !important so GSAP takes precedence) */
+.typing-dots.fallback-wave .dot {
+    animation: cssTypingWave 1.2s infinite ease-in-out both;
 }
+.typing-dots.fallback-wave .dot:nth-child(1) { animation-delay: 0s; }
+.typing-dots.fallback-wave .dot:nth-child(2) { animation-delay: 0.16s; }
+.typing-dots.fallback-wave .dot:nth-child(3) { animation-delay: 0.32s; }
 
-.typing-dots span:nth-child(3),
-.typing-dots .dot:nth-child(3) {
-    animation-delay: 0s !important;
-}
-
-@keyframes typingPulse {
-    0%, 80%, 100% {
-        transform: scale(0.75);
-        opacity: 0.3;
-        background-color: #818CF8;
+@keyframes cssTypingWave {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.45;
     }
     40% {
-        transform: scale(1.2);
+        transform: translateY(-6.5px) scale(1.15);
         opacity: 1;
-        background-color: #C084FC;
+    }
+    70% {
+        transform: translateY(0) scale(1);
+        opacity: 0.55;
     }
 }
 
@@ -1769,6 +1773,15 @@ body.dashboard-body {
 body.ai-tutor-body {
     overflow: hidden !important;
     height: 100vh;
+    height: 100dvh;
+}
+
+body.ai-tutor-body .dashboard-main-content {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    height: calc(100vh - 70px);
 }
 
 .workspace-layout {
@@ -2008,21 +2021,109 @@ body.ai-tutor-body {
 }
 
 .workspace-header {
-    padding: 1.25rem 2rem;
+    padding: 1rem 2rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: #0F172A;
+    flex-shrink: 0;
+    z-index: 10;
 }
 
-.workspace-header h2 {
+.workspace-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.workspace-header-brand {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.25rem;
-    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
     color: #FFFFFF;
     display: flex;
     align-items: center;
     gap: 0.6rem;
+}
+
+.workspace-header-brand i {
+    color: #818CF8;
+}
+
+.workspace-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mobile-drawer-toggle,
+.mobile-new-chat-btn,
+.mobile-more-btn,
+.drawer-close-btn {
+    display: none;
+}
+
+/* Review return link button */
+.btn-review-return {
+    padding: 0.4rem 1rem;
+    border-radius: 1.5rem;
+    font-size: 0.85rem;
+    background: rgba(99, 102, 241, 0.2);
+    color: #A5B4FC;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    transition: all 0.2s ease;
+}
+
+.btn-review-return:hover {
+    background: rgba(99, 102, 241, 0.35);
+    color: #FFFFFF;
+}
+
+/* Mobile Portal Dropdown Menu */
+.mobile-portal-dropdown-wrapper {
+    position: relative;
+}
+
+.mobile-portal-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: #1E293B;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.85rem;
+    padding: 0.4rem;
+    min-width: 175px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.mobile-portal-dropdown.show-dropdown {
+    display: flex;
+}
+
+.mobile-portal-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    color: #CBD5E1;
+    text-decoration: none;
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mobile-portal-dropdown a:hover {
+    background: rgba(99, 102, 241, 0.2);
+    color: #FFFFFF;
 }
 
 .chat-window {
@@ -2034,17 +2135,87 @@ body.ai-tutor-body {
     gap: 1.25rem;
 }
 
+/* Empty Chat State - Modern, Compact & Engaging */
 .empty-chat-state {
     margin: auto;
     text-align: center;
     color: #64748B;
+    max-width: 440px;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.empty-state-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #818CF8;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.2);
+    margin-bottom: 0.25rem;
 }
 
 .empty-chat-state h2 {
     font-family: 'Outfit', sans-serif;
-    font-size: 2rem;
+    font-size: 1.4rem;
     font-weight: 700;
-    color: #475569;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.empty-state-subtitle {
+    font-size: 0.86rem;
+    color: #94A3B8;
+    line-height: 1.45;
+    margin: 0;
+}
+
+.empty-state-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.chip-suggestion {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.85rem;
+    padding: 0.55rem 0.85rem;
+    color: #CBD5E1;
+    font-size: 0.82rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.2s ease;
+}
+
+.chip-suggestion i {
+    color: #818CF8;
+    font-size: 0.85rem;
+}
+
+.chip-suggestion:hover, .chip-suggestion:active {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.4);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+.workspace-drawer-overlay {
+    display: none;
 }
 
 /* =========================================================
@@ -2356,7 +2527,7 @@ body.ai-tutor-body {
 .assistant-bubble .bubble-text h3,
 .assistant-bubble .bubble-text h4 {
     margin: 1rem 0 0.5rem 0;
-    color: #0F172A;
+    color: #FFFFFF;
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 700;
 }
@@ -2379,7 +2550,13 @@ body.ai-tutor-body {
 
 .assistant-bubble .bubble-text strong,
 .assistant-bubble .bubble-text b {
-    color: #0F172A;
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.assistant-bubble .bubble-text li strong,
+.assistant-bubble .bubble-text li b {
+    color: #FFFFFF;
     font-weight: 700;
 }
 
@@ -2428,8 +2605,8 @@ body.ai-tutor-body {
     border-left: 4px solid #6366F1;
     margin: 0.85rem 0;
     padding: 0.5rem 0 0.5rem 1rem;
-    color: #475569;
-    background: #F8FAFC;
+    color: #E2E8F0;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 0 0.5rem 0.5rem 0;
     font-style: normal;
 }
@@ -2439,23 +2616,24 @@ body.ai-tutor-body {
     border-collapse: collapse;
     margin: 0.85rem 0;
     font-size: 0.9rem;
-    background: #FFFFFF;
+    background: rgba(15, 23, 42, 0.6);
     border-radius: 0.5rem;
     overflow: hidden;
-    border: 1px solid #E2E8F0;
+    border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .assistant-bubble .bubble-text th,
 .assistant-bubble .bubble-text td {
-    border: 1px solid #E2E8F0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 0.6rem 0.85rem;
     text-align: left;
+    color: #F8FAFC;
 }
 
 .assistant-bubble .bubble-text th {
-    background: #F1F5F9;
+    background: rgba(99, 102, 241, 0.2);
     font-weight: 600;
-    color: #1E293B;
+    color: #FFFFFF;
 }
 
 .assistant-bubble .bubble-text hr {
@@ -2520,30 +2698,207 @@ body.ai-tutor-body {
         padding: 1.25rem 1rem !important;
     }
     
-    /* AI Tutor Mobile Workspace */
-    .workspace-layout {
-        flex-direction: column !important;
-        height: calc(100vh - 60px) !important;
-    }
-    .workspace-sidebar {
+    /* =========================================================
+       AI Tutor Mobile Redesign: Proper Chat App Architecture
+       ========================================================= */
+    body.ai-tutor-body .app-navbar {
         display: none !important;
     }
-    .workspace-chat-container {
+    body.ai-tutor-body .dashboard-main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+        height: 100dvh !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+    }
+    body.ai-tutor-body .workspace-layout {
+        height: 100dvh !important;
+        height: 100vh !important;
+        max-height: 100dvh !important;
+        width: 100% !important;
+        flex-direction: column !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+        overflow: hidden !important;
+    }
+    body.ai-tutor-body .workspace-chat-container {
         width: 100% !important;
         height: 100% !important;
+        max-height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+        overflow: hidden !important;
+        position: relative !important;
+        background: #0B1120 !important;
     }
-    .chat-window {
-        padding: 1rem 1rem 6rem 1rem !important;
+    body.ai-tutor-body .workspace-header {
+        height: 54px !important;
+        min-height: 54px !important;
+        max-height: 54px !important;
+        padding: 0 0.85rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        background: #111B2E !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        flex-shrink: 0 !important;
+        z-index: 10 !important;
     }
-    .chat-bubble {
-        max-width: 90% !important;
+    .mobile-drawer-toggle,
+    .mobile-new-chat-btn,
+    .mobile-more-btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #E2E8F0;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
-    .chat-composer-container, .clean-composer-container {
-        bottom: 0.75rem !important;
-        width: 95% !important;
+    .mobile-drawer-toggle:active,
+    .mobile-new-chat-btn:active,
+    .mobile-more-btn:active {
+        background: rgba(99, 102, 241, 0.25);
+        color: #FFFFFF;
+        transform: scale(0.95);
     }
-    .chat-composer-box, .clean-composer-box {
+    body.ai-tutor-body .chat-window {
+        flex: 1 1 0% !important;
+        min-height: 0 !important;
+        height: auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 0.85rem 0.75rem 0.85rem 0.75rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.85rem !important;
+    }
+    body.ai-tutor-body .chat-bubble {
+        max-width: 88% !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+    body.ai-tutor-body .chat-bubble pre {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    /* Fixed/Flex bottom composer */
+    body.ai-tutor-body .chat-composer-container,
+    body.ai-tutor-body .clean-composer-container {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0.5rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom, 0px)) 0.75rem !important;
+        background: #0d1527 !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        flex-shrink: 0 !important;
+        box-sizing: border-box !important;
+        z-index: 20 !important;
+    }
+    body.ai-tutor-body .chat-composer-box,
+    body.ai-tutor-body .clean-composer-box {
+        width: 100% !important;
+        background: #1E293B !important;
+        border: 1px solid rgba(255, 255, 255, 0.16) !important;
+        border-radius: 1.75rem !important;
         padding: 0.4rem 0.6rem !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    }
+    body.ai-tutor-body .chat-composer-box textarea,
+    body.ai-tutor-body #aiDoubtInput {
+        font-size: 16px !important; /* Prevents auto-zoom on iOS & Android */
+        line-height: 1.4 !important;
+        max-height: 120px !important;
+        padding: 0.4rem 0.25rem !important;
+    }
+    /* Mobile Chat History Drawer */
+    body.ai-tutor-body .workspace-sidebar {
+        display: flex !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 80% !important;
+        max-width: 320px !important;
+        height: 100dvh !important;
+        height: 100vh !important;
+        background: #141E33 !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+        z-index: 2000 !important;
+        box-shadow: 6px 0 28px rgba(0, 0, 0, 0.6) !important;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-sizing: border-box !important;
+        padding: 1.2rem 1rem !important;
+    }
+    body.ai-tutor-body .workspace-sidebar.drawer-open {
+        transform: translateX(0) !important;
+    }
+    .sidebar-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 1.25rem;
+    }
+    .sidebar-header-row .sidebar-brand-title {
+        margin-bottom: 0 !important;
+    }
+    .drawer-close-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #94A3B8;
+        font-size: 1.3rem;
+        cursor: pointer;
+        line-height: 1;
+        transition: all 0.2s ease;
+    }
+    .drawer-close-btn:active {
+        background: rgba(239, 68, 68, 0.2);
+        color: #EF4444;
+    }
+    .workspace-drawer-overlay {
+        display: block !important;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 1999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+    }
+    .workspace-drawer-overlay.overlay-open {
+        opacity: 1;
+        pointer-events: auto;
     }
 
     /* Leaderboard & Tables Mobile */
@@ -2577,10 +2932,7 @@ body.ai-tutor-body {
     .profile-card-premium {
         padding: 1.25rem 1rem !important;
     }
-    .chat-composer-container, .clean-composer-container {
-        bottom: 0.5rem !important;
-        width: 96% !important;
-    }
+    /* Composer remains relative flex docked in AI Tutor */
     .btn-hero-primary, .btn-hero-secondary,
     .hero-quick-actions .btn-primary-action,
     .hero-quick-actions .btn-secondary-action {
@@ -3527,4 +3879,652 @@ body.ai-tutor-body {
 /* Scroll margin to prevent sticky app-navbar overlap when scrolling to questions */
 .question-card {
     scroll-margin-top: 5.5rem;
+}
+
+/* Landscape Phone Optimization for AI Tutor */
+@media (max-height: 500px) and (max-width: 950px) {
+    body.ai-tutor-body .workspace-header {
+        height: 44px !important;
+        min-height: 44px !important;
+        max-height: 44px !important;
+        padding: 0 0.65rem !important;
+    }
+    body.ai-tutor-body .chat-composer-container,
+    body.ai-tutor-body .clean-composer-container {
+        padding: 0.35rem 0.65rem calc(0.4rem + env(safe-area-inset-bottom, 0px)) 0.65rem !important;
+    }
+    body.ai-tutor-body .empty-chat-state {
+        padding: 0.5rem;
+    }
+    body.ai-tutor-body .empty-state-suggestions {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+/* Reduced Motion Respect */
+@media (prefers-reduced-motion: reduce) {
+    body.ai-tutor-body .workspace-sidebar,
+    .workspace-drawer-overlay,
+    .chat-bubble,
+    .mobile-drawer-toggle,
+    .mobile-new-chat-btn,
+    .mobile-more-btn {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+
+/* =========================================================
+   Branch Cards & Semester Cards - Professional Hover Glow Effect
+   ========================================================= */
+.paper-btn,
+.branch-card,
+.semester-card {
+    background: #1E293B;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 1.25rem;
+    padding: 2rem 1.5rem;
+    color: #FFFFFF;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.3s ease;
+    will-change: transform, box-shadow;
+    outline: none;
+}
+
+/* Subtle mouse-follow radial illumination */
+.paper-btn::before,
+.branch-card::before,
+.semester-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(320px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 102, 241, 0.18), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Only hovered card receives glow effect */
+.paper-btn:hover,
+.paper-btn:focus-visible,
+.branch-card:hover,
+.branch-card:focus-visible,
+.semester-card:hover,
+.semester-card:focus-visible {
+    transform: translateY(-5px) scale(1.02);
+    border-color: rgba(99, 102, 241, 0.65);
+    background-color: #202b3f;
+    box-shadow: 0 14px 30px -5px rgba(99, 102, 241, 0.35),
+                0 0 20px 2px rgba(59, 130, 246, 0.22),
+                0 0 4px 1px rgba(99, 102, 241, 0.4),
+                0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.paper-btn:hover::before,
+.paper-btn:focus-visible::before,
+.branch-card:hover::before,
+.branch-card:focus-visible::before,
+.semester-card:hover::before,
+.semester-card:focus-visible::before {
+    opacity: 1;
+}
+
+/* Branch & Semester Icon Hover Interaction */
+.paper-btn i,
+.paper-btn .branch-icon,
+.branch-card i,
+.branch-card .branch-icon,
+.semester-card i,
+.semester-card .semester-icon {
+    font-size: 2.5rem;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.3s ease;
+    will-change: transform, filter;
+    position: relative;
+    z-index: 2;
+}
+
+.paper-btn:hover i,
+.paper-btn:focus-visible i,
+.paper-btn:hover .branch-icon,
+.paper-btn:focus-visible .branch-icon,
+.branch-card:hover i,
+.branch-card:focus-visible i,
+.branch-card:hover .branch-icon,
+.branch-card:focus-visible .branch-icon,
+.semester-card:hover i,
+.semester-card:focus-visible i,
+.semester-card:hover .semester-icon,
+.semester-card:focus-visible .semester-icon {
+    transform: scale(1.08) translateY(-2px);
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.65));
+}
+
+/* Card Title Hover Interaction */
+.paper-btn .branch-title,
+.paper-btn span:nth-of-type(1),
+.branch-card h2,
+.branch-card h3,
+.semester-card h2,
+.semester-card .semester-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    color: #FFFFFF;
+    margin: 0;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.paper-btn:hover .branch-title,
+.paper-btn:focus-visible .branch-title,
+.paper-btn:hover span:nth-of-type(1),
+.paper-btn:focus-visible span:nth-of-type(1),
+.branch-card:hover h2,
+.branch-card:focus-visible h2,
+.branch-card:hover h3,
+.branch-card:focus-visible h3,
+.semester-card:hover h2,
+.semester-card:focus-visible h2,
+.semester-card:hover .semester-title,
+.semester-card:focus-visible .semester-title {
+    color: #FFFFFF;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.45);
+}
+
+/* Card Subtitle / Description Hover Interaction */
+.paper-btn .branch-subtitle,
+.paper-btn span:nth-of-type(2),
+.branch-card p,
+.semester-card p,
+.semester-card .semester-desc {
+    font-size: 0.85rem;
+    color: #94A3B8;
+    margin: 0;
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.paper-btn:hover .branch-subtitle,
+.paper-btn:focus-visible .branch-subtitle,
+.paper-btn:hover span:nth-of-type(2),
+.paper-btn:focus-visible span:nth-of-type(2),
+.branch-card:hover p,
+.branch-card:focus-visible p,
+.semester-card:hover p,
+.semester-card:focus-visible p,
+.semester-card:hover .semester-desc,
+.semester-card:focus-visible .semester-desc {
+    color: #CBD5E1;
+}
+
+/* Keyboard accessibility */
+.paper-btn:focus-visible,
+.branch-card:focus-visible,
+.semester-card:focus-visible {
+    outline: 2px solid #818CF8;
+    outline-offset: 3px;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .paper-btn,
+    .paper-btn:hover,
+    .paper-btn:focus-visible,
+    .branch-card,
+    .branch-card:hover,
+    .branch-card:focus-visible,
+    .semester-card,
+    .semester-card:hover,
+    .semester-card:focus-visible,
+    .paper-btn i,
+    .paper-btn:hover i,
+    .paper-btn:focus-visible i,
+    .branch-card i,
+    .branch-card:hover i,
+    .branch-card:focus-visible i,
+    .semester-card i,
+    .semester-card:hover i,
+    .semester-card:focus-visible i {
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
+
+/* =========================================================
+   LIGHT MODE OVERRIDES FOR STUDENT DASHBOARD
+   Preserves dark styling specifically for AI Tutor workspace
+   ========================================================= */
+html[data-theme="light"] body.dashboard-body:not(.ai-tutor-dark-mode) {
+    background-color: #FAFBFF;
+    color: #1E293B;
+}
+
+html[data-theme="light"] .app-navbar {
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+}
+
+html[data-theme="light"] .app-navbar .brand-logo {
+    color: #1E293B;
+}
+
+html[data-theme="light"] .app-navbar .user-pill {
+    background: #F1F5F9;
+    border-color: #E2E8F0;
+    color: #1E293B;
+}
+
+html[data-theme="light"] .hamburger-btn {
+    color: #1E293B;
+    background: #F1F5F9;
+    border-color: #E2E8F0;
+}
+
+html[data-theme="light"] .dashboard-hero-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="light"] .dashboard-hero-content h1 {
+    color: #1E293B;
+}
+
+html[data-theme="light"] .dashboard-hero-content p {
+    color: #475569;
+}
+
+html[data-theme="light"] .ai-hub-card,
+html[data-theme="light"] .branch-grid .branch-card,
+html[data-theme="light"] .subject-card,
+html[data-theme="light"] .paper-card,
+html[data-theme="light"] .quiz-branch-card,
+html[data-theme="light"] .stat-hub-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="light"] .ai-hub-card:hover,
+html[data-theme="light"] .branch-grid .branch-card:hover,
+html[data-theme="light"] .subject-card:hover,
+html[data-theme="light"] .paper-card:hover,
+html[data-theme="light"] .quiz-branch-card:hover {
+    background: #F8FAFC;
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+}
+
+html[data-theme="light"] .ai-hub-card h3,
+html[data-theme="light"] .branch-grid .branch-card h3,
+html[data-theme="light"] .subject-card h3,
+html[data-theme="light"] .paper-card h3 {
+    color: #1E293B;
+}
+
+html[data-theme="light"] .ai-hub-card p,
+html[data-theme="light"] .branch-grid .branch-card p,
+html[data-theme="light"] .subject-card p,
+html[data-theme="light"] .paper-card p {
+    color: #475569;
+}
+
+html[data-theme="light"] .app-sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid #E2E8F0;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .app-sidebar .brand-logo {
+    color: #1E293B;
+}
+
+html[data-theme="light"] .sidebar-user-card {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+}
+
+html[data-theme="light"] .sidebar-user-card .user-name {
+    color: #1E293B;
+}
+
+html[data-theme="light"] .sidebar-menu a {
+    color: #475569;
+}
+
+html[data-theme="light"] .sidebar-menu a:hover {
+    color: #4F46E5;
+    background: #EEF2FF;
+}
+
+html[data-theme="light"] .sidebar-menu a.active {
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #4F46E5, #6366F1);
+}
+
+/* Night Mode specifically aligns with #0B1220 palette */
+html[data-theme="dark"] body.dashboard-body {
+    background-color: #0B1220;
+    color: #F8FAFC;
+}
+
+html[data-theme="dark"] .app-navbar {
+    background: rgba(11, 18, 32, 0.94);
+    border-bottom: 1px solid #263449;
+}
+
+html[data-theme="dark"] .app-sidebar {
+    background: #111827;
+    border-right: 1px solid #263449;
+}
+
+html[data-theme="dark"] .ai-hub-card,
+html[data-theme="dark"] .branch-card,
+html[data-theme="dark"] .subject-card,
+html[data-theme="dark"] .paper-card,
+html[data-theme="dark"] .quiz-branch-card,
+html[data-theme="dark"] .stat-hub-card,
+html[data-theme="dark"] .semester-card {
+    background: #172033;
+    border-color: #263449;
+}
+
+html[data-theme="dark"] .ai-hub-card:hover,
+html[data-theme="dark"] .branch-card:hover,
+html[data-theme="dark"] .subject-card:hover,
+html[data-theme="dark"] .paper-card:hover,
+html[data-theme="dark"] .quiz-branch-card:hover,
+html[data-theme="dark"] .semester-card:hover {
+    background: #1E2B45;
+    border-color: rgba(99, 102, 241, 0.5);
+}
+
+
+/* =========================================================
+   PAGE HEADER HEADINGS & TITLES (THEME-AWARE)
+   ========================================================= */
+.page-header-title,
+.branch-container h1,
+.papers-container h1,
+.quiz-container h1 {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 0.5rem;
+    transition: color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Bright / Light Mode: Deep high-contrast dark navy (#0F172A) */
+:root .page-header-title,
+:root .branch-container h1,
+:root .papers-container h1,
+:root .quiz-container h1,
+html[data-theme="light"] .page-header-title,
+html[data-theme="light"] .branch-container h1,
+html[data-theme="light"] .papers-container h1,
+html[data-theme="light"] .quiz-container h1,
+html:not([data-theme="dark"]) .page-header-title,
+html:not([data-theme="dark"]) .branch-container h1,
+html:not([data-theme="dark"]) .papers-container h1,
+html:not([data-theme="dark"]) .quiz-container h1 {
+    color: #0F172A !important;
+}
+
+/* Night / Dark Mode: Clean crisp light text (#F8FAFC) */
+html[data-theme="dark"] .page-header-title,
+html[data-theme="dark"] .branch-container h1,
+html[data-theme="dark"] .papers-container h1,
+html[data-theme="dark"] .quiz-container h1 {
+    color: #F8FAFC !important;
+}
+
+/* Accent icon spacing and alignment */
+.page-header-title i,
+.branch-container h1 i,
+.papers-container h1 i,
+.quiz-container h1 i {
+    margin-right: 0.35rem;
+    vertical-align: middle;
+}
+
+/* Subtitle styling */
+.page-header-subtitle,
+.branch-container > p,
+.papers-container > p,
+.quiz-container > p {
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.5;
+    transition: color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-theme="light"] .page-header-subtitle,
+html[data-theme="light"] .branch-container > p,
+html[data-theme="light"] .papers-container > p,
+html[data-theme="light"] .quiz-container > p,
+html:not([data-theme="dark"]) .page-header-subtitle,
+html:not([data-theme="dark"]) .branch-container > p,
+html:not([data-theme="dark"]) .papers-container > p,
+html:not([data-theme="dark"]) .quiz-container > p {
+    color: #475569 !important;
+}
+
+html[data-theme="dark"] .page-header-subtitle,
+html[data-theme="dark"] .branch-container > p,
+html[data-theme="dark"] .papers-container > p,
+html[data-theme="dark"] .quiz-container > p {
+    color: #CBD5E1 !important;
+}
+
+/* Responsive typography */
+@media (max-width: 1024px) {
+    .page-header-title,
+    .branch-container h1,
+    .papers-container h1,
+    .quiz-container h1 {
+        font-size: 1.95rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header-title,
+    .branch-container h1,
+    .papers-container h1,
+    .quiz-container h1 {
+        font-size: 1.65rem;
+    }
+    .page-header-subtitle,
+    .branch-container > p,
+    .papers-container > p,
+    .quiz-container > p {
+        font-size: 0.92rem;
+        margin-bottom: 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header-title,
+    .branch-container h1,
+    .papers-container h1,
+    .quiz-container h1 {
+        font-size: 1.45rem;
+    }
+}
+
+
+/* =========================================================
+   NOTES & STUDY MATERIALS SELECTION CARDS
+   Matches the professional dark navy card design of PYQs
+   ========================================================= */
+.branch-container .branch-card,
+.semester-container .semester-card,
+html[data-theme="light"] .branch-container .branch-card,
+html[data-theme="light"] .semester-container .semester-card,
+html[data-theme="dark"] .branch-container .branch-card,
+html[data-theme="dark"] .semester-container .semester-card {
+    background: #1E293B !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 1.25rem !important;
+    padding: 2rem 1.5rem !important;
+    color: #FFFFFF !important;
+    text-decoration: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    position: relative !important;
+    overflow: hidden !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.3s ease !important;
+    will-change: transform, box-shadow;
+    outline: none !important;
+}
+
+.branch-container .branch-card::before,
+.semester-container .semester-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(320px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 102, 241, 0.18), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.branch-container .branch-card:hover,
+.branch-container .branch-card:focus-visible,
+.semester-container .semester-card:hover,
+.semester-container .semester-card:focus-visible,
+html[data-theme="light"] .branch-container .branch-card:hover,
+html[data-theme="light"] .branch-container .branch-card:focus-visible,
+html[data-theme="light"] .semester-container .semester-card:hover,
+html[data-theme="light"] .semester-container .semester-card:focus-visible,
+html[data-theme="dark"] .branch-container .branch-card:hover,
+html[data-theme="dark"] .branch-container .branch-card:focus-visible,
+html[data-theme="dark"] .semester-container .semester-card:hover,
+html[data-theme="dark"] .semester-container .semester-card:focus-visible {
+    transform: translateY(-5px) scale(1.02) !important;
+    border-color: rgba(99, 102, 241, 0.65) !important;
+    background-color: #202b3f !important;
+    box-shadow: 0 14px 30px -5px rgba(99, 102, 241, 0.35),
+                0 0 20px 2px rgba(59, 130, 246, 0.22),
+                0 0 4px 1px rgba(99, 102, 241, 0.4),
+                0 4px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.branch-container .branch-card:hover::before,
+.branch-container .branch-card:focus-visible::before,
+.semester-container .semester-card:hover::before,
+.semester-container .semester-card:focus-visible::before {
+    opacity: 1;
+}
+
+/* Branch & Semester Card Titles (White & Bold) */
+.branch-container .branch-card h2,
+.branch-container .branch-card h3,
+.branch-container .branch-card .branch-title,
+.semester-container .semester-card h2,
+.semester-container .semester-card .semester-title,
+html[data-theme="light"] .branch-container .branch-card h2,
+html[data-theme="light"] .branch-container .branch-card h3,
+html[data-theme="light"] .branch-container .branch-card .branch-title,
+html[data-theme="light"] .semester-container .semester-card h2,
+html[data-theme="light"] .semester-container .semester-card .semester-title,
+html[data-theme="dark"] .branch-container .branch-card h2,
+html[data-theme="dark"] .branch-container .branch-card h3,
+html[data-theme="dark"] .branch-container .branch-card .branch-title,
+html[data-theme="dark"] .semester-container .semester-card h2,
+html[data-theme="dark"] .semester-container .semester-card .semester-title {
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+    font-family: 'Outfit', sans-serif !important;
+    color: #FFFFFF !important;
+    margin: 0 !important;
+    transition: color 0.3s ease, text-shadow 0.3s ease !important;
+    position: relative;
+    z-index: 2;
+}
+
+.branch-container .branch-card:hover h2,
+.branch-container .branch-card:hover h3,
+.branch-container .branch-card:hover .branch-title,
+.semester-container .semester-card:hover h2,
+.semester-container .semester-card:hover .semester-title {
+    color: #FFFFFF !important;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Branch & Semester Card Subtitles (Muted Light Blue-Gray #94A3B8) */
+.branch-container .branch-card p,
+.branch-container .branch-card .branch-subtitle,
+.semester-container .semester-card p,
+.semester-container .semester-card .semester-desc,
+html[data-theme="light"] .branch-container .branch-card p,
+html[data-theme="light"] .branch-container .branch-card .branch-subtitle,
+html[data-theme="light"] .semester-container .semester-card p,
+html[data-theme="light"] .semester-container .semester-card .semester-desc,
+html[data-theme="dark"] .branch-container .branch-card p,
+html[data-theme="dark"] .branch-container .branch-card .branch-subtitle,
+html[data-theme="dark"] .semester-container .semester-card p,
+html[data-theme="dark"] .semester-container .semester-card .semester-desc {
+    font-size: 0.85rem !important;
+    color: #94A3B8 !important;
+    margin: 0 !important;
+    transition: color 0.3s ease !important;
+    position: relative;
+    z-index: 2;
+}
+
+.branch-container .branch-card:hover p,
+.branch-container .branch-card:hover .branch-subtitle,
+.semester-container .semester-card:hover p,
+.semester-container .semester-card:hover .semester-desc {
+    color: #CBD5E1 !important;
+}
+
+/* Branch & Semester Card Icons */
+.branch-container .branch-card i,
+.branch-container .branch-card .branch-icon,
+.semester-container .semester-card i,
+.semester-container .semester-card .semester-icon {
+    font-size: 2.5rem !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.3s ease !important;
+    will-change: transform, filter;
+    position: relative;
+    z-index: 2;
+}
+
+.branch-container .branch-card:hover i,
+.branch-container .branch-card:hover .branch-icon,
+.semester-container .semester-card:hover i,
+.semester-container .semester-card:hover .semester-icon {
+    transform: scale(1.08) translateY(-2px) !important;
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.65)) !important;
 }

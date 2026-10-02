@@ -953,7 +953,33 @@ body.dashboard-body {
     }
 }
 
+/* AI Tutor Real-time Live Streaming Cursor & Content */
+.stream-cursor {
+    display: inline-block;
+    color: var(--primary-indigo, #6366F1);
+    font-weight: 700;
+    margin-left: 2px;
+    animation: streamCursorBlink 0.75s infinite ease-in-out;
+    vertical-align: baseline;
+    user-select: none;
+}
+
+@keyframes streamCursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.stream-content-markdown {
+    display: block;
+    word-break: break-word;
+}
+
+.stream-content-markdown p:last-child {
+    display: inline;
+}
+
 .workspace-prompt-chips {
+
     display: flex;
     gap: 0.6rem;
     flex-wrap: wrap;

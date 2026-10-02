@@ -422,6 +422,17 @@
             }
         });
 
+        function renderMarkdown(text) {
+            try {
+                if (typeof marked !== "undefined" && marked.parse) {
+                    return marked.parse(text);
+                }
+                return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+            } catch (e) {
+                return text.replace(/\n/g, "<br>");
+            }
+        }
+
         let isSending = false;
         doubtForm.addEventListener("submit", async function(e) {
             e.preventDefault();
@@ -441,10 +452,74 @@
             sendBtn.disabled = true;
             sendBtn.classList.remove("active-send");
 
-            const loadingId = appendLoadingBubble();
+            // Create assistant streaming bubble immediately
+            const assistantBubble = document.createElement("div");
+            assistantBubble.className = "chat-bubble assistant-bubble";
+
+            const bubbleText = document.createElement("div");
+            bubbleText.className = "bubble-text";
+
+            // Initial typing wave animation shown while connection / first token is prepared
+            const typingContainer = document.createElement("div");
+            typingContainer.className = "typing-dots";
+            typingContainer.setAttribute("aria-label", "AI Tutor is thinking");
+            typingContainer.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+            bubbleText.appendChild(typingContainer);
+
+            // Container for live streamed markdown content
+            const streamContent = document.createElement("div");
+            streamContent.className = "stream-content-markdown";
+            streamContent.style.display = "none";
+            bubbleText.appendChild(streamContent);
+
+            // Blinking cursor indicating live generation
+            const streamCursor = document.createElement("span");
+            streamCursor.className = "stream-cursor";
+            streamCursor.style.display = "none";
+            streamCursor.innerHTML = "▌";
+            bubbleText.appendChild(streamCursor);
+
+            assistantBubble.appendChild(bubbleText);
+            chatWindow.appendChild(assistantBubble);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Start typing wave animation
+            if (typeof window.startTypingWave === "function") {
+                window.startTypingWave(assistantBubble);
+            } else if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                const dots = assistantBubble.querySelectorAll('.dot');
+                if (dots && dots.length > 0) {
+                    gsap.set(dots, { y: 0, scale: 1, opacity: 0.45 });
+                    assistantBubble._typingTween = gsap.to(dots, {
+                        y: -6.5,
+                        scale: 1.15,
+                        opacity: 1,
+                        duration: 0.5,
+                        stagger: { each: 0.15, repeat: -1, yoyo: true },
+                        ease: "sine.inOut"
+                    });
+                }
+            } else {
+                typingContainer.classList.add('fallback-wave');
+            }
+
+            function stopTyping() {
+                if (typeof window.stopTypingWave === "function") {
+                    window.stopTypingWave(assistantBubble);
+                }
+                if (assistantBubble._typingTween && assistantBubble._typingTween.kill) {
+                    assistantBubble._typingTween.kill();
+                }
+                if (typingContainer.parentNode) {
+                    typingContainer.remove();
+                }
+            }
+
+            let accumulatedText = "";
+            let hasReceivedFirstChunk = false;
 
             try {
-                const response = await fetch("/api/ai_chat", {
+                const response = await fetch("/api/ai_chat_stream", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -453,23 +528,89 @@
                     })
                 });
 
-                const data = await response.json();
-                removeBubble(loadingId);
-
-                if (data.reply) {
-                    appendBubble("assistant", data.reply);
-                    if (data.conversation_id && !currentConvId) {
-                        currentConvId = data.conversation_id;
-                        addSessionToSidebar(data.conversation_id, data.title || message.substring(0, 25));
-                    }
-                } else {
-                    appendBubble("assistant", "⚠️ " + (data.error || "Unable to receive AI response."));
+                if (!response.ok) {
+                    throw new Error(`Server returned status ${response.status}`);
                 }
+
+                if (!response.body || typeof response.body.getReader !== "function") {
+                    // Fallback for environments lacking ReadableStream
+                    const fallbackData = await response.json();
+                    stopTyping();
+                    streamContent.style.display = "block";
+                    streamContent.innerHTML = renderMarkdown(fallbackData.reply || "⚠️ Unexpected response.");
+                    return;
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let buffer = "";
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const blocks = buffer.split("\n\n");
+                    buffer = blocks.pop() || "";
+
+                    for (const block of blocks) {
+                        const trimmed = block.trim();
+                        if (!trimmed || !trimmed.startsWith("data:")) continue;
+
+                        const jsonStr = trimmed.replace(/^data:\s*/, "");
+                        try {
+                            const data = JSON.parse(jsonStr);
+
+                            if (data.type === "meta") {
+                                if (data.conversation_id && !currentConvId) {
+                                    currentConvId = data.conversation_id;
+                                    addSessionToSidebar(data.conversation_id, data.title || message.substring(0, 25));
+                                }
+                            } else if (data.type === "chunk") {
+                                if (!hasReceivedFirstChunk) {
+                                    hasReceivedFirstChunk = true;
+                                    stopTyping();
+                                    streamContent.style.display = "block";
+                                    streamCursor.style.display = "inline";
+                                }
+                                accumulatedText += data.text;
+                                streamContent.innerHTML = renderMarkdown(accumulatedText);
+                                chatWindow.scrollTop = chatWindow.scrollHeight;
+                            } else if (data.type === "done") {
+                                stopTyping();
+                                if (streamCursor.parentNode) streamCursor.remove();
+                                streamContent.style.display = "block";
+                                streamContent.innerHTML = renderMarkdown(accumulatedText);
+                                chatWindow.scrollTop = chatWindow.scrollHeight;
+                            } else if (data.type === "error") {
+                                stopTyping();
+                                if (streamCursor.parentNode) streamCursor.remove();
+                                streamContent.style.display = "block";
+                                streamContent.innerHTML = `<span style="color: #F87171;">⚠️ ${data.error || "Unable to receive AI response."}</span>`;
+                            }
+                        } catch (err) {
+                            console.error("[SSE Parse Error]", err, jsonStr);
+                        }
+                    }
+                }
+
+                // Final safety check after stream completion
+                stopTyping();
+                if (streamCursor.parentNode) streamCursor.remove();
+                if (accumulatedText) {
+                    streamContent.style.display = "block";
+                    streamContent.innerHTML = renderMarkdown(accumulatedText);
+                }
+
             } catch (err) {
-                removeBubble(loadingId);
-                appendBubble("assistant", "⚠️ Connection Error: " + err.message);
+                stopTyping();
+                if (streamCursor.parentNode) streamCursor.remove();
+                streamContent.style.display = "block";
+                streamContent.innerHTML = `<span style="color: #F87171;">⚠️ Connection Error: ${err.message}</span>`;
             } finally {
                 isSending = false;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                doubtInput.focus();
             }
         });
 
@@ -598,15 +739,7 @@
             div.className = `chat-bubble ${sender}-bubble`;
             let contentHtml = "";
             if (sender === "assistant") {
-                try {
-                    if (typeof marked !== "undefined" && marked.parse) {
-                        contentHtml = marked.parse(text);
-                    } else {
-                        contentHtml = text.replace(/\n/g, "<br>");
-                    }
-                } catch (e) {
-                    contentHtml = text.replace(/\n/g, "<br>");
-                }
+                contentHtml = renderMarkdown(text);
             } else {
                 const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 contentHtml = escaped.replace(/\n/g, "<br>");

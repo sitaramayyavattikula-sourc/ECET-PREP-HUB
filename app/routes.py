@@ -1,4 +1,4 @@
-from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_file
+from flask import render_template, request, flash, redirect, url_for, session, jsonify, send_file, Response, stream_with_context
 import os
 import re
 import json
@@ -1364,6 +1364,7 @@ MULTI-TURN CONVERSATION & TOPIC HANDLING:
         last_err = None
 
         candidate_models = [
+            'gemini-3.8-flash',
             'gemini-3.5-flash-lite',
             'gemini-flash-lite-latest',
             'gemini-3.6-flash',
@@ -1405,6 +1406,204 @@ MULTI-TURN CONVERSATION & TOPIC HANDLING:
         print(f"[AI Chat Error - {category}]:", str(e)[:200])
         add_ai_message(conv_id, "assistant", user_reply)
         return jsonify({"reply": user_reply, "conversation_id": conv_id, "title": title, "error_category": category})
+
+
+# Real-time Streaming AI Tutor API (Server-Sent Events / SSE)
+@app.route("/api/ai_chat_stream", methods=["POST"])
+@login_required
+def ai_chat_stream():
+    data = request.get_json(silent=True) or {}
+    user_message = data.get("message", "").strip()
+    conv_id = data.get("conversation_id")
+
+    if not user_message:
+        return jsonify({"error": "Message cannot be empty."}), 400
+
+    student_email = session["student_email"]
+    student_name = session.get("student_name", "Student")
+    raw_branch = session.get("student_branch")
+    student_branch = str(raw_branch).strip().upper() if raw_branch else "GENERAL"
+    branch_subjects = ", ".join(BRANCH_SUBJECTS.get(student_branch.lower(), ["General Engineering Mathematics", "Physics", "Chemistry"]))
+
+    # Handle Conversation ID & Retrieve Multi-Turn History (bounded to latest 8 turns)
+    history_msgs = []
+    if conv_id:
+        existing_msgs = get_conversation_messages(conv_id, student_email, limit=8)
+        if existing_msgs is False:
+            return jsonify({"error": "Unauthorized access to conversation."}), 403
+        if existing_msgs is not None and isinstance(existing_msgs, list):
+            history_msgs = existing_msgs
+        else:
+            conv_id = None
+
+    # Clean, intelligent topic-based title generation for new conversation
+    title = generate_clean_topic_title(user_message)
+    if not conv_id:
+        conv_id = create_ai_conversation(student_email, title, student_branch)
+
+    # Save student message to DB (1 message per turn)
+    add_ai_message(conv_id, "user", user_message)
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        reply = "AI Tutor configuration is incomplete. Please contact the administrator."
+        add_ai_message(conv_id, "assistant", reply)
+        def err_stream():
+            yield f"data: {json.dumps({'type': 'meta', 'conversation_id': conv_id, 'title': title})}\n\n"
+            yield f"data: {json.dumps({'type': 'chunk', 'text': reply})}\n\n"
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+        res = Response(stream_with_context(err_stream()), mimetype="text/event-stream")
+        res.headers["Cache-Control"] = "no-cache"
+        res.headers["X-Accel-Buffering"] = "no"
+        return res
+
+    # Build multi-turn conversational dialogue context (last 8 messages)
+    dialogue_history = ""
+    if history_msgs:
+        recent_turns = history_msgs[-8:]
+        dialogue_history = "\n".join([f"{'User' if m.get('role') == 'user' else 'Assistant'}: {m.get('content')}" for m in recent_turns])
+
+    # Intelligent query intent & academic context detection
+    query_context_type = detect_query_academic_context(user_message, student_branch)
+
+    domain_context = ""
+    if query_context_type == "branch_engineering":
+        branch_domain = BRANCH_ENGINEERING_DOMAINS.get(student_branch.lower(), {
+            "domain_name": f"{student_branch} Engineering",
+            "core_topics": branch_subjects,
+            "pedagogy_focus": "Provide clear, accurate engineering explanations with formulas and practical examples."
+        })
+        available_pdfs_info = ""
+        try:
+            branch_pdfs = get_available_pdfs(student_branch.lower())
+            if branch_pdfs:
+                available_pdfs_info = f"\nRelevant study reference topics for {student_branch}: " + ", ".join([p.get("title", "") for p in branch_pdfs[:6]])
+        except Exception:
+            available_pdfs_info = ""
+
+        domain_context = f"""
+ACADEMIC ENGINEERING DOMAIN (Specific to this query):
+- Branch: {student_branch} ({branch_domain.get('domain_name')})
+- Core Curriculum Topics: {branch_subjects}{available_pdfs_info}
+- Engineering Focus: {branch_domain.get('pedagogy_focus')}
+Apply this verified engineering curriculum context to provide rigorous, accurate, diploma-aligned technical explanations.
+"""
+    elif query_context_type == "ecet_exam":
+        domain_context = f"""
+EXAMINATION CONTEXT:
+The user is specifically inquiring about the AP E-CET (Engineering Common Entrance Test).
+Provide factual information about the entrance exam structure, pattern (200 Total Marks: Mathematics 50 marks, Physics 25 marks, Chemistry 25 marks, Engineering Core 100 marks), syllabus, eligibility criteria, rank estimation, or counseling procedures as requested.
+"""
+
+    system_context = f"""You are an intelligent, highly accurate, and multilingual General and Educational Conversational AI Assistant interacting with {student_name}.
+
+PRIMARY MISSION & SCOPE:
+- You assist learners with ANY question they ask—ranging from general knowledge, everyday questions, science, mathematics, literature, and programming, to in-depth diploma engineering concepts and AP E-CET examination preparation.
+- You are NOT restricted to E-CET. You are a versatile, intelligent educational assistant.
+- Answer the user's CURRENT question directly, accurately, and naturally.
+- DO NOT assume every question is about the E-CET exam.
+- NEVER force an unrelated or general question into E-CET exam format, marks breakdown, or syllabus disclaimers.
+
+EDUCATIONAL RIGOR & ACCURACY STANDARDS (HIGH PRIORITY):
+1. Absolute Factual & Technical Correctness:
+   - Prioritize correctness above all. Never invent formulas, definitions, code syntax, library methods, or facts.
+   - For mathematical, scientific, or programming problems, verify your reasoning and steps before stating the final result.
+   - For programming: provide clean, formatted, idiomatic, compilable code examples with concise explanation.
+   - For calculations: show clear step-by-step working and state exact numerical results with correct units.
+2. Epistemic Humility & Honesty:
+   - Clearly distinguish established facts from uncertainty, hypotheses, or conditional cases.
+   - If something is ambiguous, uncertain, or depends on specific external conditions, state so clearly rather than asserting unverified claims.
+   - When relevant verified project study material or curriculum standards exist, prefer them over unsupported assumptions.
+3. Pedagogical Adaptability:
+   - Match explanation depth to the learner: clear, accessible, and intuitive for beginners, while preserving rigorous technical terminology.
+   - Provide structured, step-by-step explanations when breaking down complex concepts.
+
+NATURAL MULTILINGUAL COMMUNICATION:
+- Automatically detect the language, script, and phrasing used by the user.
+- Respond in that SAME language:
+  * English -> Respond fluently and naturally in English.
+  * Native Telugu script (e.g., "పైథాన్ అంటే ఏమిటి?", "లింక్డ్ లిస్ట్ అంటే ఏమిటి?") -> Respond in natural Telugu script.
+  * Romanized Telugu / Telugu-English (e.g., "Python lo list ante enti?", "KVL simple ga explain cheyyi", "C lo pointer ela pani chesthundhi?") -> Respond naturally in Telugu / Telugu-English.
+  * Native Hindi script -> Respond in natural Hindi script.
+  * Hinglish / Romanized Hindi (e.g., "Python kya hai?", "C me loop kya hota hai?") -> Respond naturally in Hindi / Hinglish.
+  * Other languages -> Match the user's input language.
+- Never translate a user's non-English question into English to answer in English unless the user explicitly requested an English answer.
+
+MULTI-TURN CONVERSATION & TOPIC HANDLING:
+- Use previous conversation history ONLY when the current message is a genuine follow-up or relates to the ongoing topic.
+- If the user changes topics or asks an independent, standalone question, answer the new question directly without dragging in old, irrelevant topic context.
+{domain_context}"""
+
+    if dialogue_history:
+        full_prompt = f"{system_context}\n\n--- PREVIOUS CONVERSATION CONTEXT ---\n{dialogue_history}\n\n--- CURRENT USER MESSAGE ---\nUser: {user_message}\nAssistant:"
+    else:
+        full_prompt = f"{system_context}\n\nUser: {user_message}\nAssistant:"
+
+    client = get_cached_genai_client(api_key)
+
+    candidate_models = [
+        'gemini-3.8-flash',
+        'gemini-3.5-flash-lite',
+        'gemini-3.5-flash',
+        'gemini-flash-latest'
+    ]
+
+    def generate_events():
+        # First send metadata event with conversation_id and title
+        yield f"data: {json.dumps({'type': 'meta', 'conversation_id': conv_id, 'title': title})}\n\n"
+
+        full_reply = ""
+        stream_success = False
+        last_err = None
+
+        for model_name in candidate_models:
+            try:
+                print(f"[AI Chat Stream] Calling model: {model_name}")
+                if client:
+                    stream = client.models.generate_content_stream(
+                        model=model_name,
+                        contents=full_prompt,
+                    )
+                    for chunk in stream:
+                        text = chunk.text
+                        if text:
+                            full_reply += text
+                            yield f"data: {json.dumps({'type': 'chunk', 'text': text})}\n\n"
+                    stream_success = True
+                    break
+                else:
+                    import google.generativeai as legacy_genai
+                    legacy_genai.configure(api_key=api_key)
+                    model = legacy_genai.GenerativeModel(model_name)
+                    res_stream = model.generate_content(full_prompt, stream=True)
+                    for chunk in res_stream:
+                        text = chunk.text
+                        if text:
+                            full_reply += text
+                            yield f"data: {json.dumps({'type': 'chunk', 'text': text})}\n\n"
+                    stream_success = True
+                    break
+            except Exception as e:
+                last_err = e
+                print(f"[AI Chat Stream] Model {model_name} failed: {type(e).__name__} - {str(e)[:120]}")
+                continue
+
+        if stream_success and full_reply.strip():
+            # Persist assistant reply in database
+            add_ai_message(conv_id, "assistant", full_reply)
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+        else:
+            err = last_err or Exception("Failed to generate response")
+            category, user_reply = classify_ai_error(err)
+            print(f"[AI Chat Stream Error - {category}]:", str(err)[:200])
+            add_ai_message(conv_id, "assistant", user_reply)
+            yield f"data: {json.dumps({'type': 'error', 'error': user_reply, 'error_category': category})}\n\n"
+
+    response = Response(stream_with_context(generate_events()), mimetype="text/event-stream")
+    response.headers["Cache-Control"] = "no-cache"
+    response.headers["X-Accel-Buffering"] = "no"
+    return response
+
 
 
 # Fetch Conversation Messages API with Ownership Guard

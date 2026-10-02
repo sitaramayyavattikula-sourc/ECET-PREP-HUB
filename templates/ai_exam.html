@@ -198,20 +198,426 @@
             color: #FFFFFF;
         }
 
+        /* Question Palette Color States: Yellow (Current), Green (Answered), Red (Unanswered) */
+        .cbt-pal-btn.current-pal,
+        .cbt-pal-btn.active-pal {
+            background: #F59E0B !important;
+            color: #0F172A !important;
+            border: 2px solid #FEF08A !important;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.75) !important;
+            font-weight: 800 !important;
+            transform: scale(1.08);
+            z-index: 2;
+        }
+
         .cbt-pal-btn.answered-pal {
-            background: #22C55E !important;
-            border-color: #22C55E !important;
+            background: #10B981 !important;
+            border-color: #34D399 !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+            font-weight: 700;
+        }
+
+        .cbt-pal-btn.unanswered-pal {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border: 1px solid rgba(239, 68, 68, 0.55) !important;
+            color: #FCA5A5 !important;
+            font-weight: 600;
+        }
+
+        .cbt-pal-btn.unanswered-pal:hover {
+            background: rgba(239, 68, 68, 0.38) !important;
+            border-color: #EF4444 !important;
             color: #FFFFFF !important;
         }
 
-        .cbt-pal-btn.active-pal {
-            border: 2px solid #6366F1 !important;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        /* Question Palette Status Legend */
+        .cbt-palette-legend {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.35rem;
+            padding: 0.45rem 0.65rem;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.5rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .cbt-palette-legend .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.72rem;
+            color: #94A3B8;
+            font-weight: 500;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .legend-dot.dot-yellow {
+            background-color: #F59E0B;
+            box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
+        }
+
+        .legend-dot.dot-green {
+            background-color: #10B981;
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
+        }
+
+        .legend-dot.dot-red {
+            background-color: #EF4444;
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
+        }
+
+        /* Professional Next Question Button & Action Bar */
+        .cbt-nav-btn-next {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.72rem 1.85rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.98rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #FFFFFF !important;
+            background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            text-decoration: none;
+            min-width: 125px;
+        }
+
+        .cbt-nav-btn-next i {
+            font-size: 0.92rem;
+            transition: transform 0.2s ease;
+        }
+
+        .cbt-nav-btn-next:hover {
+            background: linear-gradient(135deg, #4338CA 0%, #2563EB 100%) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.55);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .cbt-nav-btn-next:hover i {
+            transform: translateX(3px);
+        }
+
+        .cbt-nav-btn-next:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+        }
+
+        .cbt-nav-btn-next:focus-visible {
+            outline: 2px solid #818CF8;
+            outline-offset: 3px;
+        }
+
+        .cbt-nav-btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-cancel-exam-setup:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+            transform: none !important;
+        }
+
+        /* CBT Submit Section & Professional Button */
+        .cbt-submit-section {
+            margin-top: 1.75rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cbt-submit-btn {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.82rem 1.25rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            user-select: none;
+        }
+
+        .cbt-submit-btn i {
+            font-size: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .cbt-submit-btn:hover {
+            background: linear-gradient(135deg, #4338CA 0%, #2563EB 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.48);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .cbt-submit-btn:hover i {
+            transform: scale(1.1);
+        }
+
+        .cbt-submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+        }
+
+        .cbt-submit-btn:focus-visible {
+            outline: 2px solid #818CF8;
+            outline-offset: 3px;
+        }
+
+        .cbt-submit-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Submit Confirmation Modal */
+        .cbt-modal-box {
+            background: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 1.25rem;
+            padding: 2.25rem 2rem;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(99, 102, 241, 0.15);
+            animation: modalBoxPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .cbt-modal-icon-wrap {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            color: #818CF8;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .cbt-modal-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .cbt-modal-desc {
+            font-size: 0.95rem;
+            color: #94A3B8;
+            margin: 0 0 1.5rem 0;
+            line-height: 1.5;
+        }
+
+        /* Modal Statistics Grid */
+        .cbt-modal-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cbt-stat-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 0.75rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .cbt-stat-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .cbt-stat-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-answered {
+            border-color: rgba(34, 197, 94, 0.35);
+            background: rgba(34, 197, 94, 0.08);
+        }
+        .stat-answered .cbt-stat-val {
+            color: #4ADE80;
+        }
+
+        .stat-unanswered {
+            border-color: rgba(239, 68, 68, 0.35);
+            background: rgba(239, 68, 68, 0.08);
+        }
+        .stat-unanswered .cbt-stat-val {
+            color: #F87171;
+        }
+
+        .stat-total {
+            border-color: rgba(99, 102, 241, 0.35);
+            background: rgba(99, 102, 241, 0.08);
+        }
+        .stat-total .cbt-stat-val {
+            color: #A5B4FC;
+        }
+
+        .cbt-stat-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-green { background-color: #22C55E; box-shadow: 0 0 6px rgba(34, 197, 94, 0.6); }
+        .dot-red { background-color: #EF4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.6); }
+        .dot-indigo { background-color: #6366F1; box-shadow: 0 0 6px rgba(99, 102, 241, 0.6); }
+
+        .cbt-modal-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #FCD34D;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-align: left;
+            margin-bottom: 1.75rem;
+            line-height: 1.4;
+        }
+
+        .cbt-modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .cbt-modal-btn-cancel {
+            flex: 1;
+            padding: 0.8rem 1.25rem;
+            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #E2E8F0;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cbt-modal-btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #FFFFFF;
+        }
+
+        .cbt-modal-btn-cancel:focus-visible {
+            outline: 2px solid #94A3B8;
+            outline-offset: 2px;
+        }
+
+        .cbt-modal-btn-submit {
+            flex: 1.2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.25rem;
+            border-radius: 0.75rem;
+            background: linear-gradient(135deg, #4F46E5 0%, #3B82F6 100%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #FFFFFF;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .cbt-modal-btn-submit:hover {
+            background: linear-gradient(135deg, #4338CA 0%, #2563EB 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.55);
+        }
+
+        .cbt-modal-btn-submit:focus-visible {
+            outline: 2px solid #818CF8;
+            outline-offset: 2px;
+        }
+
+        .cbt-modal-btn-submit:disabled,
+        .cbt-modal-btn-cancel:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
         }
 
         @media (max-width: 900px) {
             .cbt-grid-layout {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cbt-modal-box {
+                padding: 1.5rem 1.15rem;
+            }
+            .cbt-modal-stats-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            .cbt-stat-card {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 0.6rem 0.85rem;
+            }
+            .cbt-modal-actions {
+                flex-direction: column-reverse;
+                gap: 0.65rem;
             }
         }
     </style>
@@ -361,11 +767,11 @@
                     {% endfor %}
 
                     <!-- Nav Action Bar -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08);">
-                        <button type="button" class="btn-cancel-exam-setup" id="btnPrev" onclick="navigateQuestion(-1)" disabled>
+                    <div class="cbt-nav-bar" style="display: flex; justify-content: space-between; align-items: center; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08); margin-top: auto;">
+                        <button type="button" class="btn-cancel-exam-setup" id="btnPrev" onclick="navigateQuestion(-1)" disabled aria-label="Previous Question">
                             <i class="fa-solid fa-arrow-left"></i> Previous
                         </button>
-                        <button type="button" class="btn-featured-action" id="btnNext" onclick="navigateQuestion(1)" style="padding: 0.65rem 1.75rem;">
+                        <button type="button" class="cbt-nav-btn-next" id="btnNext" onclick="navigateQuestion(1)" aria-label="Next Question">
                             Next <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
@@ -374,24 +780,76 @@
 
             <!-- Question Palette Sidebar -->
             <aside class="cbt-palette-card">
-                <h3 style="font-size: 1rem; font-family: 'Outfit', sans-serif; margin: 0 0 0.5rem 0; color: #FFFFFF;">Question Palette</h3>
-                <p style="font-size: 0.8rem; color: #94A3B8; margin: 0 0 1rem 0;">Click any question number to jump directly.</p>
+                <h3 style="font-size: 1rem; font-family: 'Outfit', sans-serif; margin: 0 0 0.35rem 0; color: #FFFFFF;">Question Palette</h3>
+                <p style="font-size: 0.8rem; color: #94A3B8; margin: 0 0 0.75rem 0;">Click any question number to jump directly.</p>
+
+                <!-- Color Status Legend -->
+                <div class="cbt-palette-legend">
+                    <span class="legend-item"><span class="legend-dot dot-yellow"></span> Current</span>
+                    <span class="legend-item"><span class="legend-dot dot-green"></span> Answered</span>
+                    <span class="legend-item"><span class="legend-dot dot-red"></span> Not Answered</span>
+                </div>
 
                 <div class="cbt-palette-grid">
                     {% for q in questions %}
                     {% set q_num = loop.index %}
-                    <button type="button" class="cbt-pal-btn {% if loop.first %}active-pal{% endif %}" id="palBtn_{{ q_num }}" onclick="jumpToQuestion({{ q_num }})">
+                    <button type="button" class="cbt-pal-btn {% if loop.first %}current-pal active-pal{% else %}unanswered-pal{% endif %}" id="palBtn_{{ q_num }}" onclick="jumpToQuestion({{ q_num }})" aria-label="Question {{ q_num }}">
                         {{ q_num }}
                     </button>
                     {% endfor %}
                 </div>
 
-                <div style="margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08);">
-                    <button type="button" class="btn-auth-submit" onclick="confirmSubmitExam()" style="background: #22C55E; margin-top: 0; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.35);">
-                        <i class="fa-solid fa-paper-plane"></i> Submit Examination
+                <div class="cbt-submit-section">
+                    <button type="button" class="cbt-submit-btn" id="btnSubmitExamination" onclick="openSubmitModal()" aria-haspopup="dialog">
+                        <i class="fa-solid fa-file-circle-check"></i> Submit Examination
                     </button>
                 </div>
             </aside>
+        </div>
+    </div>
+
+    <!-- CBT Final Submission Confirmation Modal -->
+    <div id="cbtSubmitModal" class="exam-modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalConfirmTitle" aria-describedby="modalConfirmDesc">
+        <div class="cbt-modal-box">
+            <div class="cbt-modal-icon-wrap" aria-hidden="true">
+                <i class="fa-solid fa-file-circle-check"></i>
+            </div>
+            
+            <h3 class="cbt-modal-title" id="modalConfirmTitle">Submit Examination?</h3>
+            
+            <p class="cbt-modal-desc" id="modalConfirmDesc">
+                Are you sure you want to submit your examination?<br>
+                <span style="font-size: 0.85rem; color: #CBD5E1;">You will not be able to change your answers after submission.</span>
+            </p>
+
+            <div class="cbt-modal-stats-grid">
+                <div class="cbt-stat-card stat-answered">
+                    <span class="cbt-stat-label"><span class="cbt-stat-dot dot-green"></span> Answered</span>
+                    <strong class="cbt-stat-val" id="modalAnsweredCount">0</strong>
+                </div>
+                <div class="cbt-stat-card stat-unanswered">
+                    <span class="cbt-stat-label"><span class="cbt-stat-dot dot-red"></span> Not Answered</span>
+                    <strong class="cbt-stat-val" id="modalUnansweredCount">0</strong>
+                </div>
+                <div class="cbt-stat-card stat-total">
+                    <span class="cbt-stat-label"><span class="cbt-stat-dot dot-indigo"></span> Total Questions</span>
+                    <strong class="cbt-stat-val" id="modalTotalCount">{{ num_questions }}</strong>
+                </div>
+            </div>
+
+            <div class="cbt-modal-warning">
+                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                <span>Final submission will grade your responses and generate your examination result.</span>
+            </div>
+
+            <div class="cbt-modal-actions">
+                <button type="button" class="cbt-modal-btn-cancel" id="btnCancelSubmitModal" onclick="closeSubmitModal()">
+                    Cancel
+                </button>
+                <button type="button" class="cbt-modal-btn-submit" id="btnConfirmFinalSubmit" onclick="finalizeExamSubmission()">
+                    <i class="fa-solid fa-check"></i> Submit Examination
+                </button>
+            </div>
         </div>
     </div>
 
@@ -433,22 +891,58 @@
             timerElem.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }, 1000);
 
+        function updatePalette() {
+            for (let i = 1; i <= totalQs; i++) {
+                const palBtn = document.getElementById(`palBtn_${i}`);
+                if (!palBtn) continue;
+
+                const isAnswered = document.querySelector(`input[name="q${i}"]:checked`) !== null;
+
+                palBtn.classList.remove("current-pal", "active-pal", "answered-pal", "unanswered-pal");
+
+                if (i === currentQ) {
+                    palBtn.classList.add("current-pal", "active-pal");
+                    palBtn.setAttribute("aria-label", `Question ${i} — Current Question`);
+                } else if (isAnswered) {
+                    palBtn.classList.add("answered-pal");
+                    palBtn.setAttribute("aria-label", `Question ${i} — Answered`);
+                } else {
+                    palBtn.classList.add("unanswered-pal");
+                    palBtn.setAttribute("aria-label", `Question ${i} — Not Answered`);
+                }
+            }
+        }
+
         function jumpToQuestion(qNum) {
-            document.getElementById(`qBox_${currentQ}`).style.display = "none";
-            document.getElementById(`palBtn_${currentQ}`).classList.remove("active-pal");
+            if (qNum < 1 || qNum > totalQs) return;
+
+            const oldBox = document.getElementById(`qBox_${currentQ}`);
+            if (oldBox) oldBox.style.display = "none";
 
             currentQ = qNum;
 
-            document.getElementById(`qBox_${currentQ}`).style.display = "block";
-            document.getElementById(`palBtn_${currentQ}`).classList.add("active-pal");
+            const newBox = document.getElementById(`qBox_${currentQ}`);
+            if (newBox) newBox.style.display = "block";
 
-            document.getElementById("btnPrev").disabled = (currentQ === 1);
-            const btnNext = document.getElementById("btnNext");
-            if (currentQ === totalQs) {
-                btnNext.innerHTML = `<i class="fa-solid fa-check"></i> Review & Finish`;
-            } else {
-                btnNext.innerHTML = `Next <i class="fa-solid fa-arrow-right"></i>`;
+            const btnPrev = document.getElementById("btnPrev");
+            if (btnPrev) {
+                btnPrev.disabled = (currentQ === 1);
             }
+
+            const btnNext = document.getElementById("btnNext");
+            if (btnNext) {
+                if (currentQ === totalQs) {
+                    btnNext.innerHTML = `<i class="fa-solid fa-check"></i> Review / Finish`;
+                    btnNext.setAttribute("aria-label", "Review and Finish Examination");
+                    btnNext.title = "Review your answers or proceed to submit";
+                } else {
+                    btnNext.innerHTML = `Next <i class="fa-solid fa-arrow-right"></i>`;
+                    btnNext.setAttribute("aria-label", "Next Question");
+                    btnNext.title = "Proceed to next question";
+                }
+            }
+
+            updatePalette();
         }
 
         function navigateQuestion(direction) {
@@ -462,23 +956,116 @@
 
         function chooseOption(qNum, optVal, optIdx) {
             const radio = document.getElementById(`optRadio_${qNum}_${optIdx}`);
-            radio.checked = true;
+            if (radio) {
+                radio.checked = true;
+            }
 
             for (let i = 0; i < 4; i++) {
                 const card = document.getElementById(`optCard_${qNum}_${i}`);
                 if (card) card.classList.remove("selected-card");
             }
-            document.getElementById(`optCard_${qNum}_${optIdx}`).classList.add("selected-card");
+            const activeCard = document.getElementById(`optCard_${qNum}_${optIdx}`);
+            if (activeCard) {
+                activeCard.classList.add("selected-card");
+            }
 
-            const palBtn = document.getElementById(`palBtn_${qNum}`);
-            if (palBtn) palBtn.classList.add("answered-pal");
+            updatePalette();
+        }
+
+        // Initialize palette states at startup
+        updatePalette();
+
+        let isSubmitting = false;
+
+        function openSubmitModal() {
+            let answered = 0;
+            for (let i = 1; i <= totalQs; i++) {
+                if (document.querySelector(`input[name="q${i}"]:checked`)) {
+                    answered++;
+                }
+            }
+            const unanswered = totalQs - answered;
+
+            const elAnswered = document.getElementById("modalAnsweredCount");
+            const elUnanswered = document.getElementById("modalUnansweredCount");
+            const elTotal = document.getElementById("modalTotalCount");
+            if (elAnswered) elAnswered.innerText = answered;
+            if (elUnanswered) elUnanswered.innerText = unanswered;
+            if (elTotal) elTotal.innerText = totalQs;
+
+            const btnConfirm = document.getElementById("btnConfirmFinalSubmit");
+            const btnCancel = document.getElementById("btnCancelSubmitModal");
+            if (btnConfirm) {
+                btnConfirm.disabled = false;
+                btnConfirm.innerHTML = '<i class="fa-solid fa-check"></i> Submit Examination';
+            }
+            if (btnCancel) {
+                btnCancel.disabled = false;
+            }
+
+            const modal = document.getElementById("cbtSubmitModal");
+            if (modal) {
+                modal.style.display = "flex";
+                if (btnCancel) btnCancel.focus();
+            }
+        }
+
+        function closeSubmitModal() {
+            if (isSubmitting) return;
+            const modal = document.getElementById("cbtSubmitModal");
+            if (modal) {
+                modal.style.display = "none";
+            }
+            const btnTrigger = document.getElementById("btnSubmitExamination");
+            if (btnTrigger) btnTrigger.focus();
+        }
+
+        function finalizeExamSubmission() {
+            if (isSubmitting) return;
+            isSubmitting = true;
+
+            const btnConfirm = document.getElementById("btnConfirmFinalSubmit");
+            const btnCancel = document.getElementById("btnCancelSubmitModal");
+            const btnTrigger = document.getElementById("btnSubmitExamination");
+
+            if (btnConfirm) {
+                btnConfirm.disabled = true;
+                btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+            }
+            if (btnCancel) {
+                btnCancel.disabled = true;
+            }
+            if (btnTrigger) {
+                btnTrigger.disabled = true;
+                btnTrigger.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+            }
+
+            document.getElementById("cbtForm").submit();
         }
 
         function confirmSubmitExam() {
-            if (confirm("Are you sure you want to submit your AP E-CET Examination?")) {
-                document.getElementById("cbtForm").submit();
-            }
+            openSubmitModal();
         }
+
+        // Close on overlay backdrop click
+        const modalOverlay = document.getElementById("cbtSubmitModal");
+        if (modalOverlay) {
+            modalOverlay.addEventListener("click", function(e) {
+                if (e.target === modalOverlay && !isSubmitting) {
+                    closeSubmitModal();
+                }
+            });
+        }
+
+        // Close on Escape key press
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape" && !isSubmitting) {
+                const modal = document.getElementById("cbtSubmitModal");
+                if (modal && modal.style.display === "flex") {
+                    closeSubmitModal();
+                }
+            }
+        });
     </script>
 </body>
 </html>

@@ -1,18 +1,161 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import lottie from 'lottie-web';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+import DOMPurify from 'dompurify';
 
-// Register GSAP plugins
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-// Expose GSAP globally for page micro-animations (AI Tutor drawer, typing wave & message bubbles)
+/**
+ * High-performance, secure AI Tutor mathematical and Markdown renderer
+ * Integrates KaTeX for LaTeX notation, preserves code blocks, protects currency $,
+ * and sanitizes output using DOMPurify.
+ */
+export function renderAIResponse(rawText) {
+    if (!rawText || typeof rawText !== 'string') return '';
+
+    try {
+        // Step 1: Protect fenced code blocks (```...```) and inline code (`...`)
+        const codeBlocks = [];
+        let text = rawText.replace(/(```[\s\S]*?```|`[^`\n]+?`)/g, (match) => {
+            const id = `%%CODE_BLOCK_${codeBlocks.length}%%`;
+            codeBlocks.push(match);
+            return id;
+        });
+
+        // Step 2: Protect and extract Display/Block Math: $$...$$ and \[...\]
+        const mathBlocks = [];
+        text = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
+            const id = `%%MATH_BLOCK_${mathBlocks.length}%%`;
+            try {
+                const rendered = katex.renderToString(formula.trim(), { displayMode: true, throwOnError: false });
+                mathBlocks.push(`<div class="math-block katex-display">${rendered}</div>`);
+            } catch (e) {
+                mathBlocks.push(`<div class="math-block katex-display">${formula}</div>`);
+            }
+            return id;
+        });
+
+        text = text.replace(/\\\[([\s\S]*?)\\\]/g, (match, formula) => {
+            const id = `%%MATH_BLOCK_${mathBlocks.length}%%`;
+            try {
+                const rendered = katex.renderToString(formula.trim(), { displayMode: true, throwOnError: false });
+                mathBlocks.push(`<div class="math-block katex-display">${rendered}</div>`);
+            } catch (e) {
+                mathBlocks.push(`<div class="math-block katex-display">${formula}</div>`);
+            }
+            return id;
+        });
+
+        // Step 3: Protect and extract Inline Math: \(...\)
+        const mathInlines = [];
+        text = text.replace(/\\\(([\s\S]*?)\\\)/g, (match, formula) => {
+            const id = `%%MATH_INLINE_${mathInlines.length}%%`;
+            try {
+                const rendered = katex.renderToString(formula.trim(), { displayMode: false, throwOnError: false });
+                mathInlines.push(`<span class="math-inline">${rendered}</span>`);
+            } catch (e) {
+                mathInlines.push(`<span class="math-inline">${formula}</span>`);
+            }
+            return id;
+        });
+
+        // Step 4: Protect and extract Inline Math: $...$
+        // Match $...$ where opening $ is not followed by space, closing $ is not preceded by space, and not escaped
+        text = text.replace(/(?<!\\)\$(?!\s)([^$\n]+?)(?<!\s)(?<!\\)\$/g, (match, formula) => {
+            const trimmed = formula.trim();
+            // Currency check: e.g. "50", "100.00", "50,000", "25"
+            if (/^\d+([.,]\d+)?\s*\$?$/.test(trimmed)) {
+                return match;
+            }
+            // Prose check: if it contains normal prose words without math operators
+            if (/\b(and|or|is|to|for|costs?|price|in)\b/i.test(trimmed) && !/[\\=+\-_^<>]/.test(trimmed)) {
+                return match;
+            }
+
+            const id = `%%MATH_INLINE_${mathInlines.length}%%`;
+            try {
+                const rendered = katex.renderToString(trimmed, { displayMode: false, throwOnError: false });
+                mathInlines.push(`<span class="math-inline">${rendered}</span>`);
+            } catch (e) {
+                mathInlines.push(`<span class="math-inline">${formula}</span>`);
+            }
+            return id;
+        });
+
+        // Step 4b: Detect and render isolated LaTeX math commands outside delimiters (e.g. \theta, \omega, \vec{F}, \frac{a}{b})
+        const bareLatexRegex = /(\\(?:theta|omega|alpha|beta|gamma|lambda|mu|Delta|sum|int|sin|cos|tan|log|ln|sqrt|vec|frac|text)\b(?:\{[^{}]*\}|\[[^\[\]]*\])*)/g;
+        text = text.replace(bareLatexRegex, (match, formula) => {
+            const id = `%%MATH_INLINE_${mathInlines.length}%%`;
+            try {
+                const rendered = katex.renderToString(formula.trim(), { displayMode: false, throwOnError: false });
+                mathInlines.push(`<span class="math-inline">${rendered}</span>`);
+            } catch (e) {
+                mathInlines.push(`<span class="math-inline">${formula}</span>`);
+            }
+            return id;
+        });
+
+        // Step 5: Restore code blocks before marked.parse
+        text = text.replace(/%%CODE_BLOCK_(\d+)%%/g, (match, idx) => {
+            return codeBlocks[parseInt(idx, 10)] || match;
+        });
+
+        // Step 6: Parse Markdown via marked if available, otherwise clean fallback
+        let parsedHtml = '';
+        if (typeof window !== 'undefined' && window.marked && window.marked.parse) {
+            parsedHtml = window.marked.parse(text);
+        } else if (typeof marked !== 'undefined' && marked.parse) {
+            parsedHtml = marked.parse(text);
+        } else {
+            parsedHtml = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+        }
+
+        // Step 7: Unwrap block equations from <p> tags
+        parsedHtml = parsedHtml.replace(/<p>\s*(%%MATH_BLOCK_\d+%%)\s*<\/p>/g, '$1');
+
+        // Step 8: Replace math placeholders with rendered KaTeX markup
+        parsedHtml = parsedHtml.replace(/%%MATH_BLOCK_(\d+)%%/g, (match, idx) => {
+            return mathBlocks[parseInt(idx, 10)] || match;
+        });
+        parsedHtml = parsedHtml.replace(/%%MATH_INLINE_(\d+)%%/g, (match, idx) => {
+            return mathInlines[parseInt(idx, 10)] || match;
+        });
+
+        // Step 9: Sanitize via DOMPurify
+        if (DOMPurify && DOMPurify.sanitize) {
+            parsedHtml = DOMPurify.sanitize(parsedHtml, {
+                ADD_TAGS: [
+                    'math', 'semantics', 'mrow', 'mi', 'mo', 'mn', 'ms', 'mspace', 
+                    'msup', 'msub', 'msubsup', 'mfrac', 'mover', 'munder', 'munderover', 
+                    'msqrt', 'mroot', 'mtable', 'mtr', 'mtd', 'annotation', 'annotation-xml'
+                ],
+                ADD_ATTR: [
+                    'aria-hidden', 'aria-label', 'role', 'style', 'class', 'xmlns', 
+                    'encoding', 'mathvariant', 'columnalign', 'rowalign'
+                ]
+            });
+        }
+
+        return parsedHtml;
+    } catch (err) {
+        console.error("[renderAIResponse Error]", err);
+        return rawText.replace(/\n/g, '<br>');
+    }
+}
+
+// Expose globally for page micro-animations and AI Tutor workspace
 if (typeof window !== 'undefined') {
     window.gsap = gsap;
     window.ScrollTrigger = ScrollTrigger;
     window.lottie = lottie;
     window.startTypingWave = startTypingWave;
     window.stopTypingWave = stopTypingWave;
+    window.katex = katex;
+    window.DOMPurify = DOMPurify;
+    window.renderAIResponse = renderAIResponse;
 }
 
 

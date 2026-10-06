@@ -76,7 +76,11 @@ document.addEventListener("DOMContentLoaded", function () {
         
         const textPara = document.createElement("div");
         textPara.className = "bubble-text";
-        textPara.innerText = text;
+        if (sender === "assistant" && typeof window.renderAIResponse === "function") {
+            textPara.innerHTML = window.renderAIResponse(text);
+        } else {
+            textPara.innerText = text;
+        }
         
         msgDiv.appendChild(textPara);
         aiMessages.appendChild(msgDiv);

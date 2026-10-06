@@ -2669,6 +2669,84 @@ body.ai-tutor-body .dashboard-main-content {
 }
 
 /* =========================================================
+   MATHEMATICAL FORMULA & KATEX STYLING FOR AI RESPONSES
+   ========================================================= */
+.bubble-text .katex {
+    font-size: 1.05em;
+    text-rendering: auto;
+    font-weight: normal;
+}
+
+/* Inline equations: natural vertical alignment with surrounding text */
+.bubble-text .math-inline {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 0.15rem;
+    max-width: 100%;
+}
+
+/* Block equations: standalone container, centered, padded, horizontal scroll on overflow */
+.bubble-text .math-block,
+.bubble-text .katex-display {
+    display: block;
+    margin: 0.85rem 0;
+    padding: 0.75rem 1rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+    text-align: center;
+    -webkit-overflow-scrolling: touch;
+}
+
+.bubble-text .katex-display > .katex {
+    display: inline-block;
+    white-space: nowrap;
+    text-align: initial;
+}
+
+/* Dark Mode Contrast (AI Tutor default theme) */
+.assistant-bubble .bubble-text .katex {
+    color: #F8FAFC;
+}
+
+.assistant-bubble .bubble-text .katex-display {
+    background: rgba(30, 41, 59, 0.55);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Light Mode Contrast */
+html[data-theme="light"] .assistant-bubble .bubble-text .katex {
+    color: #0F172A;
+}
+
+html[data-theme="light"] .assistant-bubble .bubble-text .katex-display {
+    background: #F8FAFC;
+    border-color: #E2E8F0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Smooth custom scrollbars for long equations */
+.bubble-text .math-block::-webkit-scrollbar,
+.bubble-text .katex-display::-webkit-scrollbar {
+    height: 5px;
+}
+
+.bubble-text .math-block::-webkit-scrollbar-thumb,
+.bubble-text .katex-display::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.35);
+    border-radius: 4px;
+}
+
+.bubble-text .math-block::-webkit-scrollbar-track,
+.bubble-text .katex-display::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+/* =========================================================
    COMPREHENSIVE RESPONSIVE DESIGN SYSTEM (320px - 1440px)
    ========================================================= */
 

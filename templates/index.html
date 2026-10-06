@@ -157,7 +157,7 @@
 
 <!-- ================= FEATURES ================= -->
 
-<section class="features">
+<section class="features" role="region" aria-label="Learning Modules" tabindex="0">
 
     <div class="feature-card">
 
@@ -256,9 +256,9 @@
 </section>
 <!-- ================= STATISTICS ================= -->
 
-<section class="stats">
+<section class="stats" aria-label="Platform Statistics">
 
-    <div class="stats-container">
+    <div class="stats-container" role="region" aria-label="Key Statistics" tabindex="0">
 
         <div class="stat-box">
             <h2>500+</h2>
@@ -374,6 +374,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (homeLink) homeLink.classList.add('active');
             }
         }, { passive: true });
+    }
+
+    // Natural PC mouse wheel horizontal scrolling for module cards (.features)
+    const featuresContainer = document.querySelector('.features');
+    if (featuresContainer) {
+        featuresContainer.addEventListener('wheel', (e) => {
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                const maxScrollLeft = featuresContainer.scrollWidth - featuresContainer.clientWidth;
+                if (maxScrollLeft > 0) {
+                    const canScrollRight = e.deltaY > 0 && featuresContainer.scrollLeft < maxScrollLeft - 1;
+                    const canScrollLeft = e.deltaY < 0 && featuresContainer.scrollLeft > 1;
+                    if (canScrollRight || canScrollLeft) {
+                        e.preventDefault();
+                        featuresContainer.scrollLeft += e.deltaY;
+                    }
+                }
+            }
+        }, { passive: false });
     }
 });
 </script>

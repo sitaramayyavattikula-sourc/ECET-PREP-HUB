@@ -12,6 +12,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/main.css') }}">
 
     <!-- Marked.js Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -424,11 +425,15 @@
 
         function renderMarkdown(text) {
             try {
+                if (typeof window.renderAIResponse === "function") {
+                    return window.renderAIResponse(text);
+                }
                 if (typeof marked !== "undefined" && marked.parse) {
                     return marked.parse(text);
                 }
                 return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
             } catch (e) {
+                console.error("Render markdown error:", e);
                 return text.replace(/\n/g, "<br>");
             }
         }
